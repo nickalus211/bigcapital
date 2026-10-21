@@ -100,3 +100,7 @@ value. Returns the same body as `GET`.
 The `jamaica.gct_registered` and `jamaica.gct_registration_number` settings
 above now drive the Tax Invoice PDF and the `compliance_warnings` returned
 with invoices. See [tax-invoice.md](tax-invoice.md).
+
+## `GET /api/jamaica/gct-return` (M4)
+
+The GCT return for a period. See [gct-return.md](gct-return.md).

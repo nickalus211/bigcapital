@@ -36,8 +36,8 @@ Before M0, the request above was rejected as an undeclared setting key.
 | `jamaica.gct_registered` | boolean | `false` | Since M3: Tax Invoice PDF; switches the `compliance_warnings` checks ([tax-invoice.md](tax-invoice.md)) |
 | `jamaica.gct_registration_number` | string | unset | Since M3: printed on Tax Invoices |
 | `jamaica.gct_registration_date` | date | unset | |
-| `jamaica.filing_frequency` | string | `monthly` | M4: GCT return period |
-| `jamaica.apportionment_enabled` | boolean | `false` | M4: input tax apportionment |
+| `jamaica.filing_frequency` | string | `monthly` | Stored only. The GCT return (M4) takes any period and defaults to last month. |
+| `jamaica.apportionment_enabled` | boolean | `false` | Since M4: the GCT return claims input tax in proportion to taxable supplies ([gct-return.md](gct-return.md)) |
 | `jamaica.setup_at` | string | unset | Written by the Jamaica setup |
 
 How the `tax.*` options change each document: [document-tax.md](document-tax.md).

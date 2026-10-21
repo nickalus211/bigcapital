@@ -3,6 +3,24 @@
 Newest first. Every entry is backward compatible unless it is marked
 **BREAKING**, and none are.
 
+## M4: GCT return (2026-10-22)
+
+Details: [gct-return.md](gct-return.md). Additive only.
+
+### New endpoint `GET /api/jamaica/gct-return`
+- Query: `from_date`, `to_date` (default: last month).
+- Returns supplies by tax type, output tax, input tax, the input tax
+  apportionment, net GCT (payable or refundable), the due date and filing
+  warnings.
+- Needs the Jamaica feature (`JAMAICA_FEATURE_NOT_ENABLED` otherwise) and
+  the sales tax liability report permission.
+
+### Settings
+- `jamaica.apportionment_enabled` now takes effect in the GCT return.
+
+### Invoice and estimate sync
+No change.
+
 ## Fix: estimate adjustment (2026-10-22)
 
 Applies to every tenant.
