@@ -1,6 +1,6 @@
 import { useFormikContext } from 'formik';
 import * as FF from 'fp-ts/function';
-import { first } from 'lodash';
+import { first, omit } from 'lodash';
 import moment from 'moment';
 import React from 'react';
 import { useVendorCreditNoteFormContext } from './VendorCreditNoteFormProvider';
@@ -10,11 +10,16 @@ import {
   transformAttachmentsToRequest,
 } from '@/containers/Attachments/utils';
 import {
+  useDocumentExclusiveTaxAmount,
+  useDocumentTaxRates,
+} from '@/containers/Entries/DocumentTax';
+import {
   updateItemsEntriesTotal,
   ensureEntriesHaveEmptyLine,
   getEntriesTotal,
 } from '@/containers/Entries/utils';
 import { useCurrentOrganizationBaseCurrency } from '@/hooks/query';
+import { TaxType } from '@/interfaces/TaxRates';
 import {
   defaultFastFieldShouldUpdate,
   transformToForm,
@@ -35,6 +40,9 @@ export type VendorCreditEntry = {
   quantity: string | number;
   description: string;
   amount: string | number;
+  taxRateId: string | number;
+  taxRate: string | number;
+  taxAmount: string | number;
 };
 
 export type VendorCreditFormValues = {
@@ -52,6 +60,7 @@ export type VendorCreditFormValues = {
   discount: string;
   discountType: 'amount' | 'percentage';
   adjustment: string;
+  inclusiveExclusiveTax: TaxType;
   entries: VendorCreditEntry[];
   attachments: unknown[];
 };
@@ -65,6 +74,9 @@ export const defaultVendorCreditEntry: VendorCreditEntry = {
   quantity: '',
   description: '',
   amount: '',
+  taxRateId: '',
+  taxRate: '',
+  taxAmount: '',
 };
 
 // Default vendor credit note.
@@ -83,6 +95,7 @@ export const defaultVendorCredit: VendorCreditFormValues = {
   discount: '',
   discountType: 'amount',
   adjustment: '',
+  inclusiveExclusiveTax: TaxType.Exclusive,
   entries: [...repeatValue(defaultVendorCreditEntry, MIN_LINES_NUMBER)],
   attachments: [],
 };
@@ -118,6 +131,9 @@ export function transformToEditForm(
       vendorCredit,
       defaultVendorCredit,
     ) as Partial<VendorCreditFormValues>),
+    inclusiveExclusiveTax: vendorCredit.isInclusiveTax
+      ? TaxType.Inclusive
+      : TaxType.Exclusive,
     entries,
     attachments: transformAttachmentsToForm(vendorCredit),
   };
@@ -131,6 +147,7 @@ const defaultReqVendorCreditEntry = {
   discount: '',
   quantity: '',
   description: '',
+  taxRateId: '',
 };
 
 /**
@@ -138,7 +155,10 @@ const defaultReqVendorCreditEntry = {
  */
 const transformEntriesToSubmit = (entries: VendorCreditEntry[]) => {
   return orderingLinesIndexes(
-    entries.map((entry) => transformToForm(entry, defaultReqVendorCreditEntry)),
+    entries.map((entry) => ({
+      ...transformToForm(entry, defaultReqVendorCreditEntry),
+      taxRateId: entry.taxRateId || null,
+    })),
   );
 };
 
@@ -163,7 +183,8 @@ export function transformFormValuesToRequest(
   values: VendorCreditFormValues,
 ): CreateVendorCreditBody {
   return {
-    ...values,
+    ...omit(values, ['inclusiveExclusiveTax']),
+    isInclusiveTax: values.inclusiveExclusiveTax === TaxType.Inclusive,
     entries: transformEntriesToSubmit(filterNonZeroEntries(values.entries)),
     open: false,
     attachments: transformAttachmentsToRequest(values),
@@ -198,6 +219,7 @@ export const entriesFieldShouldUpdate = (
 ): boolean => {
   return (
     newProps.items !== oldProps.items ||
+    newProps.taxRates !== oldProps.taxRates ||
     defaultFastFieldShouldUpdate(newProps, oldProps)
   );
 };
@@ -326,8 +348,10 @@ export const useVendorCreditTotal = () => {
   const subtotal = useVendorCreditSubtotal();
   const discountAmount = useVendorCreditDiscountAmount();
   const adjustmentAmount = useVendorCreditAdjustmentAmount();
+  const { taxRates } = useDocumentTaxRates();
+  const exclusiveTaxAmount = useDocumentExclusiveTaxAmount(taxRates);
 
-  return subtotal + adjustmentAmount - discountAmount;
+  return subtotal + adjustmentAmount - discountAmount + exclusiveTaxAmount;
 };
 
 /**

@@ -1,6 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useExpenseSubtotalFormatted, useExpenseTotalFormatted } from './utils';
+import {
+  useExpenseSubtotalFormatted,
+  useExpenseTaxLines,
+  useExpenseTotalFormatted,
+} from './utils';
 import {
   T,
   TotalLines,
@@ -12,6 +16,7 @@ import {
 export function ExpenseFormFooterRight() {
   const totalFormatted = useExpenseTotalFormatted();
   const subtotalFormatted = useExpenseSubtotalFormatted();
+  const taxLines = useExpenseTaxLines();
 
   return (
     <ExpensesTotalLines>
@@ -20,6 +25,14 @@ export function ExpenseFormFooterRight() {
         value={subtotalFormatted}
         borderStyle={TotalLineBorderStyle.None}
       />
+      {taxLines.map((line) => (
+        <TotalLine
+          key={line.taxRateId}
+          title={line.label}
+          value={line.taxAmountFormatted}
+          borderStyle={TotalLineBorderStyle.None}
+        />
+      ))}
       <TotalLine
         title={<T id={'expense.label.total'} />}
         value={totalFormatted}

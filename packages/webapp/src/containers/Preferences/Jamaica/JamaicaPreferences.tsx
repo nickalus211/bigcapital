@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import * as Yup from 'yup';
+import { TaxCalculationCard } from './TaxCalculationCard';
 import type { WithDashboardActionsProps } from '@/containers/Dashboard/withDashboardActions';
 import type { JamaicaSetupReport } from '@bigcapital/sdk-ts';
 import {
@@ -174,6 +175,8 @@ function JamaicaPreferencesInner({
           )}
         </Formik>
       </Card>
+
+      <TaxCalculationCard />
     </PageRoot>
   );
 }

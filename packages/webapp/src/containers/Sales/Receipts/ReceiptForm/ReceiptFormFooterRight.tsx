@@ -19,6 +19,11 @@ import {
   TotalLineBorderStyle,
   TotalLineTextStyle,
 } from '@/components';
+import {
+  DocumentTaxTotalLines,
+  useDocumentTaxRates,
+} from '@/containers/Entries/DocumentTax';
+import { formattedAmount } from '@/utils';
 
 export function ReceiptFormFooterRight() {
   const {
@@ -33,6 +38,7 @@ export function ReceiptFormFooterRight() {
 
   const discountAmount = useReceiptDiscountAmountFormatted();
   const adjustmentAmount = useReceiptAdjustmentFormatted();
+  const { taxRates } = useDocumentTaxRates();
 
   return (
     <ReceiptTotalLines labelColWidth={'180px'} amountColWidth={'180px'}>
@@ -45,6 +51,10 @@ export function ReceiptFormFooterRight() {
         discountAmount={discountAmount}
       />
       <AdjustmentTotalLine adjustmentAmount={adjustmentAmount} />
+      <DocumentTaxTotalLines
+        taxRates={taxRates}
+        formatAmount={(amount) => formattedAmount(amount, currencyCode)}
+      />
       <TotalLine
         title={<T id={'receipt_form.label.total'} />}
         value={totalFormatted}

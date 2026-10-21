@@ -1,6 +1,6 @@
 import { useFormikContext } from 'formik';
 import * as FF from 'fp-ts/function';
-import { first } from 'lodash';
+import { first, omit } from 'lodash';
 import moment from 'moment';
 import React from 'react';
 import { useCreditNoteFormContext } from './CreditNoteFormProvider';
@@ -10,12 +10,17 @@ import {
   transformAttachmentsToRequest,
 } from '@/containers/Attachments/utils';
 import { convertBrandingTemplatesToOptions } from '@/containers/BrandingTemplates/BrandingTemplatesSelectFields';
+import {
+  useDocumentExclusiveTaxAmount,
+  useDocumentTaxRates,
+} from '@/containers/Entries/DocumentTax';
 import { getEntriesTotal } from '@/containers/Entries/utils';
 import {
   updateItemsEntriesTotal,
   ensureEntriesHaveEmptyLine,
 } from '@/containers/Entries/utils';
 import { useCurrentOrganizationBaseCurrency } from '@/hooks/query';
+import { TaxType } from '@/interfaces/TaxRates';
 import {
   defaultFastFieldShouldUpdate,
   transformToForm,
@@ -35,6 +40,9 @@ export type CreditNoteEntry = {
   quantity: string | number;
   description: string;
   amount: string | number;
+  taxRateId: string | number;
+  taxRate: string | number;
+  taxAmount: string | number;
 };
 
 export type CreditNoteFormValues = {
@@ -54,6 +62,7 @@ export type CreditNoteFormValues = {
   discount: string;
   discountType: 'amount' | 'percentage';
   adjustment: string;
+  inclusiveExclusiveTax: TaxType;
   entries: CreditNoteEntry[];
   attachments: unknown[];
 };
@@ -67,6 +76,9 @@ export const defaultCreditNoteEntry: CreditNoteEntry = {
   quantity: '',
   description: '',
   amount: '',
+  taxRateId: '',
+  taxRate: '',
+  taxAmount: '',
 };
 
 // Default credit note object.
@@ -87,6 +99,7 @@ export const defaultCreditNote: CreditNoteFormValues = {
   discount: '',
   discountType: 'amount',
   adjustment: '',
+  inclusiveExclusiveTax: TaxType.Exclusive,
   entries: [...repeatValue(defaultCreditNoteEntry, MIN_LINES_NUMBER)],
   attachments: [],
 };
@@ -122,6 +135,9 @@ export function transformToEditForm(
       creditNote,
       defaultCreditNote,
     ) as Partial<CreditNoteFormValues>),
+    inclusiveExclusiveTax: creditNote.isInclusiveTax
+      ? TaxType.Inclusive
+      : TaxType.Exclusive,
     entries,
     attachments: transformAttachmentsToForm(creditNote),
   };
@@ -135,6 +151,7 @@ const defaultReqCreditNoteEntry = {
   discount: '',
   quantity: '',
   description: '',
+  taxRateId: '',
 };
 
 /**
@@ -142,7 +159,10 @@ const defaultReqCreditNoteEntry = {
  */
 const transformEntriesToSubmit = (entries: CreditNoteEntry[]) => {
   return orderingLinesIndexes(
-    entries.map((entry) => transformToForm(entry, defaultReqCreditNoteEntry)),
+    entries.map((entry) => ({
+      ...transformToForm(entry, defaultReqCreditNoteEntry),
+      taxRateId: entry.taxRateId || null,
+    })),
   );
 };
 
@@ -167,7 +187,8 @@ export function transformFormValuesToRequest(
   values: CreditNoteFormValues,
 ): CreateCreditNoteBody {
   return {
-    ...values,
+    ...omit(values, ['inclusiveExclusiveTax']),
+    isInclusiveTax: values.inclusiveExclusiveTax === TaxType.Inclusive,
     entries: transformEntriesToSubmit(filterNonZeroEntries(values.entries)),
     open: false,
     attachments: transformAttachmentsToRequest(values),
@@ -202,6 +223,7 @@ export const entriesFieldShouldUpdate = (
 ): boolean => {
   return (
     newProps.items !== oldProps.items ||
+    newProps.taxRates !== oldProps.taxRates ||
     defaultFastFieldShouldUpdate(newProps, oldProps)
   );
 };
@@ -314,8 +336,10 @@ export const useCreditNoteTotal = () => {
   const subtotal = useCreditNoteSubtotal();
   const discountAmount = useCreditNoteDiscountAmount();
   const adjustmentAmount = useCreditNoteAdjustmentAmount();
+  const { taxRates } = useDocumentTaxRates();
+  const exclusiveTaxAmount = useDocumentExclusiveTaxAmount(taxRates);
 
-  return subtotal + adjustmentAmount - discountAmount;
+  return subtotal + adjustmentAmount - discountAmount + exclusiveTaxAmount;
 };
 
 /**

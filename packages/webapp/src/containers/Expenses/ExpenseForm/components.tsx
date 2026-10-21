@@ -17,6 +17,7 @@ import {
   AccountsListFieldCell,
   CheckBoxFieldCell,
 } from '@/components/DataTableCells';
+import { TaxRatesSuggestInputCell } from '@/components/TaxRates/TaxRatesSuggestInputCell';
 import { CellType, Align } from '@/constants';
 import { useCurrentOrganizationBaseCurrency } from '@/hooks/query';
 
@@ -102,8 +103,10 @@ export function ExpenseAmountHeaderCell({
  */
 export function useExpenseFormTableColumns({
   landedCost,
+  enableTaxRates = false,
 }: {
   landedCost: boolean;
+  enableTaxRates?: boolean;
 }) {
   return React.useMemo(
     () => [
@@ -127,6 +130,17 @@ export function useExpenseFormTableColumns({
         align: Align.Right,
         moneyInputGroupProps: { 'data-testId': 'expense-entry-amount-input' },
       },
+      ...(enableTaxRates
+        ? [
+            {
+              Header: 'Tax rate',
+              accessor: 'taxRateId',
+              Cell: TaxRatesSuggestInputCell,
+              disableSortBy: true,
+              width: 70,
+            },
+          ]
+        : []),
       {
         Header: intl.get('description'),
         accessor: 'description',
@@ -157,7 +171,7 @@ export function useExpenseFormTableColumns({
         align: Align.Center,
       },
     ],
-    [],
+    [landedCost, enableTaxRates],
   );
 }
 /**

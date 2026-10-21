@@ -12,11 +12,16 @@ import {
 } from '@/containers/Attachments/utils';
 import { convertBrandingTemplatesToOptions } from '@/containers/BrandingTemplates/BrandingTemplatesSelectFields';
 import {
+  useDocumentExclusiveTaxAmount,
+  useDocumentTaxRates,
+} from '@/containers/Entries/DocumentTax';
+import {
   updateItemsEntriesTotal,
   ensureEntriesHaveEmptyLine,
   getEntriesTotal,
 } from '@/containers/Entries/utils';
 import { useCurrentOrganizationBaseCurrency } from '@/hooks/query';
+import { TaxType } from '@/interfaces/TaxRates';
 import {
   defaultFastFieldShouldUpdate,
   repeatValue,
@@ -35,6 +40,9 @@ export type EstimateEntry = {
   quantity: string | number;
   description: string;
   amount: string | number;
+  taxRateId: string | number;
+  taxRate: string | number;
+  taxAmount: string | number;
 };
 
 export type EstimateFormValues = {
@@ -53,6 +61,7 @@ export type EstimateFormValues = {
   currencyCode: string;
   pdfTemplateId: string | number;
   entries: EstimateEntry[];
+  inclusiveExclusiveTax: TaxType;
   attachments: unknown[];
   discount: string;
   discountType: 'amount' | 'percentage';
@@ -67,6 +76,9 @@ export const defaultEstimateEntry: EstimateEntry = {
   quantity: '',
   description: '',
   amount: '',
+  taxRateId: '',
+  taxRate: '',
+  taxAmount: '',
 };
 
 const defaultEstimateEntryReq = {
@@ -76,6 +88,7 @@ const defaultEstimateEntryReq = {
   discount: '',
   quantity: '',
   description: '',
+  taxRateId: '',
 };
 
 export const defaultEstimate: EstimateFormValues = {
@@ -94,6 +107,7 @@ export const defaultEstimate: EstimateFormValues = {
   exchangeRate: '1',
   currencyCode: '',
   entries: [...repeatValue(defaultEstimateEntry, MIN_LINES_NUMBER)],
+  inclusiveExclusiveTax: TaxType.Exclusive,
   attachments: [],
   pdfTemplateId: '',
   adjustment: '',
@@ -137,6 +151,9 @@ export function transformToEditForm(
       estimate,
       defaultEstimate,
     ) as Partial<EstimateFormValues>),
+    inclusiveExclusiveTax: estimate.isInclusiveTax
+      ? TaxType.Inclusive
+      : TaxType.Exclusive,
     entries,
     attachments,
   };
@@ -170,6 +187,7 @@ export const entriesFieldShouldUpdate = (
 ): boolean => {
   return (
     newProps.items !== oldProps.items ||
+    newProps.taxRates !== oldProps.taxRates ||
     defaultFastFieldShouldUpdate(newProps, oldProps)
   );
 };
@@ -241,7 +259,12 @@ export function transformValueToRequest(
   const attachments = transformAttachmentsToRequest(values);
 
   return {
-    ...omit(values, ['estimateNumberManually', 'estimateNumber']),
+    ...omit(values, [
+      'estimateNumberManually',
+      'estimateNumber',
+      'inclusiveExclusiveTax',
+    ]),
+    isInclusiveTax: values.inclusiveExclusiveTax === TaxType.Inclusive,
     // The `estimateNumberManually` will be presented just if the auto-increment
     // is disable, always both attributes hold the same value in manual mode.
     ...(values.estimateNumberManually && {
@@ -249,6 +272,7 @@ export function transformValueToRequest(
     }),
     entries: entries.map((entry) => ({
       ...transformToForm(entry, defaultEstimateEntryReq),
+      taxRateId: entry.taxRateId || null,
     })),
     attachments,
   } as unknown as CreateSaleEstimateBody;
@@ -373,8 +397,10 @@ export const useEstimateTotal = () => {
   const subtotal = useEstimateSubtotal();
   const discount = useEstimateDiscount();
   const adjustment = useEstimateAdjustment();
+  const { taxRates } = useDocumentTaxRates();
+  const exclusiveTaxAmount = useDocumentExclusiveTaxAmount(taxRates);
 
-  return subtotal + adjustment - discount;
+  return subtotal + adjustment - discount + exclusiveTaxAmount;
 };
 
 /**

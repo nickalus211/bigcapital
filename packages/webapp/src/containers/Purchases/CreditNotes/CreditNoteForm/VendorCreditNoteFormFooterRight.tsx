@@ -9,13 +9,19 @@ import {
   type VendorCreditFormValues,
 } from './utils';
 import { T, TotalLines, TotalLine, TotalLineTextStyle } from '@/components';
+import {
+  DocumentTaxTotalLines,
+  useDocumentTaxRates,
+} from '@/containers/Entries/DocumentTax';
 import { AdjustmentTotalLine } from '@/containers/Sales/Invoices/InvoiceForm/AdjustmentTotalLine';
 import { DiscountTotalLine } from '@/containers/Sales/Invoices/InvoiceForm/DiscountTotalLine';
+import { formattedAmount } from '@/utils';
 
 export function VendorCreditNoteFormFooterRight() {
   const {
     values: { currencyCode },
   } = useFormikContext<VendorCreditFormValues>();
+  const { taxRates } = useDocumentTaxRates();
   const totalFormatted = useVendorCreditTotalFormatted();
   const subtotalFormatted = useVendorCreditSubtotalFormatted();
 
@@ -36,6 +42,10 @@ export function VendorCreditNoteFormFooterRight() {
         discountAmount={discountAmountFormatted}
       />
       <AdjustmentTotalLine adjustmentAmount={adjustmentAmountFormatted} />
+      <DocumentTaxTotalLines
+        taxRates={taxRates}
+        formatAmount={(amount) => formattedAmount(amount, currencyCode)}
+      />
       <TotalLine
         title={<T id={'vendor_credit_form.label.total'} />}
         value={totalFormatted}

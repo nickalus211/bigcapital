@@ -9045,6 +9045,14 @@ export interface components {
              * @example $100.00
              */
             amountFormatted?: string;
+            /** @description Tax rate id of the category (tax.extended_documents setting) */
+            taxRateId?: number | null;
+            /** @description Tax rate percentage */
+            taxRate?: number | null;
+            /** @description Category amount without its tax */
+            taxableAmount?: number | null;
+            /** @description Tax on the category */
+            lineTaxAmount?: number | null;
         };
         ExpenseResponseDto: {
             /**
@@ -9199,6 +9207,12 @@ export interface components {
             branch?: components["schemas"]["BranchResponseDto"];
             /** @description The categories associated with this expense */
             categories: components["schemas"]["ExpenseCategoryResponseDto"][];
+            /** @description Whether the category amounts include tax (tax.extended_documents setting) */
+            isInclusiveTax?: boolean;
+            /** @description Total tax on the categories; null when untaxed */
+            taxAmountWithheld?: number | null;
+            /** @description Formatted total tax */
+            taxAmountWithheldFormatted?: string;
         };
         CreateExpenseDto: {
             /**
@@ -9261,6 +9275,11 @@ export interface components {
              *     ]
              */
             categories: string[];
+            /**
+             * @description Whether the category amounts include tax. Used only while the tax.extended_documents setting is on.
+             * @example true
+             */
+            isInclusiveTax?: boolean;
             /**
              * @description The attachments of the expense
              * @example [
@@ -9332,6 +9351,11 @@ export interface components {
              *     ]
              */
             categories: string[];
+            /**
+             * @description Whether the category amounts include tax. Used only while the tax.extended_documents setting is on.
+             * @example true
+             */
+            isInclusiveTax?: boolean;
             /**
              * @description The attachments of the expense
              * @example [
@@ -10437,6 +10461,23 @@ export interface components {
              * @example false
              */
             isConvertedToInvoice: boolean;
+            /**
+             * @description Whether the line rates include tax (tax.extended_documents setting)
+             * @example false
+             */
+            isInclusiveTax?: boolean;
+            /**
+             * @description Total tax on the lines; null when the document carries no tax (tax.extended_documents setting)
+             * @example 15
+             */
+            taxAmountWithheld?: number | null;
+            /**
+             * @description Formatted total tax on the lines
+             * @example $15.00
+             */
+            taxAmountWithheldFormatted?: string;
+            /** @description Tax lines, one per tax rate */
+            taxes?: components["schemas"]["SaleInvoiceTaxEntryDto"][];
         };
         SaleEstiamteStateResponseDto: {
             /**
@@ -10593,6 +10634,11 @@ export interface components {
              * @example 1
              */
             adjustment: number;
+            /**
+             * @description Whether the line rates include tax. Used only while the tax.extended_documents setting is on.
+             * @example false
+             */
+            isInclusiveTax?: boolean;
         };
         EditSaleEstimateDto: {
             /**
@@ -10689,6 +10735,11 @@ export interface components {
              * @example 1
              */
             adjustment: number;
+            /**
+             * @description Whether the line rates include tax. Used only while the tax.extended_documents setting is on.
+             * @example false
+             */
+            isInclusiveTax?: boolean;
         };
         SaleReceiptHtmlContentResponseDto: {
             /**
@@ -10906,6 +10957,23 @@ export interface components {
              * @example 2024-01-02T00:00:00Z
              */
             updatedAt?: string;
+            /**
+             * @description Whether the line rates include tax (tax.extended_documents setting)
+             * @example false
+             */
+            isInclusiveTax?: boolean;
+            /**
+             * @description Total tax on the lines; null when the document carries no tax (tax.extended_documents setting)
+             * @example 15
+             */
+            taxAmountWithheld?: number | null;
+            /**
+             * @description Formatted total tax on the lines
+             * @example $15.00
+             */
+            taxAmountWithheldFormatted?: string;
+            /** @description Tax lines, one per tax rate */
+            taxes?: components["schemas"]["SaleInvoiceTaxEntryDto"][];
         };
         CreateSaleReceiptDto: {
             /**
@@ -11002,6 +11070,11 @@ export interface components {
              * @example 1
              */
             adjustment: number;
+            /**
+             * @description Whether the line rates include tax. Used only while the tax.extended_documents setting is on.
+             * @example false
+             */
+            isInclusiveTax?: boolean;
         };
         EditSaleReceiptDto: {
             /**
@@ -11098,6 +11171,11 @@ export interface components {
              * @example 1
              */
             adjustment: number;
+            /**
+             * @description Whether the line rates include tax. Used only while the tax.extended_documents setting is on.
+             * @example false
+             */
+            isInclusiveTax?: boolean;
         };
         BillPaymentTransactionDto: {
             /**
@@ -12237,6 +12315,23 @@ export interface components {
             totalLocalFormatted: string;
             /** @description The customer of the credit note */
             customer: components["schemas"]["CustomerResponseDto"];
+            /**
+             * @description Whether the line rates include tax (tax.extended_documents setting)
+             * @example false
+             */
+            isInclusiveTax?: boolean;
+            /**
+             * @description Total tax on the lines; null when the document carries no tax (tax.extended_documents setting)
+             * @example 15
+             */
+            taxAmountWithheld?: number | null;
+            /**
+             * @description Formatted total tax on the lines
+             * @example $15.00
+             */
+            taxAmountWithheldFormatted?: string;
+            /** @description Tax lines, one per tax rate */
+            taxes?: components["schemas"]["SaleInvoiceTaxEntryDto"][];
         };
         CreateCreditNoteDto: {
             /**
@@ -12318,6 +12413,11 @@ export interface components {
              * @enum {string}
              */
             discountType: "percentage" | "amount";
+            /**
+             * @description Whether the line rates include tax. Used only while the tax.extended_documents setting is on.
+             * @example false
+             */
+            isInclusiveTax?: boolean;
         };
         CreditNoteStateResponseDto: {
             /**
@@ -12406,6 +12506,11 @@ export interface components {
              * @enum {string}
              */
             discountType: "percentage" | "amount";
+            /**
+             * @description Whether the line rates include tax. Used only while the tax.extended_documents setting is on.
+             * @example false
+             */
+            isInclusiveTax?: boolean;
         };
         RefundCreditAccountDto: {
             /** @example 10 */
@@ -12795,6 +12900,23 @@ export interface components {
              * @example 2024-03-16T00:00:00Z
              */
             updatedAt?: string;
+            /**
+             * @description Whether the line rates include tax (tax.extended_documents setting)
+             * @example false
+             */
+            isInclusiveTax?: boolean;
+            /**
+             * @description Total tax on the lines; null when the document carries no tax (tax.extended_documents setting)
+             * @example 15
+             */
+            taxAmountWithheld?: number | null;
+            /**
+             * @description Formatted total tax on the lines
+             * @example $15.00
+             */
+            taxAmountWithheldFormatted?: string;
+            /** @description Tax lines, one per tax rate */
+            taxes?: components["schemas"]["SaleInvoiceTaxEntryDto"][];
         };
         CreateVendorCreditDto: {
             /**
@@ -12881,6 +13003,11 @@ export interface components {
              * @example 1
              */
             adjustment: number;
+            /**
+             * @description Whether the line rates include tax. Used only while the tax.extended_documents setting is on.
+             * @example false
+             */
+            isInclusiveTax?: boolean;
         };
         EditVendorCreditDto: {
             /**
@@ -12967,6 +13094,11 @@ export interface components {
              * @example 1
              */
             adjustment: number;
+            /**
+             * @description Whether the line rates include tax. Used only while the tax.extended_documents setting is on.
+             * @example false
+             */
+            isInclusiveTax?: boolean;
         };
         VendorCreditAppliedBillResponseDto: {
             /**

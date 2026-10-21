@@ -11,11 +11,16 @@ import {
 } from '@/containers/Attachments/utils';
 import { convertBrandingTemplatesToOptions } from '@/containers/BrandingTemplates/BrandingTemplatesSelectFields';
 import {
+  useDocumentExclusiveTaxAmount,
+  useDocumentTaxRates,
+} from '@/containers/Entries/DocumentTax';
+import {
   updateItemsEntriesTotal,
   ensureEntriesHaveEmptyLine,
   getEntriesTotal,
 } from '@/containers/Entries/utils';
 import { useCurrentOrganizationBaseCurrency } from '@/hooks/query';
+import { TaxType } from '@/interfaces/TaxRates';
 import {
   defaultFastFieldShouldUpdate,
   repeatValue,
@@ -34,6 +39,9 @@ export type ReceiptEntry = {
   quantity: string | number;
   description: string;
   amount: string | number;
+  taxRateId: string | number;
+  taxRate: string | number;
+  taxAmount: string | number;
 };
 
 export type ReceiptFormValues = {
@@ -57,6 +65,7 @@ export type ReceiptFormValues = {
   discount: string | number;
   discountType: 'amount' | 'percentage';
   adjustment: string | number;
+  inclusiveExclusiveTax: TaxType;
 };
 
 export const defaultReceiptEntry: ReceiptEntry = {
@@ -67,6 +76,9 @@ export const defaultReceiptEntry: ReceiptEntry = {
   quantity: '',
   description: '',
   amount: '',
+  taxRateId: '',
+  taxRate: '',
+  taxAmount: '',
 };
 
 const defaultReceiptEntryReq = {
@@ -76,6 +88,7 @@ const defaultReceiptEntryReq = {
   discount: '',
   quantity: '',
   description: '',
+  taxRateId: '',
 };
 
 export const defaultReceipt: ReceiptFormValues = {
@@ -98,6 +111,7 @@ export const defaultReceipt: ReceiptFormValues = {
   discount: '',
   discountType: 'amount',
   adjustment: '',
+  inclusiveExclusiveTax: TaxType.Exclusive,
 };
 
 const ERRORS = {
@@ -141,6 +155,9 @@ export function transformToEditForm(
   return {
     ...defaultReceipt,
     ...(transformToForm(receipt, defaultReceipt) as Partial<ReceiptFormValues>),
+    inclusiveExclusiveTax: receipt.isInclusiveTax
+      ? TaxType.Inclusive
+      : TaxType.Exclusive,
     entries,
     attachments,
   };
@@ -155,6 +172,7 @@ export const entriesFieldShouldUpdate = (
 ): boolean => {
   return (
     newProps.items !== oldProps.items ||
+    newProps.taxRates !== oldProps.taxRates ||
     defaultFastFieldShouldUpdate(newProps, oldProps)
   );
 };
@@ -220,12 +238,18 @@ export const transformFormValuesToRequest = (
   const attachments = transformAttachmentsToRequest(values);
 
   return {
-    ...omit(values, ['receiptNumberManually', 'receiptNumber']),
+    ...omit(values, [
+      'receiptNumberManually',
+      'receiptNumber',
+      'inclusiveExclusiveTax',
+    ]),
     ...(values.receiptNumberManually && {
       receiptNumber: values.receiptNumber,
     }),
+    isInclusiveTax: values.inclusiveExclusiveTax === TaxType.Inclusive,
     entries: entries.map((entry) => ({
       ...transformToForm(entry, defaultReceiptEntryReq),
+      taxRateId: entry.taxRateId || null,
     })),
     closed: false,
     attachments,
@@ -345,8 +369,10 @@ export const useReceiptTotal = () => {
   const subtotal = useReceiptSubtotal();
   const adjustmentAmount = useReceiptAdjustmentAmount();
   const discountAmount = useReceiptDiscountAmount();
+  const { taxRates } = useDocumentTaxRates();
+  const exclusiveTaxAmount = useDocumentExclusiveTaxAmount(taxRates);
 
-  return subtotal - discountAmount + adjustmentAmount;
+  return subtotal - discountAmount + adjustmentAmount + exclusiveTaxAmount;
 };
 
 /**

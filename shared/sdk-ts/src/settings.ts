@@ -186,6 +186,16 @@ export async function fetchSettingsExpenses(
   return fetchSettingsGroup(fetcher, "expenses");
 }
 
+/**
+ * The `tax` settings group: calcAfterDiscount, extendedDocuments,
+ * defaultFromItem, inputTaxAccountId and outputTaxAccountId.
+ */
+export async function fetchSettingsTax(
+  fetcher: ApiFetcher,
+): Promise<SettingsGroup> {
+  return fetchSettingsGroup(fetcher, "tax");
+}
+
 export async function fetchSettingsAccounts(
   fetcher: ApiFetcher,
 ): Promise<SettingsGroup> {

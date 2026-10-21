@@ -17,7 +17,14 @@ import {
   transformAttachmentsToForm,
   transformAttachmentsToRequest,
 } from '@/containers/Attachments/utils';
+import { useDocumentTaxRates } from '@/containers/Entries/DocumentTax';
+import {
+  aggregateItemEntriesTaxRates,
+  assignEntriesTaxAmount,
+  assignEntriesTaxRate,
+} from '@/containers/Entries/utils';
 import { useCurrentOrganizationBaseCurrency } from '@/hooks/query';
+import { TaxType } from '@/interfaces/TaxRates';
 import {
   defaultFastFieldShouldUpdate,
   transformToForm,
@@ -40,6 +47,7 @@ export const defaultExpenseEntry: ExpenseEntry = {
   expenseAccountId: '',
   description: '',
   landedCost: 0,
+  taxRateId: '',
 };
 
 export const defaultExpense: ExpenseFormValues = {
@@ -54,6 +62,8 @@ export const defaultExpense: ExpenseFormValues = {
   exchangeRate: 1,
   categories: [...repeatValue(defaultExpenseEntry, MIN_LINES_NUMBER)],
   attachments: [],
+  // Receipts for expenses usually show the amount paid, tax included.
+  inclusiveExclusiveTax: TaxType.Inclusive,
 };
 
 /**
@@ -110,6 +120,9 @@ export const transformToEditForm = (
 
   return {
     ...transformToForm(expense, defaultValues),
+    inclusiveExclusiveTax: expense.isInclusiveTax
+      ? TaxType.Inclusive
+      : TaxType.Exclusive,
     categories,
     attachments,
   } as ExpenseFormValues;
@@ -131,6 +144,7 @@ export const customersFieldShouldUpdate = (newProps: any, oldProps: any) => {
 export const accountsFieldShouldUpdate = (newProps: any, oldProps: any) => {
   return (
     newProps.items !== oldProps.items ||
+    newProps.taxRates !== oldProps.taxRates ||
     defaultFastFieldShouldUpdate(newProps, oldProps)
   );
 };
@@ -151,9 +165,17 @@ export const transformFormValuesToRequest = (values: ExpenseFormValues) => {
   const categories = filterNonZeroEntries(values.categories);
   const attachments = transformAttachmentsToRequest(values);
 
+  const { inclusiveExclusiveTax, ...rest } = values;
+
   return {
-    ...values,
-    categories: FF.pipe(categories, orderingLinesIndexes),
+    ...rest,
+    isInclusiveTax: inclusiveExclusiveTax === TaxType.Inclusive,
+    categories: (
+      FF.pipe(categories, orderingLinesIndexes) as ExpenseEntry[]
+    ).map((category) => ({
+      ...category,
+      taxRateId: category.taxRateId || null,
+    })),
     attachments,
   };
 };
@@ -204,8 +226,43 @@ export const useExpenseSubtotalFormatted = () => {
  */
 export const useExpenseTotal = () => {
   const subtotal = useExpenseSubtotal();
+  const taxLines = useExpenseTaxLines();
+  const {
+    values: { inclusiveExclusiveTax },
+  } = useFormikContext<ExpenseFormValues>();
 
-  return subtotal;
+  return inclusiveExclusiveTax === TaxType.Exclusive
+    ? subtotal + sumBy(taxLines, 'taxAmount')
+    : subtotal;
+};
+
+/**
+ * Previews the tax lines of the expense, one per tax rate
+ * (`tax.extended_documents`).
+ * @returns {Array}
+ */
+export const useExpenseTaxLines = () => {
+  const { values } = useFormikContext<ExpenseFormValues>();
+  const { taxRates } = useDocumentTaxRates();
+
+  return React.useMemo(() => {
+    const isInclusiveTax = values.inclusiveExclusiveTax === TaxType.Inclusive;
+    const categories = assignEntriesTaxAmount(
+      isInclusiveTax,
+      assignEntriesTaxRate(taxRates)(values.categories) as Array<
+        ExpenseEntry & { taxRate: number }
+      >,
+    );
+    return aggregateItemEntriesTaxRates(
+      values.currencyCode,
+      taxRates,
+    )(categories);
+  }, [
+    values.categories,
+    values.currencyCode,
+    values.inclusiveExclusiveTax,
+    taxRates,
+  ]);
 };
 
 /**

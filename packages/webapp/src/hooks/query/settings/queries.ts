@@ -15,6 +15,7 @@ import {
   fetchSettingsBillPayments,
   fetchSettingsOrganization,
   fetchSettingsExpenses,
+  fetchSettingsTax,
   fetchSettingsAccounts,
   fetchSettingsCustomers,
   fetchSettingsVendors,
@@ -215,6 +216,15 @@ export function useSettingsExpenses(props?: GroupQueryOptions) {
     ...props,
     queryKey: settingsKeys.expenses(),
     queryFn: () => fetchSettingsExpenses(fetcher),
+  });
+}
+
+export function useSettingsTax(props?: GroupQueryOptions) {
+  const fetcher = useApiFetcher({ enableCamelCaseTransform: true });
+  return useQuery({
+    ...props,
+    queryKey: settingsKeys.tax(),
+    queryFn: () => fetchSettingsTax(fetcher),
   });
 }
 

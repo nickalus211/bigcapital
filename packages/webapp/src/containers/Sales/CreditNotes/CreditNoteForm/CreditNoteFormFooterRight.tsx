@@ -17,11 +17,17 @@ import {
   TotalLineBorderStyle,
   TotalLineTextStyle,
 } from '@/components';
+import {
+  DocumentTaxTotalLines,
+  useDocumentTaxRates,
+} from '@/containers/Entries/DocumentTax';
+import { formattedAmount } from '@/utils';
 
 export function CreditNoteFormFooterRight() {
   const {
     values: { currencyCode },
   } = useFormikContext<CreditNoteFormValues>();
+  const { taxRates } = useDocumentTaxRates();
 
   const subtotalFormatted = useCreditNoteSubtotalFormatted();
   const totalFormatted = useCreditNoteTotalFormatted();
@@ -40,6 +46,10 @@ export function CreditNoteFormFooterRight() {
         discountAmount={discountAmount}
       />
       <AdjustmentTotalLine adjustmentAmount={adjustmentAmount} />
+      <DocumentTaxTotalLines
+        taxRates={taxRates}
+        formatAmount={(amount) => formattedAmount(amount, currencyCode)}
+      />
       <TotalLine
         title={<T id={'credit_note.label_total'} />}
         value={totalFormatted}

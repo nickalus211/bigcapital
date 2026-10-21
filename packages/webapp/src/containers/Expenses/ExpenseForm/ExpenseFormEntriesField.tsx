@@ -5,6 +5,10 @@ import { useExpenseFormContext } from './ExpenseFormPageProvider';
 import { defaultExpenseEntry, accountsFieldShouldUpdate } from './utils';
 import type { ExpenseEntry, ExpenseFormValues } from './types';
 import { Features } from '@/constants';
+import {
+  DocumentTaxInclusiveSelect,
+  useDocumentTaxRates,
+} from '@/containers/Entries/DocumentTax';
 import { useFeatureCan } from '@/hooks/state';
 
 type ExpenseFormEntriesFieldProps = {
@@ -20,29 +24,37 @@ export function ExpenseFormEntriesField({
   const { accounts } = useExpenseFormContext();
   const { featureCan } = useFeatureCan();
   const isLandedCostEnabled = featureCan(Features.LandedCost);
+  const { taxRates, isExtendedDocumentsTax } = useDocumentTaxRates();
 
   return (
-    <FastField
-      name={'categories'}
-      accounts={accounts}
-      shouldUpdate={accountsFieldShouldUpdate}
-    >
-      {({
-        form: { values, setFieldValue },
-        field: { value },
-        meta: { error, touched },
-      }: any) => (
-        <ExpenseFormEntriesTable
-          entries={value}
-          error={error}
-          onChange={(entries: ExpenseEntry[]) => {
-            setFieldValue('categories', entries);
-          }}
-          defaultEntry={defaultExpenseEntry}
-          currencyCode={(values as ExpenseFormValues).currencyCode}
-          landedCost={isLandedCostEnabled}
-        />
+    <>
+      {isExtendedDocumentsTax && (
+        <DocumentTaxInclusiveSelect recomputeEntries={false} />
       )}
-    </FastField>
+      <FastField
+        name={'categories'}
+        accounts={accounts}
+        taxRates={taxRates}
+        shouldUpdate={accountsFieldShouldUpdate}
+      >
+        {({
+          form: { values, setFieldValue },
+          field: { value },
+          meta: { error, touched },
+        }: any) => (
+          <ExpenseFormEntriesTable
+            entries={value}
+            error={error}
+            onChange={(entries: ExpenseEntry[]) => {
+              setFieldValue('categories', entries);
+            }}
+            defaultEntry={defaultExpenseEntry}
+            currencyCode={(values as ExpenseFormValues).currencyCode}
+            landedCost={isLandedCostEnabled}
+            taxRates={isExtendedDocumentsTax ? taxRates : undefined}
+          />
+        )}
+      </FastField>
+    </>
   );
 }

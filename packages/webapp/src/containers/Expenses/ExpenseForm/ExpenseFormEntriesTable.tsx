@@ -3,6 +3,7 @@ import React, { useCallback } from 'react';
 import { useExpenseFormTableColumns } from './components';
 import { useExpenseFormContext } from './ExpenseFormPageProvider';
 import type { ExpenseEntry } from './types';
+import type { TaxRate } from '@bigcapital/sdk-ts';
 import { DataTableEditable } from '@/components';
 import {
   saveInvoke,
@@ -20,6 +21,8 @@ type ExpenseFormEntriesTableProps = {
   currencyCode: string;
   landedCost?: boolean;
   minLines?: number;
+  /** Tax rates; the tax rate column shows when given. */
+  taxRates?: TaxRate[];
 };
 
 /**
@@ -33,10 +36,14 @@ export function ExpenseFormEntriesTable({
   currencyCode,
   landedCost = true,
   minLines = 1,
+  taxRates,
 }: ExpenseFormEntriesTableProps) {
   const { accounts } = useExpenseFormContext();
 
-  const columns = useExpenseFormTableColumns({ landedCost });
+  const columns = useExpenseFormTableColumns({
+    landedCost,
+    enableTaxRates: !!taxRates,
+  });
 
   const handleUpdateData = useCallback(
     (rowIndex: number, columnId: string, value: unknown) => {
@@ -77,6 +84,7 @@ export function ExpenseFormEntriesTable({
         removeRow: handleRemoveRow,
         autoFocus: ['expenseAccountId', 0],
         currencyCode,
+        taxRates,
       }}
     />
   );

@@ -199,6 +199,7 @@ export function useEditableItemsEntriesColumns() {
         align: Align.Center,
       },
     ],
-    [],
+    // The tax column follows settings that may load after the first render.
+    [landedCost, enableTaxRates],
   );
 }

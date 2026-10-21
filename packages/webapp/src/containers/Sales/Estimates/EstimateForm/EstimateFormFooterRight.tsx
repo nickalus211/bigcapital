@@ -10,11 +10,17 @@ import {
 } from './utils';
 import type { EstimateFormValues } from './utils';
 import { T, TotalLines, TotalLine, TotalLineTextStyle } from '@/components';
+import {
+  DocumentTaxTotalLines,
+  useDocumentTaxRates,
+} from '@/containers/Entries/DocumentTax';
+import { formattedAmount } from '@/utils';
 
 export function EstimateFormFooterRight() {
   const {
     values: { currencyCode },
   } = useFormikContext<EstimateFormValues>();
+  const { taxRates } = useDocumentTaxRates();
   const subtotalFormatted = useEstimateSubtotalFormatted();
   const totalFormatted = useEstimateTotalFormatted();
   const discountAmountFormatted = useEstimateDiscountFormatted();
@@ -31,6 +37,10 @@ export function EstimateFormFooterRight() {
         discountAmount={discountAmountFormatted}
       />
       <AdjustmentTotalLine adjustmentAmount={adjustmentAmountFormatted} />
+      <DocumentTaxTotalLines
+        taxRates={taxRates}
+        formatAmount={(amount) => formattedAmount(amount, currencyCode)}
+      />
       <TotalLine
         title={<T id={'estimate_form.label.total'} />}
         value={totalFormatted}

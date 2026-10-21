@@ -5,15 +5,23 @@ import { entriesFieldShouldUpdate, type VendorCreditFormValues } from './utils';
 import { useVendorCreditNoteFormContext } from './VendorCreditNoteFormProvider';
 import type { FieldProps } from 'formik';
 import { CLASSES } from '@/constants/classes';
+import {
+  DocumentTaxInclusiveSelect,
+  useDocumentTaxRates,
+} from '@/containers/Entries/DocumentTax';
 import { ItemsEntriesTable } from '@/containers/Entries/ItemsEntriesTable';
+import { TaxType } from '@/interfaces/TaxRates';
 
 export function VendorCreditNoteItemsEntriesEditor() {
   const { items } = useVendorCreditNoteFormContext();
+  const { taxRates, isExtendedDocumentsTax } = useDocumentTaxRates();
   return (
     <div className={classNames(CLASSES.PAGE_FORM_BODY)}>
+      {isExtendedDocumentsTax && <DocumentTaxInclusiveSelect />}
       <FastField
         name={'entries'}
         items={items}
+        taxRates={taxRates}
         shouldUpdate={entriesFieldShouldUpdate}
       >
         {({
@@ -30,7 +38,9 @@ export function VendorCreditNoteItemsEntriesEditor() {
             errors={error}
             linesNumber={4}
             currencyCode={values.currencyCode}
-            enableTaxRates={false}
+            taxRates={taxRates}
+            enableTaxRates={isExtendedDocumentsTax}
+            isInclusiveTax={values.inclusiveExclusiveTax === TaxType.Inclusive}
           />
         )}
       </FastField>

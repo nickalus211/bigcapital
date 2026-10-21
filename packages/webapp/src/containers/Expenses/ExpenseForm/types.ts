@@ -1,3 +1,4 @@
+import type { TaxType } from '@/interfaces/TaxRates';
 import type {
   CreateExpenseBody,
   EditExpenseBody,
@@ -12,6 +13,7 @@ export type ExpenseEntry = {
   expenseAccountId: string | number;
   description: string;
   landedCost: boolean | number;
+  taxRateId: string | number;
 };
 
 export type ExpenseFormValues = {
@@ -26,6 +28,7 @@ export type ExpenseFormValues = {
   exchangeRate: number;
   categories: ExpenseEntry[];
   attachments: unknown[];
+  inclusiveExclusiveTax: TaxType;
 };
 
 export type ExpenseSubmitPayload = {

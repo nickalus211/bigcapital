@@ -30924,6 +30924,26 @@
             "type": "string",
             "example": "$100.00",
             "description": "The formatted amount of the expense category"
+          },
+          "taxRateId": {
+            "type": "number",
+            "description": "Tax rate id of the category (tax.extended_documents setting)",
+            "nullable": true
+          },
+          "taxRate": {
+            "type": "number",
+            "description": "Tax rate percentage",
+            "nullable": true
+          },
+          "taxableAmount": {
+            "type": "number",
+            "description": "Category amount without its tax",
+            "nullable": true
+          },
+          "lineTaxAmount": {
+            "type": "number",
+            "description": "Tax on the category",
+            "nullable": true
           }
         },
         "required": [
@@ -31100,6 +31120,19 @@
             "items": {
               "$ref": "#/components/schemas/ExpenseCategoryResponseDto"
             }
+          },
+          "isInclusiveTax": {
+            "type": "boolean",
+            "description": "Whether the category amounts include tax (tax.extended_documents setting)"
+          },
+          "taxAmountWithheld": {
+            "type": "number",
+            "description": "Total tax on the categories; null when untaxed",
+            "nullable": true
+          },
+          "taxAmountWithheldFormatted": {
+            "type": "string",
+            "description": "Formatted total tax"
           }
         },
         "required": [
@@ -31193,6 +31226,11 @@
               "type": "string"
             }
           },
+          "isInclusiveTax": {
+            "type": "boolean",
+            "description": "Whether the category amounts include tax. Used only while the tax.extended_documents setting is on.",
+            "example": true
+          },
           "attachments": {
             "description": "The attachments of the expense",
             "example": [
@@ -31285,6 +31323,11 @@
             "items": {
               "type": "string"
             }
+          },
+          "isInclusiveTax": {
+            "type": "boolean",
+            "description": "Whether the category amounts include tax. Used only while the tax.extended_documents setting is on.",
+            "example": true
           },
           "attachments": {
             "description": "The attachments of the expense",
@@ -32995,6 +33038,29 @@
             "type": "boolean",
             "description": "Whether the estimate is converted to invoice",
             "example": false
+          },
+          "isInclusiveTax": {
+            "type": "boolean",
+            "description": "Whether the line rates include tax (tax.extended_documents setting)",
+            "example": false
+          },
+          "taxAmountWithheld": {
+            "type": "number",
+            "description": "Total tax on the lines; null when the document carries no tax (tax.extended_documents setting)",
+            "example": 15,
+            "nullable": true
+          },
+          "taxAmountWithheldFormatted": {
+            "type": "string",
+            "description": "Formatted total tax on the lines",
+            "example": "$15.00"
+          },
+          "taxes": {
+            "description": "Tax lines, one per tax rate",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SaleInvoiceTaxEntryDto"
+            }
           }
         },
         "required": [
@@ -33363,6 +33429,11 @@
             "type": "number",
             "description": "The adjustment of the estimate",
             "example": 1
+          },
+          "isInclusiveTax": {
+            "type": "boolean",
+            "description": "Whether the line rates include tax. Used only while the tax.extended_documents setting is on.",
+            "example": false
           }
         },
         "required": [
@@ -33486,6 +33557,11 @@
             "type": "number",
             "description": "The adjustment of the estimate",
             "example": 1
+          },
+          "isInclusiveTax": {
+            "type": "boolean",
+            "description": "Whether the line rates include tax. Used only while the tax.extended_documents setting is on.",
+            "example": false
           }
         },
         "required": [
@@ -33774,6 +33850,29 @@
             "type": "string",
             "description": "The date when the receipt was last updated",
             "example": "2024-01-02T00:00:00Z"
+          },
+          "isInclusiveTax": {
+            "type": "boolean",
+            "description": "Whether the line rates include tax (tax.extended_documents setting)",
+            "example": false
+          },
+          "taxAmountWithheld": {
+            "type": "number",
+            "description": "Total tax on the lines; null when the document carries no tax (tax.extended_documents setting)",
+            "example": 15,
+            "nullable": true
+          },
+          "taxAmountWithheldFormatted": {
+            "type": "string",
+            "description": "Formatted total tax on the lines",
+            "example": "$15.00"
+          },
+          "taxes": {
+            "description": "Tax lines, one per tax rate",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SaleInvoiceTaxEntryDto"
+            }
           }
         },
         "required": [
@@ -33906,6 +34005,11 @@
             "type": "number",
             "description": "The adjustment of the sale receipt",
             "example": 1
+          },
+          "isInclusiveTax": {
+            "type": "boolean",
+            "description": "Whether the line rates include tax. Used only while the tax.extended_documents setting is on.",
+            "example": false
           }
         },
         "required": [
@@ -34030,6 +34134,11 @@
             "type": "number",
             "description": "The adjustment of the sale receipt",
             "example": 1
+          },
+          "isInclusiveTax": {
+            "type": "boolean",
+            "description": "Whether the line rates include tax. Used only while the tax.extended_documents setting is on.",
+            "example": false
           }
         },
         "required": [
@@ -35644,6 +35753,29 @@
                 "$ref": "#/components/schemas/CustomerResponseDto"
               }
             ]
+          },
+          "isInclusiveTax": {
+            "type": "boolean",
+            "description": "Whether the line rates include tax (tax.extended_documents setting)",
+            "example": false
+          },
+          "taxAmountWithheld": {
+            "type": "number",
+            "description": "Total tax on the lines; null when the document carries no tax (tax.extended_documents setting)",
+            "example": 15,
+            "nullable": true
+          },
+          "taxAmountWithheldFormatted": {
+            "type": "string",
+            "description": "Formatted total tax on the lines",
+            "example": "$15.00"
+          },
+          "taxes": {
+            "description": "Tax lines, one per tax rate",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SaleInvoiceTaxEntryDto"
+            }
           }
         },
         "required": [
@@ -35760,6 +35892,11 @@
               "percentage",
               "amount"
             ]
+          },
+          "isInclusiveTax": {
+            "type": "boolean",
+            "description": "Whether the line rates include tax. Used only while the tax.extended_documents setting is on.",
+            "example": false
           }
         },
         "required": [
@@ -35879,6 +36016,11 @@
               "percentage",
               "amount"
             ]
+          },
+          "isInclusiveTax": {
+            "type": "boolean",
+            "description": "Whether the line rates include tax. Used only while the tax.extended_documents setting is on.",
+            "example": false
           }
         },
         "required": [
@@ -36473,6 +36615,29 @@
             "type": "string",
             "description": "The date when the vendor credit was last updated",
             "example": "2024-03-16T00:00:00Z"
+          },
+          "isInclusiveTax": {
+            "type": "boolean",
+            "description": "Whether the line rates include tax (tax.extended_documents setting)",
+            "example": false
+          },
+          "taxAmountWithheld": {
+            "type": "number",
+            "description": "Total tax on the lines; null when the document carries no tax (tax.extended_documents setting)",
+            "example": 15,
+            "nullable": true
+          },
+          "taxAmountWithheldFormatted": {
+            "type": "string",
+            "description": "Formatted total tax on the lines",
+            "example": "$15.00"
+          },
+          "taxes": {
+            "description": "Tax lines, one per tax rate",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SaleInvoiceTaxEntryDto"
+            }
           }
         },
         "required": [
@@ -36587,6 +36752,11 @@
             "type": "number",
             "description": "The adjustment of the vendor credit",
             "example": 1
+          },
+          "isInclusiveTax": {
+            "type": "boolean",
+            "description": "Whether the line rates include tax. Used only while the tax.extended_documents setting is on.",
+            "example": false
           }
         },
         "required": [
@@ -36698,6 +36868,11 @@
             "type": "number",
             "description": "The adjustment of the vendor credit",
             "example": 1
+          },
+          "isInclusiveTax": {
+            "type": "boolean",
+            "description": "Whether the line rates include tax. Used only while the tax.extended_documents setting is on.",
+            "example": false
           }
         },
         "required": [
