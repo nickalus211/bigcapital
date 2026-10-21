@@ -1,7 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TenancyModule } from '../Tenancy/Tenancy.module';
 import { FeaturesModule } from '../Features/Features.module';
+import { TaxRatesModule } from '../TaxRates/TaxRate.module';
 import { JamaicaFeatureGuard } from './JamaicaFeatureGuard';
+import { JamaicaController } from './Jamaica.controller';
+import { JamaicaSetupService } from './setup/JamaicaSetup.service';
+import { JamaicaSetupOnOrganizationBuildSubscriber } from './setup/JamaicaSetupOnOrganizationBuild.subscriber';
+import { JamaicaSettingsService } from './settings/JamaicaSettings.service';
 
 /**
  * Jamaica localization (GCT, TAJ reporting, sole-trader tax).
@@ -9,8 +14,14 @@ import { JamaicaFeatureGuard } from './JamaicaFeatureGuard';
  * stays mergeable with upstream Bigcapital.
  */
 @Module({
-  imports: [TenancyModule, FeaturesModule],
-  providers: [JamaicaFeatureGuard],
-  exports: [JamaicaFeatureGuard],
+  imports: [TenancyModule, FeaturesModule, TaxRatesModule],
+  controllers: [JamaicaController],
+  providers: [
+    JamaicaFeatureGuard,
+    JamaicaSetupService,
+    JamaicaSettingsService,
+    JamaicaSetupOnOrganizationBuildSubscriber,
+  ],
+  exports: [JamaicaFeatureGuard, JamaicaSetupService],
 })
 export class JamaicaModule {}

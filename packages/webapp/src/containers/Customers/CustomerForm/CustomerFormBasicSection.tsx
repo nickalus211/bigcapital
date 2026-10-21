@@ -18,6 +18,7 @@ import {
   Stack,
 } from '@/components';
 import { useAutofocus } from '@/hooks';
+import { TaxNumberFormGroup } from '@/components/Contacts/TaxNumberFormGroup';
 
 export function CustomerFormBasicSection() {
   const firstNameFieldRef = useAutofocus<HTMLInputElement>();
@@ -131,6 +132,9 @@ export function CustomerFormBasicSection() {
           leftIcon={<BlueprintIcon icon="globe-network" />}
         />
       </FFormGroup>
+
+      {/*------------ Tax registration number (TRN) -----------*/}
+      <TaxNumberFormGroup />
     </Box>
   );
 }

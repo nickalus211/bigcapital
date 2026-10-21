@@ -46,6 +46,7 @@ export * from './warehouses-transfers';
 // Banking and payment hooks (nested directory structure)
 export * from './banking';
 export * from './api-keys';
+export * from './jamaica';
 export * from './payment-methods';
 export * from './payment-link';
 export * from './payment-services';

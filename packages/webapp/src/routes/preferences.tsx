@@ -158,6 +158,17 @@ export const getPreferenceRoutes = () => [
     exact: true,
   },
   {
+    path: `${BASE_URL}/jamaica`,
+    component: lazy(() =>
+      import('@/containers/Preferences/Jamaica/JamaicaPreferences').then(
+        (m) => ({
+          default: m.JamaicaPreferences,
+        }),
+      ),
+    ),
+    exact: true,
+  },
+  {
     path: `${BASE_URL}/appearance`,
     component: lazy(() =>
       import('@/containers/Preferences/Appearance/Appearance').then((m) => ({

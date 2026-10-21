@@ -50,6 +50,11 @@ export const PreferencesMenu: PreferencesMenuItem[] = [
     href: '/preferences/credit-notes',
   },
   {
+    text: 'Jamaica (GCT)',
+    href: '/preferences/jamaica',
+    feature: Features.Jamaica,
+  },
+  {
     text: <T id={'currencies'} />,
     href: '/preferences/currencies',
   },

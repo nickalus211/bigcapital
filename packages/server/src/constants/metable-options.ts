@@ -307,4 +307,41 @@ export const SettingsOptions = {
       type: 'boolean',
     },
   },
+  tax: {
+    calc_after_discount: {
+      type: 'boolean',
+    },
+    extended_documents: {
+      type: 'boolean',
+    },
+    default_from_item: {
+      type: 'boolean',
+    },
+    input_tax_account_id: {
+      type: 'number',
+    },
+    output_tax_account_id: {
+      type: 'number',
+    },
+  },
+  jamaica: {
+    gct_registered: {
+      type: 'boolean',
+    },
+    gct_registration_number: {
+      type: 'string',
+    },
+    gct_registration_date: {
+      type: 'date',
+    },
+    filing_frequency: {
+      type: 'string',
+    },
+    apportionment_enabled: {
+      type: 'boolean',
+    },
+    setup_at: {
+      type: 'string',
+    },
+  },
 };

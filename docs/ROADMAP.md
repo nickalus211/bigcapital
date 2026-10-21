@@ -22,9 +22,9 @@ requirements are in [`Jamaican Accounting Software Features.md`](../Jamaican%20A
 
 | Milestone | Scope | Status |
 |---|---|---|
-| [M0](milestones/M0-foundation.md) | Docs, `jamaica` feature flag, hidden modules, light/dark/system theme | ✅ Done (e2e pending a DB, see the milestone doc) |
-| M1 | Jamaica setup: GCT rates with tax types, dated rate versions, `tax_parameters`, GCT input/output accounts, TRN on organization and contacts, setup service + CLI | ⏳ Next |
-| M2 | GCT engine: tax after discount (new docs), tax on receipts, credit notes, vendor credits, estimates and expenses, opt-in default tax from item, tax amounts stored, tax-line display fix | Planned |
+| [M0](milestones/M0-foundation.md) | Docs, `jamaica` feature flag, hidden modules, light/dark/system theme | ✅ Done |
+| [M1](milestones/M1-jamaica-setup.md) | Jamaica setup: GCT rates with tax types, dated rate versions, `tax_parameters`, GCT input/output accounts, TRN on organization and contacts, setup service + CLI | ✅ Done |
+| M2 | GCT engine: tax after discount (new docs), tax on receipts, credit notes, vendor credits, estimates and expenses, opt-in default tax from item, tax amounts stored, tax-line display fix | ⏳ Next |
 | M3 | Tax Invoice: "Tax Invoice" PDF title, TRN/GCT numbers, per-line GCT, non-blocking compliance warnings in the API | Planned |
 | M4 | GCT return report (Form 4A style), zero-rated/exempt totals, input-tax apportionment | Planned |
 | M5 | WHT 3% receivable on payments received, certificate tracking (S04 line F24) | Outline |

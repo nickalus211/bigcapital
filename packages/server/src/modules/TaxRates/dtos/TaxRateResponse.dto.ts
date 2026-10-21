@@ -39,6 +39,15 @@ export class TaxRateResponseDto {
   rateFormatted: string;
 
   @ApiProperty({
+    description:
+      'The tax type: standard, zero_rated, exempt or out_of_scope. Null when unclassified.',
+    enum: ['standard', 'zero_rated', 'exempt', 'out_of_scope'],
+    nullable: true,
+    example: 'standard',
+  })
+  taxType: string | null;
+
+  @ApiProperty({
     description: 'The description of the tax rate',
     example: 'Value Added Tax',
     required: false,

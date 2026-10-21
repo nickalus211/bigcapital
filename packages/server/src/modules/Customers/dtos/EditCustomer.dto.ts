@@ -54,6 +54,16 @@ export class EditCustomerDto extends ContactAddressDto {
   @IsString()
   personalPhone?: string;
 
+  @ApiProperty({
+    required: false,
+    nullable: true,
+    description: 'Tax registration number, e.g. the Jamaican TRN',
+    example: '123456789',
+  })
+  @IsOptional()
+  @IsString()
+  taxNumber?: string | null;
+
   @ApiProperty({ required: false, description: 'Note' })
   @IsOptional()
   @IsString()

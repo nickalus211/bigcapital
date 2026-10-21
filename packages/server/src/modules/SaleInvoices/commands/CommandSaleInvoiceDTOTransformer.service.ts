@@ -79,8 +79,12 @@ export class CommandSaleInvoiceDTOTransformer {
       ...entry,
     }));
     const asyncEntries = await composeAsync(
-      // Associate tax rate from tax id to entries.
-      this.taxDTOTransformer.assocTaxRateFromTaxIdToEntries,
+      // Associate tax rate from tax id to entries, as of the invoice date.
+      (entries) =>
+        this.taxDTOTransformer.assocTaxRateFromTaxIdToEntries(
+          entries,
+          saleInvoiceDTO.invoiceDate,
+        ),
       // Associate tax rate id from tax code to entries.
       this.taxDTOTransformer.assocTaxRateIdFromCodeToEntries,
       // Sets default cost and sell account to invoice items entries.

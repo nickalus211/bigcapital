@@ -4,11 +4,18 @@ import { ChangeEvent } from 'react';
 import styled from 'styled-components';
 import { useTaxRateFormDialogContext } from './TaxRateFormDialogBoot';
 import {
+  TAX_TYPE_OPTIONS,
   TaxRateFormValues,
   transformTaxRateCodeValue,
   useIsTaxRateChanged,
 } from './utils';
-import { FCheckbox, FFormGroup, FInputGroup, Hint } from '@/components';
+import {
+  FCheckbox,
+  FFormGroup,
+  FInputGroup,
+  FSelect,
+  Hint,
+} from '@/components';
 
 /**
  * Tax rate form content.
@@ -40,6 +47,24 @@ export function TaxRateFormDialogContent() {
           name={'rate'}
           rightElement={<Tag minimal>%</Tag>}
           fill={false}
+          fastField={true}
+        />
+      </FFormGroup>
+
+      <FFormGroup
+        name={'taxType'}
+        label={'Tax type'}
+        labelInfo={
+          <Hint content="Zero-rated supplies keep the right to claim input tax; exempt supplies do not. Used by the GCT return." />
+        }
+        fastField={true}
+      >
+        <FSelect
+          name={'taxType'}
+          items={TAX_TYPE_OPTIONS}
+          valueAccessor={'key'}
+          textAccessor={'label'}
+          popoverProps={{ minimal: true }}
           fastField={true}
         />
       </FFormGroup>

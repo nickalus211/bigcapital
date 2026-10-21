@@ -22,6 +22,7 @@ export * from './manual-journals';
 export * from './roles';
 export * from './users';
 export * from './dashboard';
+export * from './jamaica';
 export * from './settings';
 export * from './organization';
 export * from './subscription';

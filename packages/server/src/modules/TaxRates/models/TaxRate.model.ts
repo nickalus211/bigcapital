@@ -3,8 +3,10 @@
 // import SoftDeleteQueryBuilder from '@/collection/SoftDeleteQueryBuilder';
 // import TaxRateMeta from './TaxRate.settings';
 // import ModelSetting from './ModelSetting';
+import { Model } from 'objection';
 import { BaseModel } from '@/models/Model';
 import { ExportableModel } from '@/modules/Export/decorators/ExportableModel.decorator';
+import { TaxType } from '../constants';
 
 @ExportableModel()
 export class TaxRateModel extends BaseModel {
@@ -12,6 +14,7 @@ export class TaxRateModel extends BaseModel {
   code!: string;
   name!: string;
   rate!: number;
+  taxType?: TaxType | null;
   description?: string;
 
   /**
@@ -60,6 +63,20 @@ export class TaxRateModel extends BaseModel {
    * Relationship mapping.
    */
   static get relationMappings() {
-    return {};
+    const { TaxRateVersion } = require('./TaxRateVersion.model');
+
+    return {
+      /**
+       * Tax rate has many effective-dated versions.
+       */
+      versions: {
+        relation: Model.HasManyRelation,
+        modelClass: TaxRateVersion,
+        join: {
+          from: 'tax_rates.id',
+          to: 'tax_rate_versions.taxRateId',
+        },
+      },
+    };
   }
 }

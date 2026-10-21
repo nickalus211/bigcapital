@@ -1911,6 +1911,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/jamaica/setup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Configures the organization for a Jamaican sole trader (idempotent). Turns on the Jamaica feature. */
+        post: operations["JamaicaController_setup"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/jamaica/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieves the Jamaica (GCT) settings. */
+        get: operations["JamaicaController_getSettings"];
+        /** Saves the Jamaica (GCT) settings. Omitted fields are unchanged. */
+        put: operations["JamaicaController_editSettings"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/warehouse-transfers/validate-bulk-delete": {
         parameters: {
             query?: never;
@@ -7211,6 +7246,11 @@ export interface components {
             personalPhone?: string;
             /** @example https://www.acme.com */
             website?: string;
+            /**
+             * @description Tax registration number, e.g. the Jamaican TRN
+             * @example 123456789
+             */
+            taxNumber?: string | null;
             /** @example 123 Business Ave */
             billingAddress1?: string;
             /** @example Suite 100 */
@@ -7830,6 +7870,12 @@ export interface components {
              */
             rateFormatted: string;
             /**
+             * @description The tax type: standard, zero_rated, exempt or out_of_scope. Null when unclassified.
+             * @example standard
+             * @enum {string|null}
+             */
+            taxType: "standard" | "zero_rated" | "exempt" | "out_of_scope" | null;
+            /**
              * @description The description of the tax rate
              * @example Value Added Tax
              */
@@ -7879,6 +7925,12 @@ export interface components {
              */
             rate: number;
             /**
+             * @description The tax type. Omitted keeps the stored value; null means unclassified.
+             * @example standard
+             * @enum {string|null}
+             */
+            taxType?: "standard" | "zero_rated" | "exempt" | "out_of_scope" | null;
+            /**
              * @description The description of the tax rate.
              * @example VAT
              */
@@ -7915,6 +7967,12 @@ export interface components {
              * @example 10
              */
             rate: number;
+            /**
+             * @description The tax type. Omitted keeps the stored value; null means unclassified.
+             * @example standard
+             * @enum {string|null}
+             */
+            taxType?: "standard" | "zero_rated" | "exempt" | "out_of_scope" | null;
             /**
              * @description The description of the tax rate.
              * @example VAT
@@ -9284,6 +9342,85 @@ export interface components {
              */
             attachments: string[];
         };
+        JamaicaSettingsResponseDto: {
+            /** @example true */
+            gctRegistered: boolean;
+            /** @example GCT-000123456 */
+            gctRegistrationNumber: string | null;
+            /** @example 2025-01-15 */
+            gctRegistrationDate: string | null;
+            /** @example monthly */
+            filingFrequency: string;
+            /** @example false */
+            apportionmentEnabled: boolean;
+            /**
+             * @description The organization's Taxpayer Registration Number (organization tax number).
+             * @example 123456789
+             */
+            trn: string | null;
+            /**
+             * @description When the Jamaica setup last ran.
+             * @example 2026-10-21T05:00:00.000Z
+             */
+            setupAt: string | null;
+        };
+        JamaicaSetupResponseDto: {
+            /** @example false */
+            dryRun: boolean;
+            /**
+             * @example [
+             *       "tax_rate:GCT-STD"
+             *     ]
+             */
+            created: string[];
+            /**
+             * @example [
+             *       "account:tax-payable:name"
+             *     ]
+             */
+            updated: string[];
+            /**
+             * @example [
+             *       "account:gct-input-tax"
+             *     ]
+             */
+            skipped: string[];
+        };
+        JamaicaSetupDto: {
+            /**
+             * @description Report the changes without applying them.
+             * @example true
+             */
+            dryRun?: boolean;
+        };
+        EditJamaicaSettingsDto: {
+            /**
+             * @description Whether the business is registered for GCT.
+             * @example true
+             */
+            gctRegistered?: boolean;
+            /**
+             * @description The GCT registration number.
+             * @example GCT-000123456
+             */
+            gctRegistrationNumber?: string | null;
+            /**
+             * @description The GCT registration date (YYYY-MM-DD).
+             * @example 2025-01-15
+             */
+            gctRegistrationDate?: string | null;
+            /**
+             * @description The GCT return filing frequency.
+             * @example monthly
+             * @enum {string}
+             */
+            filingFrequency?: "monthly";
+            /**
+             * @description Apportion input GCT between taxable and exempt supplies on the GCT return.
+             * @example false
+             */
+            apportionmentEnabled?: boolean;
+        };
         WarehouseTransferEntryResponseDto: {
             /**
              * @description The ID of the warehouse transfer entry
@@ -9637,6 +9774,11 @@ export interface components {
             workPhone?: string;
             /** @description Personal phone */
             personalPhone?: string;
+            /**
+             * @description Tax registration number, e.g. the Jamaican TRN
+             * @example 123456789
+             */
+            taxNumber?: string | null;
             /** @description Note */
             note?: string;
             /**
@@ -9703,6 +9845,11 @@ export interface components {
             workPhone?: string;
             /** @description Personal phone */
             personalPhone?: string;
+            /**
+             * @description Tax registration number, e.g. the Jamaican TRN
+             * @example 123456789
+             */
+            taxNumber?: string | null;
             /** @description Note */
             note?: string;
             /** @description Active status */
@@ -9787,6 +9934,11 @@ export interface components {
             personalPhone?: string;
             /** @example https://www.acme.com */
             website?: string;
+            /**
+             * @description Tax registration number, e.g. the Jamaican TRN
+             * @example 123456789
+             */
+            taxNumber?: string | null;
             /** @example 123 Business Ave */
             billingAddress1?: string;
             /** @example Suite 100 */
@@ -9944,6 +10096,11 @@ export interface components {
             workPhone?: string;
             /** @description Vendor personal phone number */
             personalPhone?: string;
+            /**
+             * @description Tax registration number, e.g. the Jamaican TRN
+             * @example 123456789
+             */
+            taxNumber?: string | null;
             /** @description Additional notes about the vendor */
             note?: string;
             /**
@@ -10008,6 +10165,11 @@ export interface components {
             workPhone?: string;
             /** @description Vendor personal phone number */
             personalPhone?: string;
+            /**
+             * @description Tax registration number, e.g. the Jamaican TRN
+             * @example 123456789
+             */
+            taxNumber?: string | null;
             /** @description Additional notes about the vendor */
             note?: string;
             /** @description Whether the vendor is active */
@@ -21932,6 +22094,89 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    JamaicaController_setup: {
+        parameters: {
+            query?: {
+                /** @description Report the changes without applying them. Also accepted in the body. */
+                dry_run?: boolean;
+            };
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["JamaicaSetupDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JamaicaSetupResponseDto"];
+                };
+            };
+        };
+    };
+    JamaicaController_getSettings: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JamaicaSettingsResponseDto"];
+                };
+            };
+        };
+    };
+    JamaicaController_editSettings: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EditJamaicaSettingsDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JamaicaSettingsResponseDto"];
+                };
             };
         };
     };

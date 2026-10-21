@@ -17,6 +17,7 @@ import {
   Stack,
 } from '@/components';
 import { useAutofocus } from '@/hooks';
+import { TaxNumberFormGroup } from '@/components/Contacts/TaxNumberFormGroup';
 
 export function VendorFormBasicSection() {
   const firstNameFieldRef = useAutofocus<HTMLInputElement>();
@@ -161,6 +162,9 @@ export function VendorFormBasicSection() {
           fastField
         />
       </FFormGroup>
+
+      {/*------------ Tax registration number (TRN) -----------*/}
+      <TaxNumberFormGroup />
     </Box>
   );
 }

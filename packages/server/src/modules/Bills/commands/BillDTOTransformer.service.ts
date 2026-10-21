@@ -66,8 +66,12 @@ export class BillDTOTransformer {
       ...omit(entry, ['amount']),
     }));
     const asyncEntries = await composeAsync(
-      // Associate tax rate from tax id to entries.
-      this.taxDTOTransformer.assocTaxRateFromTaxIdToEntries,
+      // Associate tax rate from tax id to entries, as of the bill date.
+      (entries) =>
+        this.taxDTOTransformer.assocTaxRateFromTaxIdToEntries(
+          entries,
+          billDTO.billDate,
+        ),
       // Associate tax rate id from tax code to entries.
       this.taxDTOTransformer.assocTaxRateIdFromCodeToEntries,
       // Sets the default cost account to the bill entries.

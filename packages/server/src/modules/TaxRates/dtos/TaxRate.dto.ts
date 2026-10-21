@@ -1,8 +1,10 @@
 import { ToNumber } from '@/common/decorators/Validators';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
+import { TAX_TYPES, TaxType } from '../constants';
 import {
   IsBoolean,
+  IsIn,
   IsNumber,
   IsNotEmpty,
   IsOptional,
@@ -37,6 +39,22 @@ export class CommandTaxRateDto {
     example: 10,
   })
   rate: number;
+
+  /**
+   * Tax type: standard, zero_rated, exempt or out_of_scope.
+   * Omitted keeps the stored value; null means unclassified.
+   */
+  @IsOptional()
+  @IsIn(TAX_TYPES)
+  @ApiProperty({
+    description:
+      'The tax type. Omitted keeps the stored value; null means unclassified.',
+    enum: TAX_TYPES,
+    required: false,
+    nullable: true,
+    example: 'standard',
+  })
+  taxType?: TaxType | null;
 
   /**
    * Tax rate description.

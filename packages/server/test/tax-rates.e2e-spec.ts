@@ -17,6 +17,29 @@ describe('Item Categories(e2e)', () => {
       .expect(201);
   });
 
+  it('/tax-rates (POST) without a tax type leaves it unclassified', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/tax-rates')
+      .set('organization-id', orgainzationId)
+      .set('Authorization', AuthorizationHeader)
+      .send({
+        name: faker.person.fullName(),
+        rate: 2,
+        code: faker.string.uuid(),
+        active: true,
+      })
+      .expect(201);
+
+    const taxRate = await request(app.getHttpServer())
+      .get(`/tax-rates/${response.body.id ?? response.body.data?.id}`)
+      .set('organization-id', orgainzationId)
+      .set('Authorization', AuthorizationHeader)
+      .expect(200);
+
+    const body = taxRate.body.data ?? taxRate.body;
+    expect(body).toHaveProperty('tax_type', null);
+  });
+
   it('/tax-rates/:id (DELETE)', async () => {
     const response = await request(app.getHttpServer())
       .post('/tax-rates')

@@ -76,11 +76,32 @@ pnpm run dev:server   # :3000
 pnpm run dev:webapp   # :4000
 ```
 
-## 6. Server e2e tests
+## 6. Tenant migrations
 
-The suite signs in as `kk@kk.com` / `1231231230`, so create that user once
-through the running API (`POST /api/auth/signup`, then
-`POST /api/organization/build`; see `e2e/_auth.ts` for the payloads). Then:
+Organizations built by the running server record their migrations as the
+compiled `.js` files, so run tenant migrations from the build:
+
+```bash
+pnpm run build:server
+node packages/server/dist/cli.js tenants:migrate:latest
+```
+
+`pnpm run tenants:migrate:latest` uses ts-node. It sees only the `.ts`
+sources and fails with "The migration directory is corrupt".
+
+## 7. Server e2e tests
+
+The suites sign in as pre-built users. Create both once through the running
+API (`POST /api/auth/signup`, then `POST /api/organization/build`; see
+`e2e/_auth.ts` for the payloads):
+
+| User | Password | Organization |
+|---|---|---|
+| `kk@kk.com` | `1231231230` | `location: "US"`, `base_currency: "USD"` (shared by most suites) |
+| `jm@example.com` | `1231231230` | `location: "JM"`, `base_currency: "JMD"` (Jamaica suite; the setup runs on build). Override with `E2E_JM_EMAIL` / `E2E_JM_PASSWORD`. |
+
+Organizations can't be built inside the e2e app itself: it runs from the
+TypeScript sources, where tenant migrations don't load. Then:
 
 ```bash
 cd packages/server

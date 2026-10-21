@@ -41,6 +41,27 @@ describe('Customers (e2e)', () => {
       .expect(200);
   });
 
+  it('/customers/:id (GET) returns a null tax number when none is sent', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/customers')
+      .set('organization-id', orgainzationId)
+      .set('Authorization', AuthorizationHeader)
+      .send({
+        customerType: 'business',
+        currencyCode: 'USD',
+        displayName: faker.commerce.productName(),
+      })
+      .expect(201);
+
+    const customer = await request(app.getHttpServer())
+      .get(`/customers/${response.body.id}`)
+      .set('organization-id', orgainzationId)
+      .set('Authorization', AuthorizationHeader)
+      .expect(200);
+
+    expect(customer.body.tax_number ?? null).toBeNull();
+  });
+
   it('/customers/:id (DELETE)', async () => {
     const response = await request(app.getHttpServer())
       .post('/customers')

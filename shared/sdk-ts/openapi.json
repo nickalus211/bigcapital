@@ -7320,6 +7320,159 @@
         ]
       }
     },
+    "/api/jamaica/setup": {
+      "post": {
+        "operationId": "JamaicaController_setup",
+        "summary": "Configures the organization for a Jamaican sole trader (idempotent). Turns on the Jamaica feature.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dry_run",
+            "required": false,
+            "in": "query",
+            "description": "Report the changes without applying them. Also accepted in the body.",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JamaicaSetupDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JamaicaSetupResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Jamaica"
+        ]
+      }
+    },
+    "/api/jamaica/settings": {
+      "get": {
+        "operationId": "JamaicaController_getSettings",
+        "summary": "Retrieves the Jamaica (GCT) settings.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JamaicaSettingsResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Jamaica"
+        ]
+      },
+      "put": {
+        "operationId": "JamaicaController_editSettings",
+        "summary": "Saves the Jamaica (GCT) settings. Omitted fields are unchanged.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditJamaicaSettingsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JamaicaSettingsResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Jamaica"
+        ]
+      }
+    },
     "/api/warehouse-transfers/validate-bulk-delete": {
       "post": {
         "operationId": "WarehouseTransfersController_validateBulkDeleteWarehouseTransfers",
@@ -28021,6 +28174,12 @@
             "type": "string",
             "example": "https://www.acme.com"
           },
+          "taxNumber": {
+            "type": "string",
+            "nullable": true,
+            "description": "Tax registration number, e.g. the Jamaican TRN",
+            "example": "123456789"
+          },
           "billingAddress1": {
             "type": "string",
             "example": "123 Business Ave"
@@ -28864,6 +29023,18 @@
             "description": "The formatted rate of the tax rate with percentage symbol",
             "example": "10%"
           },
+          "taxType": {
+            "type": "string",
+            "description": "The tax type: standard, zero_rated, exempt or out_of_scope. Null when unclassified.",
+            "enum": [
+              "standard",
+              "zero_rated",
+              "exempt",
+              "out_of_scope"
+            ],
+            "nullable": true,
+            "example": "standard"
+          },
           "description": {
             "type": "string",
             "description": "The description of the tax rate",
@@ -28904,6 +29075,7 @@
           "code",
           "rate",
           "rateFormatted",
+          "taxType",
           "isNonRecoverable",
           "isCompound",
           "active",
@@ -28928,6 +29100,18 @@
             "type": "number",
             "description": "The rate of the tax rate.",
             "example": 10
+          },
+          "taxType": {
+            "type": "string",
+            "description": "The tax type. Omitted keeps the stored value; null means unclassified.",
+            "enum": [
+              "standard",
+              "zero_rated",
+              "exempt",
+              "out_of_scope"
+            ],
+            "nullable": true,
+            "example": "standard"
           },
           "description": {
             "type": "string",
@@ -28977,6 +29161,18 @@
             "type": "number",
             "description": "The rate of the tax rate.",
             "example": 10
+          },
+          "taxType": {
+            "type": "string",
+            "description": "The tax type. Omitted keeps the stored value; null means unclassified.",
+            "enum": [
+              "standard",
+              "zero_rated",
+              "exempt",
+              "out_of_scope"
+            ],
+            "nullable": true,
+            "example": "standard"
           },
           "description": {
             "type": "string",
@@ -31117,6 +31313,141 @@
           "attachments"
         ]
       },
+      "JamaicaSettingsResponseDto": {
+        "type": "object",
+        "properties": {
+          "gctRegistered": {
+            "type": "boolean",
+            "example": true
+          },
+          "gctRegistrationNumber": {
+            "type": "string",
+            "nullable": true,
+            "example": "GCT-000123456"
+          },
+          "gctRegistrationDate": {
+            "type": "string",
+            "nullable": true,
+            "example": "2025-01-15"
+          },
+          "filingFrequency": {
+            "type": "string",
+            "example": "monthly"
+          },
+          "apportionmentEnabled": {
+            "type": "boolean",
+            "example": false
+          },
+          "trn": {
+            "type": "string",
+            "nullable": true,
+            "description": "The organization's Taxpayer Registration Number (organization tax number).",
+            "example": "123456789"
+          },
+          "setupAt": {
+            "type": "string",
+            "nullable": true,
+            "description": "When the Jamaica setup last ran.",
+            "example": "2026-10-21T05:00:00.000Z"
+          }
+        },
+        "required": [
+          "gctRegistered",
+          "gctRegistrationNumber",
+          "gctRegistrationDate",
+          "filingFrequency",
+          "apportionmentEnabled",
+          "trn",
+          "setupAt"
+        ]
+      },
+      "JamaicaSetupResponseDto": {
+        "type": "object",
+        "properties": {
+          "dryRun": {
+            "type": "boolean",
+            "example": false
+          },
+          "created": {
+            "example": [
+              "tax_rate:GCT-STD"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "updated": {
+            "example": [
+              "account:tax-payable:name"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "skipped": {
+            "example": [
+              "account:gct-input-tax"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "dryRun",
+          "created",
+          "updated",
+          "skipped"
+        ]
+      },
+      "JamaicaSetupDto": {
+        "type": "object",
+        "properties": {
+          "dryRun": {
+            "type": "boolean",
+            "description": "Report the changes without applying them.",
+            "example": true
+          }
+        }
+      },
+      "EditJamaicaSettingsDto": {
+        "type": "object",
+        "properties": {
+          "gctRegistered": {
+            "type": "boolean",
+            "description": "Whether the business is registered for GCT.",
+            "example": true
+          },
+          "gctRegistrationNumber": {
+            "type": "string",
+            "nullable": true,
+            "description": "The GCT registration number.",
+            "example": "GCT-000123456"
+          },
+          "gctRegistrationDate": {
+            "type": "string",
+            "nullable": true,
+            "description": "The GCT registration date (YYYY-MM-DD).",
+            "example": "2025-01-15"
+          },
+          "filingFrequency": {
+            "type": "string",
+            "description": "The GCT return filing frequency.",
+            "enum": [
+              "monthly"
+            ],
+            "example": "monthly"
+          },
+          "apportionmentEnabled": {
+            "type": "boolean",
+            "description": "Apportion input GCT between taxable and exempt supplies on the GCT return.",
+            "example": false
+          }
+        }
+      },
       "WarehouseTransferEntryResponseDto": {
         "type": "object",
         "properties": {
@@ -31624,6 +31955,12 @@
             "type": "string",
             "description": "Personal phone"
           },
+          "taxNumber": {
+            "type": "string",
+            "nullable": true,
+            "description": "Tax registration number, e.g. the Jamaican TRN",
+            "example": "123456789"
+          },
           "note": {
             "type": "string",
             "description": "Note"
@@ -31751,6 +32088,12 @@
           "personalPhone": {
             "type": "string",
             "description": "Personal phone"
+          },
+          "taxNumber": {
+            "type": "string",
+            "nullable": true,
+            "description": "Tax registration number, e.g. the Jamaican TRN",
+            "example": "123456789"
           },
           "note": {
             "type": "string",
@@ -31891,6 +32234,12 @@
           "website": {
             "type": "string",
             "example": "https://www.acme.com"
+          },
+          "taxNumber": {
+            "type": "string",
+            "nullable": true,
+            "description": "Tax registration number, e.g. the Jamaican TRN",
+            "example": "123456789"
           },
           "billingAddress1": {
             "type": "string",
@@ -32206,6 +32555,12 @@
             "type": "string",
             "description": "Vendor personal phone number"
           },
+          "taxNumber": {
+            "type": "string",
+            "nullable": true,
+            "description": "Tax registration number, e.g. the Jamaican TRN",
+            "example": "123456789"
+          },
           "note": {
             "type": "string",
             "description": "Additional notes about the vendor"
@@ -32327,6 +32682,12 @@
           "personalPhone": {
             "type": "string",
             "description": "Vendor personal phone number"
+          },
+          "taxNumber": {
+            "type": "string",
+            "nullable": true,
+            "description": "Tax registration number, e.g. the Jamaican TRN",
+            "example": "123456789"
           },
           "note": {
             "type": "string",
