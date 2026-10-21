@@ -34,6 +34,10 @@ export class Expense extends TenantBaseModel {
   branchId!: number;
   createdAt!: Date;
 
+  // Tax (`tax.extended_documents`); null on untaxed expenses.
+  isInclusiveTax?: boolean;
+  taxAmountWithheld?: number | null;
+
   categories!: ExpenseCategory[];
   paymentAccount!: Account;
   attachments!: Document[];

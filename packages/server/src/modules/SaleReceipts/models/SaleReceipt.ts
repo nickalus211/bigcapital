@@ -1,3 +1,4 @@
+import type { TaxRateTransaction } from '@/modules/TaxRates/models/TaxRateTransaction.model';
 import { Model } from 'objection';
 import { defaultTo } from 'lodash';
 import * as R from 'ramda';
@@ -35,6 +36,11 @@ const ExtendedModel = R.pipe(
 @InjectModelMeta(SaleReceiptMeta)
 @InjectModelDefaultViews(SaleReceiptDefaultViews)
 export class SaleReceipt extends ExtendedModel {
+  // Tax (`tax.extended_documents`); null on untaxed documents.
+  public isInclusiveTax: boolean;
+  public taxAmountWithheld: number | null;
+  public taxes?: TaxRateTransaction[];
+
   public amount!: number;
   public exchangeRate!: number;
   public currencyCode!: string;
@@ -85,6 +91,7 @@ export class SaleReceipt extends ExtendedModel {
    */
   static get virtualAttributes() {
     return [
+      'taxAmountWithheldLocal',
       'localAmount',
 
       'subtotal',
@@ -165,7 +172,29 @@ export class SaleReceipt extends ExtendedModel {
   get total(): number {
     const adjustmentAmount = defaultTo(this.adjustment, 0);
 
-    return this.subtotal - this.discountAmount + adjustmentAmount;
+    return (
+      this.subtotal -
+      this.discountAmount +
+      adjustmentAmount +
+      this.exclusiveTaxAmount
+    );
+  }
+
+  /**
+   * Tax added on top of the lines. Inclusive tax is already in the line
+   * rates, and untaxed documents carry none.
+   * @returns {number}
+   */
+  get exclusiveTaxAmount(): number {
+    return this.isInclusiveTax ? 0 : this.taxAmountWithheld || 0;
+  }
+
+  /**
+   * Tax amount withheld in base currency.
+   * @returns {number}
+   */
+  get taxAmountWithheldLocal(): number {
+    return (this.taxAmountWithheld || 0) * this.exchangeRate;
   }
 
   /**
@@ -276,7 +305,26 @@ export class SaleReceipt extends ExtendedModel {
     const { Document } = require('../../ChromiumlyTenancy/models/Document');
     const { Warehouse } = require('../../Warehouses/models/Warehouse.model');
 
+    const {
+      TaxRateTransaction,
+    } = require('../../TaxRates/models/TaxRateTransaction.model');
+
     return {
+      /**
+       * Tax rate transactions of the document.
+       */
+      taxes: {
+        relation: Model.HasManyRelation,
+        modelClass: TaxRateTransaction,
+        join: {
+          from: 'sales_receipts.id',
+          to: 'tax_rate_transactions.referenceId',
+        },
+        filter(builder) {
+          builder.where('reference_type', 'SaleReceipt');
+        },
+      },
+
       /**
        * Sale receipt may has a customer.
        */

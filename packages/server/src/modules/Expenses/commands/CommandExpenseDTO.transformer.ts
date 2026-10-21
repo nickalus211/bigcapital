@@ -8,6 +8,7 @@ import { Expense } from '../models/Expense.model';
 import { assocItemEntriesDefaultIndex } from '@/utils/associate-item-entries-index';
 import { TenancyContext } from '@/modules/Tenancy/TenancyContext.service';
 import { CreateExpenseDto, EditExpenseDto } from '../dtos/Expense.dto';
+import { ExtendedDocumentsTaxService } from '@/modules/TaxRates/ExtendedDocumentsTax.service';
 
 @Injectable()
 export class ExpenseDTOTransformer {
@@ -18,6 +19,7 @@ export class ExpenseDTOTransformer {
   constructor(
     private readonly branchDTOTransform: BranchTransactionDTOTransformer,
     private readonly tenancyContext: TenancyContext,
+    private readonly extendedDocumentsTax: ExtendedDocumentsTaxService,
   ) {}
 
   /**
@@ -52,19 +54,43 @@ export class ExpenseDTOTransformer {
   private async expenseDTOToModel(
     expenseDTO: CreateExpenseDto | EditExpenseDto,
   ): Promise<Expense> {
-    const landedCostAmount = this.getExpenseLandedCostAmount(expenseDTO);
-    const totalAmount = this.getExpenseCategoriesTotal(expenseDTO.categories);
+    // Tax on the categories (`tax.extended_documents`); null while it is off.
+    const taxed = await this.extendedDocumentsTax.transformExpenseCategories(
+      expenseDTO.categories || [],
+      {
+        date: expenseDTO.paymentDate,
+        isInclusiveTax: expenseDTO.isInclusiveTax,
+      },
+    );
+    const landedCostAmount = taxed
+      ? sumBy(
+          taxed.categories.filter((category) => category.landedCost === true),
+          'taxableAmount',
+        )
+      : this.getExpenseLandedCostAmount(expenseDTO);
+
+    const totalAmount = taxed
+      ? taxed.totalAmount
+      : this.getExpenseCategoriesTotal(expenseDTO.categories);
 
     const categories = R.compose(
       // Associate the default index to categories lines.
       assocItemEntriesDefaultIndex,
-    )(expenseDTO.categories || []);
+    )(
+      taxed?.categories ??
+        // While tax is off, expense lines stay untaxed as upstream.
+        (expenseDTO.categories || []).map((category) =>
+          omit(category, ['taxRateId']),
+        ),
+    );
 
     const initialDTO = {
-      ...omit(expenseDTO, ['publish', 'attachments']),
+      ...omit(expenseDTO, ['publish', 'attachments', 'isInclusiveTax']),
       categories,
       totalAmount,
       landedCostAmount,
+      isInclusiveTax: taxed?.isInclusiveTax ?? false,
+      taxAmountWithheld: taxed?.taxAmountWithheld ?? null,
       paymentDate: moment(expenseDTO.paymentDate).toMySqlDateTime(),
       ...(expenseDTO.publish
         ? {

@@ -10,12 +10,14 @@ import { Inject } from '@nestjs/common';
 import { TenancyContext } from '@/modules/Tenancy/TenancyContext.service';
 import { Account } from '@/modules/Accounts/models/Account.model';
 import { TenantModelProxy } from '@/modules/System/models/TenantBaseModel';
+import { TaxAccountsService } from '@/modules/TaxRates/TaxAccounts.service';
 
 @Injectable()
 export class PaymentReceivedGLEntries {
   constructor(
     private readonly ledgerStorage: LedgerStorageService,
     private readonly accountRepository: AccountRepository,
+    private readonly taxAccounts: TaxAccountsService,
     private readonly tenancyContext: TenancyContext,
 
     @Inject(PaymentReceived.name)
@@ -129,9 +131,9 @@ export class PaymentReceivedGLEntries {
     paymentReceive: PaymentReceived,
     trx?: Knex.Transaction,
   ): Promise<Ledger> => {
-    // Find or create the tax payable account.
-    const taxPayableAccount =
-      await this.accountRepository.findOrCreateTaxPayable({}, trx);
+    // Output tax account (`tax.output_tax_account_id`, else tax payable).
+    const taxPayableAccountId =
+      await this.taxAccounts.getOutputTaxAccountId(trx);
     // Find or create the discount expense account.
     const discountAccount =
       await this.accountRepository.findOrCreateDiscountAccount({}, trx);
@@ -140,7 +142,7 @@ export class PaymentReceivedGLEntries {
       await this.accountRepository.findOrCreateOtherChargesAccount({}, trx);
 
     const paymentReceivedCashGL = new PaymentReceivedCashGL(paymentReceive)
-      .setTaxPayableAccountId(taxPayableAccount.id)
+      .setTaxPayableAccountId(taxPayableAccountId)
       .setDiscountAccountId(discountAccount.id)
       .setOtherChargesAccountId(otherChargesAccount.id);
 

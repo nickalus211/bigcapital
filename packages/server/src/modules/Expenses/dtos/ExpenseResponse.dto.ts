@@ -66,6 +66,34 @@ export class ExpenseCategoryResponseDto {
   @IsOptional()
   @IsString()
   amountFormatted?: string;
+
+  @ApiProperty({
+    description: 'Tax rate id of the category (tax.extended_documents setting)',
+    required: false,
+    nullable: true,
+  })
+  taxRateId?: number | null;
+
+  @ApiProperty({
+    description: 'Tax rate percentage',
+    required: false,
+    nullable: true,
+  })
+  taxRate?: number | null;
+
+  @ApiProperty({
+    description: 'Category amount without its tax',
+    required: false,
+    nullable: true,
+  })
+  taxableAmount?: number | null;
+
+  @ApiProperty({
+    description: 'Tax on the category',
+    required: false,
+    nullable: true,
+  })
+  lineTaxAmount?: number | null;
 }
 
 export class ExpenseResponseDto {
@@ -282,4 +310,21 @@ export class ExpenseResponseDto {
   @ValidateNested({ each: true })
   @Type(() => ExpenseCategoryResponseDto)
   categories: ExpenseCategoryResponseDto[];
+
+  @ApiProperty({
+    description:
+      'Whether the category amounts include tax (tax.extended_documents setting)',
+    required: false,
+  })
+  isInclusiveTax?: boolean;
+
+  @ApiProperty({
+    description: 'Total tax on the categories; null when untaxed',
+    required: false,
+    nullable: true,
+  })
+  taxAmountWithheld?: number | null;
+
+  @ApiProperty({ description: 'Formatted total tax', required: false })
+  taxAmountWithheldFormatted?: string;
 }

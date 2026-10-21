@@ -30,6 +30,7 @@ export class GetVendorCreditService {
       .query(trx)
       .findById(vendorCreditId)
       .withGraphFetched('entries.item')
+      .withGraphFetched('taxes.taxRate')
       .withGraphFetched('vendor')
       .withGraphFetched('branch')
       .withGraphFetched('attachments');

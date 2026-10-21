@@ -26,6 +26,11 @@ import { TaxRatesExportable } from './TaxRatesExportable';
 import { TaxRatesImportable } from './TaxRatesImportable';
 import { FeaturesModule } from '../Features/Features.module';
 import { SalesTaxFeatureGuard } from './SalesTaxFeatureGuard';
+import { TaxSettingsService } from './TaxSettings.service';
+import { TaxAccountsService } from './TaxAccounts.service';
+import { ExtendedDocumentsTaxService } from './ExtendedDocumentsTax.service';
+import { WriteExtendedDocumentsTaxTransactionsSubscriber } from './subscribers/WriteExtendedDocumentsTaxTransactionsSubscriber';
+import { AccountsModule } from '../Accounts/Accounts.module';
 
 const models = [
   RegisterTenancyModel(TaxRateTransaction),
@@ -34,7 +39,7 @@ const models = [
 ];
 
 @Module({
-  imports: [TenancyModule, FeaturesModule, ...models],
+  imports: [TenancyModule, FeaturesModule, AccountsModule, ...models],
   controllers: [TaxRatesController],
   providers: [
     CreateTaxRate,
@@ -57,7 +62,18 @@ const models = [
     TaxRatesExportable,
     TaxRatesImportable,
     SalesTaxFeatureGuard,
+    TaxSettingsService,
+    TaxAccountsService,
+    ExtendedDocumentsTaxService,
+    WriteExtendedDocumentsTaxTransactionsSubscriber,
   ],
-  exports: [ItemEntriesTaxTransactions, ...models],
+  exports: [
+    ItemEntriesTaxTransactions,
+    WriteTaxTransactionsItemEntries,
+    TaxSettingsService,
+    TaxAccountsService,
+    ExtendedDocumentsTaxService,
+    ...models,
+  ],
 })
 export class TaxRatesModule {}

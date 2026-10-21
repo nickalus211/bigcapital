@@ -5,12 +5,14 @@ import { Inject, Injectable } from '@nestjs/common';
 import { AccountRepository } from '@/modules/Accounts/repositories/Account.repository';
 import { VendorCredit } from '../models/VendorCredit';
 import { TenantModelProxy } from '@/modules/System/models/TenantBaseModel';
+import { TaxAccountsService } from '@/modules/TaxRates/TaxAccounts.service';
 
 @Injectable()
 export class VendorCreditGLEntries {
   constructor(
     private readonly ledgerStorage: LedgerStorageService,
     private readonly accountRepository: AccountRepository,
+    private readonly taxAccounts: TaxAccountsService,
 
     @Inject(VendorCredit.name)
     private readonly vendorCreditModel: TenantModelProxy<typeof VendorCredit>,
@@ -45,8 +47,16 @@ export class VendorCreditGLEntries {
     const otherExpensesAccount =
       await this.accountRepository.findOrCreateOtherExpensesAccount({}, trx);
 
+    // Input tax account, only for taxed credits (`tax.extended_documents`).
+    const taxAccountId =
+      vendorCredit.taxAmountWithheld !== null &&
+      vendorCredit.taxAmountWithheld !== undefined
+        ? await this.taxAccounts.getInputTaxAccountId(trx)
+        : null;
+
     const vendorCreditLedger = new VendorCreditAccrualGL(vendorCredit)
       .setAPAccountId(APAccount.id)
+      .setTaxPayableAccountId(taxAccountId)
       .setPurchaseDiscountAccountId(purchaseDiscountAccount.id)
       .setOtherExpensesAccountId(otherExpensesAccount.id)
       .getVendorCreditLedger();

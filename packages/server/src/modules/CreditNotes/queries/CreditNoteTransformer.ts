@@ -1,3 +1,4 @@
+import { SaleInvoiceTaxEntryTransformer } from '@/modules/SaleInvoices/queries/SaleInvoiceTaxEntry.transformer';
 import { AttachmentTransformer } from '@/modules/Attachments/Attachment.transformer';
 import { ItemEntryTransformer } from '@/modules/TransactionItemEntry/ItemEntry.transformer';
 import { Transformer } from '@/modules/Transformer/Transformer';
@@ -30,6 +31,8 @@ export class CreditNoteTransformer extends Transformer {
 
       'entries',
       'attachments',
+      'taxes',
+      'taxAmountWithheldFormatted',
     ];
   };
 
@@ -169,6 +172,29 @@ export class CreditNoteTransformer extends Transformer {
     return this.formatNumber(credit.totalLocal, {
       currencyCode: credit.currencyCode,
       money: true,
+    });
+  };
+
+  /**
+   * Retrieves the tax lines (`tax.extended_documents`).
+   * @returns {Array}
+   */
+  protected taxes = (credit) => {
+    return this.item(credit.taxes || [], new SaleInvoiceTaxEntryTransformer(), {
+      subtotal: credit.subtotal,
+      isInclusiveTax: credit.isInclusiveTax,
+      currencyCode: credit.currencyCode,
+      entries: credit.entries,
+    });
+  };
+
+  /**
+   * Retrieves the formatted tax amount.
+   * @returns {string}
+   */
+  protected taxAmountWithheldFormatted = (credit): string => {
+    return this.formatNumber(credit.taxAmountWithheld || 0, {
+      currencyCode: credit.currencyCode,
     });
   };
 

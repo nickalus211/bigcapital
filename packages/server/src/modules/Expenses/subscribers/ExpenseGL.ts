@@ -8,6 +8,7 @@ import { Expense } from '../models/Expense.model';
 
 export class ExpenseGL {
   private expense: Expense;
+  private taxAccountId: number | null = null;
 
   /**
    * Constructor method.
@@ -15,6 +16,15 @@ export class ExpenseGL {
    */
   constructor(expense: Expense) {
     this.expense = expense;
+  }
+
+  /**
+   * Sets the account that input tax on the categories posts to.
+   * @param {number | null} taxAccountId
+   */
+  setTaxAccountId(taxAccountId: number | null) {
+    this.taxAccountId = taxAccountId;
+    return this;
   }
 
   /**
@@ -66,7 +76,8 @@ export class ExpenseGL {
   private getExpenseGLCategoryEntry = R.curry(
     (category: ExpenseCategory, index: number): ILedgerEntry => {
       const commonEntry = this.getExpenseGLCommonEntry();
-      const localAmount = category.amount * this.expense.exchangeRate;
+      const localAmount =
+        category.amountExcludingTax * this.expense.exchangeRate;
 
       return {
         ...commonEntry,
@@ -76,9 +87,36 @@ export class ExpenseGL {
         note: category.description,
         index: index + 2,
         projectId: category.projectId,
+        ...(category.taxRateId && {
+          taxRateId: category.taxRateId,
+          taxRate: category.taxRate,
+        }),
       };
     },
   );
+
+  /**
+   * Retrieves the input tax entries of the categories.
+   * @returns {ILedgerEntry[]}
+   */
+  private getExpenseGLTaxEntries = (): ILedgerEntry[] => {
+    if (!this.taxAccountId) return [];
+
+    const commonEntry = this.getExpenseGLCommonEntry();
+
+    return this.expense.categories
+      .filter((category) => category.taxAmount > 0)
+      .map((category, index) => ({
+        ...commonEntry,
+        debit: category.taxAmount * this.expense.exchangeRate,
+        accountId: this.taxAccountId,
+        accountNormal: AccountNormal.DEBIT,
+        index: index + 1,
+        indexGroup: 30,
+        taxRateId: category.taxRateId,
+        taxRate: category.taxRate,
+      }));
+  };
 
   /**
    * Retrieves the expense GL entries.
@@ -91,7 +129,7 @@ export class ExpenseGL {
     const categoryEntries = this.expense.categories.map((category, index) =>
       getCategoryEntry(category, index),
     );
-    return [paymentEntry, ...categoryEntries];
+    return [paymentEntry, ...categoryEntries, ...this.getExpenseGLTaxEntries()];
   };
 
   /**

@@ -18,6 +18,7 @@ import {
   CreditNoteEntryDto,
   EditCreditNoteDto,
 } from '../dtos/CreditNote.dto';
+import { ExtendedDocumentsTaxService } from '@/modules/TaxRates/ExtendedDocumentsTax.service';
 
 @Injectable()
 export class CommandCreditNoteDTOTransform {
@@ -29,6 +30,7 @@ export class CommandCreditNoteDTOTransform {
    * @param {CreditNoteAutoIncrementService} creditNoteAutoIncrement - The credit note auto increment service.
    */
   constructor(
+    private readonly extendedDocumentsTax: ExtendedDocumentsTaxService,
     private readonly itemsEntriesService: ItemsEntriesService,
     private readonly branchDTOTransform: BranchTransactionDTOTransformer,
     private readonly warehouseDTOTransform: WarehouseTransactionDTOTransform,
@@ -61,6 +63,13 @@ export class CommandCreditNoteDTOTransform {
       })),
     )(creditNoteDTO.entries);
 
+    // Tax on the lines (`tax.extended_documents`); null while it is off.
+    const taxed = await this.extendedDocumentsTax.transformDocumentEntries(
+      creditNoteDTO,
+      entries,
+      { date: creditNoteDTO.creditNoteDate, side: 'sell' },
+    );
+
     // Retrieves the next credit note number.
     const autoNextNumber = this.creditNoteAutoIncrement.getNextCreditNumber();
 
@@ -71,14 +80,17 @@ export class CommandCreditNoteDTOTransform {
       autoNextNumber;
 
     const initialDTO = {
-      ...formatDateFields(omit(creditNoteDTO, ['open', 'attachments']), [
-        'creditNoteDate',
-      ]),
+      ...formatDateFields(
+        omit(creditNoteDTO, ['open', 'attachments', 'isInclusiveTax']),
+        ['creditNoteDate'],
+      ),
       creditNoteNumber,
       amount,
       currencyCode: customerCurrencyCode,
       exchangeRate: creditNoteDTO.exchangeRate || 1,
-      entries,
+      entries: taxed?.entries ?? entries,
+      isInclusiveTax: taxed?.isInclusiveTax ?? false,
+      taxAmountWithheld: taxed?.taxAmountWithheld ?? null,
       ...(creditNoteDTO.open &&
         !oldCreditNote?.openedAt && {
           openedAt: moment().toMySqlDateTime(),

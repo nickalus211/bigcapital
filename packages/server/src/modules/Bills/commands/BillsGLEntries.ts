@@ -5,6 +5,7 @@ import { Bill } from '../models/Bill';
 import { Inject, Injectable } from '@nestjs/common';
 import { BillGL } from './BillsGL';
 import { TenantModelProxy } from '@/modules/System/models/TenantBaseModel';
+import { TaxAccountsService } from '@/modules/TaxRates/TaxAccounts.service';
 import { BillLandedCostsBridge } from '../integrations/BillLandedCostsBridge';
 
 @Injectable()
@@ -17,6 +18,7 @@ export class BillGLEntries {
   constructor(
     private readonly ledgerStorage: LedgerStorageService,
     private readonly accountRepository: AccountRepository,
+    private readonly taxAccounts: TaxAccountsService,
     private readonly landedCostsBridge: BillLandedCostsBridge,
 
     @Inject(Bill.name)
@@ -52,9 +54,9 @@ export class BillGLEntries {
       {},
       trx,
     );
-    // Find or create tax payable account.
-    const taxPayableAccount =
-      await this.accountRepository.findOrCreateTaxPayable({}, trx);
+    // Input tax account (`tax.input_tax_account_id`, else tax payable).
+    const taxPayableAccountId =
+      await this.taxAccounts.getInputTaxAccountId(trx);
 
     // Find or create other expenses account.
     const otherExpensesAccount =
@@ -71,7 +73,7 @@ export class BillGLEntries {
       landedCostLedgerEntries,
     )
       .setPayableAccountId(APAccount.id)
-      .setTaxPayableAccountId(taxPayableAccount.id)
+      .setTaxPayableAccountId(taxPayableAccountId)
       .setPurchaseDiscountAccountId(purchaseDiscountAccount.id)
       .setOtherExpensesAccountId(otherExpensesAccount.id)
       .getBillLedger();

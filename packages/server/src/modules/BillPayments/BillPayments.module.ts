@@ -1,3 +1,4 @@
+import { TaxRatesModule } from '../TaxRates/TaxRate.module';
 import { Module } from '@nestjs/common';
 import { BillPaymentsApplication } from './BillPaymentsApplication.service';
 import { CreateBillPaymentService } from './commands/CreateBillPayment.service';
@@ -26,7 +27,13 @@ import { BulkDeleteBillPaymentsService } from './BulkDeleteBillPayments.service'
 import { ValidateBulkDeleteBillPaymentsService } from './ValidateBulkDeleteBillPayments.service';
 
 @Module({
-  imports: [TenancyModule, LedgerModule, AccountsModule, DynamicListModule],
+  imports: [
+    TenancyModule,
+    LedgerModule,
+    AccountsModule,
+    DynamicListModule,
+    TaxRatesModule,
+  ],
   providers: [
     BillPaymentsApplication,
     CreateBillPaymentService,

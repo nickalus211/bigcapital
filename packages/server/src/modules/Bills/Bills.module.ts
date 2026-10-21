@@ -13,7 +13,7 @@ import { BranchTransactionDTOTransformer } from '../Branches/integrations/Branch
 import { BranchesSettingsService } from '../Branches/BranchesSettings';
 import { WarehouseTransactionDTOTransform } from '../Warehouses/Integrations/WarehouseTransactionDTOTransform';
 import { WarehousesSettings } from '../Warehouses/WarehousesSettings';
-import { ItemEntriesTaxTransactions } from '../TaxRates/ItemEntriesTaxTransactions.service';
+import { TaxRatesModule } from '../TaxRates/TaxRate.module';
 import { FeaturesModule } from '../Features/Features.module';
 import { TenancyModule } from '../Tenancy/Tenancy.module';
 import { BillsController } from './Bills.controller';
@@ -42,13 +42,13 @@ import { ValidateBulkDeleteBillsService } from './ValidateBulkDeleteBills.servic
     AccountsModule,
     DynamicListModule,
     InventoryCostModule,
+    TaxRatesModule,
   ],
   providers: [
     BillsApplication,
     BranchTransactionDTOTransformer,
     WarehouseTransactionDTOTransform,
     WarehousesSettings,
-    ItemEntriesTaxTransactions,
     BranchesSettingsService,
     CreateBill,
     EditBillService,

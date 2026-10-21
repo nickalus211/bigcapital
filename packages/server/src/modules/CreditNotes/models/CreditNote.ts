@@ -1,3 +1,4 @@
+import type { TaxRateTransaction } from '@/modules/TaxRates/models/TaxRateTransaction.model';
 import { Model, raw } from 'objection';
 import { DiscountType } from '@/common/types/Discount';
 import { Branch } from '@/modules/Branches/models/Branch.model';
@@ -14,12 +15,23 @@ import { InjectModelDefaultViews } from '@/modules/Views/decorators/InjectModelD
 import { CreditNoteDefaultViews } from '../constants';
 import { InjectAttachable } from '@/modules/Attachments/decorators/InjectAttachable.decorator';
 
+/**
+ * The creditable amount in SQL: the lines' amount plus any exclusive tax.
+ */
+const CREDIT_AMOUNT_SQL =
+  'COALESCE(AMOUNT) + IF(IS_INCLUSIVE_TAX, 0, COALESCE(TAX_AMOUNT_WITHHELD, 0))';
+
 @InjectAttachable()
 @ExportableModel()
 @ImportableModel()
 @InjectModelMeta(CreditNoteMeta)
 @InjectModelDefaultViews(CreditNoteDefaultViews)
 export class CreditNote extends TenantBaseModel {
+  // Tax (`tax.extended_documents`); null on untaxed documents.
+  public isInclusiveTax: boolean;
+  public taxAmountWithheld: number | null;
+  public taxes?: TaxRateTransaction[];
+
   public amount: number;
   public exchangeRate: number;
   public openedAt: Date;
@@ -67,6 +79,8 @@ export class CreditNote extends TenantBaseModel {
    */
   static get virtualAttributes() {
     return [
+      'taxAmountWithheldLocal',
+      'creditAmount',
       'localAmount',
       'isDraft',
       'isPublished',
@@ -153,7 +167,38 @@ export class CreditNote extends TenantBaseModel {
    * @returns {number}
    */
   get total() {
-    return this.subtotal - this.discountAmount + this.adjustment;
+    return (
+      this.subtotal -
+      this.discountAmount +
+      this.adjustment +
+      this.exclusiveTaxAmount
+    );
+  }
+
+  /**
+   * Tax added on top of the lines. Inclusive tax is already in the line
+   * rates, and untaxed documents carry none.
+   * @returns {number}
+   */
+  get exclusiveTaxAmount(): number {
+    return this.isInclusiveTax ? 0 : this.taxAmountWithheld || 0;
+  }
+
+  /**
+   * Tax amount withheld in base currency.
+   * @returns {number}
+   */
+  get taxAmountWithheldLocal(): number {
+    return (this.taxAmountWithheld || 0) * this.exchangeRate;
+  }
+
+  /**
+   * Amount available to refund or apply: the lines' amount plus any
+   * exclusive tax. Matches `CREDIT_AMOUNT_SQL`.
+   * @returns {number}
+   */
+  get creditAmount(): number {
+    return this.amount + this.exclusiveTaxAmount;
   }
 
   /**
@@ -200,7 +245,10 @@ export class CreditNote extends TenantBaseModel {
    * Retrieve the credits remaining.
    */
   get creditsRemaining() {
-    return Math.max(this.amount - this.refundedAmount - this.invoicesAmount, 0);
+    return Math.max(
+      this.creditAmount - this.refundedAmount - this.invoicesAmount,
+      0,
+    );
   }
 
   /**
@@ -236,7 +284,7 @@ export class CreditNote extends TenantBaseModel {
         query
           .where(
             raw(`COALESCE(REFUNDED_AMOUNT) + COALESCE(INVOICES_AMOUNT) <
-            COALESCE(AMOUNT)`),
+            ${CREDIT_AMOUNT_SQL}`),
           )
           .modify('published');
       },
@@ -248,7 +296,7 @@ export class CreditNote extends TenantBaseModel {
         query
           .where(
             raw(`COALESCE(REFUNDED_AMOUNT) + COALESCE(INVOICES_AMOUNT) =
-            COALESCE(AMOUNT)`),
+            ${CREDIT_AMOUNT_SQL}`),
           )
           .modify('published');
       },
@@ -280,7 +328,7 @@ export class CreditNote extends TenantBaseModel {
       sortByStatus(query, order) {
         const dir = sanitizeSortDirection(order);
         query.orderByRaw(
-          `COALESCE(REFUNDED_AMOUNT) + COALESCE(INVOICES_AMOUNT) = COALESCE(AMOUNT) ${dir}`,
+          `COALESCE(REFUNDED_AMOUNT) + COALESCE(INVOICES_AMOUNT) = ${CREDIT_AMOUNT_SQL} ${dir}`,
         );
       },
     };
@@ -304,7 +352,26 @@ export class CreditNote extends TenantBaseModel {
       PdfTemplateModel,
     } = require('../../PdfTemplate/models/PdfTemplate');
 
+    const {
+      TaxRateTransaction,
+    } = require('../../TaxRates/models/TaxRateTransaction.model');
+
     return {
+      /**
+       * Tax rate transactions of the document.
+       */
+      taxes: {
+        relation: Model.HasManyRelation,
+        modelClass: TaxRateTransaction,
+        join: {
+          from: 'credit_notes.id',
+          to: 'tax_rate_transactions.referenceId',
+        },
+        filter(builder) {
+          builder.where('reference_type', 'CreditNote');
+        },
+      },
+
       /**
        * Credit note associated entries.
        */

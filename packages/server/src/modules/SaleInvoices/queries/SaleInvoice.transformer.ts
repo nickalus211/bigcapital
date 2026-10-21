@@ -229,6 +229,7 @@ export class SaleInvoiceTransformer extends Transformer {
       subtotal: invoice.subtotal,
       isInclusiveTax: invoice.isInclusiveTax,
       currencyCode: invoice.currencyCode,
+      entries: invoice.entries,
     });
   };
 

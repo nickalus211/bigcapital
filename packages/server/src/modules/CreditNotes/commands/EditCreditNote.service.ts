@@ -132,7 +132,11 @@ export class EditCreditNoteService {
     // and applied-to-invoices amounts against the locked row.
     this.commandCreditNoteDTOTransform.validateCreditAmountNotBelowUsed(
       oldCreditNote,
-      creditNoteModel.amount,
+      // The creditable amount includes any exclusive tax.
+      creditNoteModel.amount +
+        (creditNoteModel.isInclusiveTax
+          ? 0
+          : creditNoteModel.taxAmountWithheld || 0),
     );
     return { oldCreditNote, creditNoteModel };
   }

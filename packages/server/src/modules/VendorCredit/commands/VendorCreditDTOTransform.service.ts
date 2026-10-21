@@ -17,6 +17,7 @@ import {
   EditVendorCreditDto,
   VendorCreditEntryDto,
 } from '../dtos/VendorCredit.dto';
+import { ExtendedDocumentsTaxService } from '@/modules/TaxRates/ExtendedDocumentsTax.service';
 
 @Injectable()
 export class VendorCreditDTOTransformService {
@@ -27,6 +28,7 @@ export class VendorCreditDTOTransformService {
    * @param {VendorCreditAutoIncrementService} vendorCreditAutoIncrement - The vendor credit auto increment service.
    */
   constructor(
+    private readonly extendedDocumentsTax: ExtendedDocumentsTaxService,
     private itemsEntriesService: ItemsEntriesService,
     private branchDTOTransform: BranchTransactionDTOTransformer,
     private warehouseDTOTransform: WarehouseTransactionDTOTransform,
@@ -60,6 +62,13 @@ export class VendorCreditDTOTransformService {
       })),
     )(vendorCreditDTO.entries);
 
+    // Tax on the lines (`tax.extended_documents`); null while it is off.
+    const taxed = await this.extendedDocumentsTax.transformDocumentEntries(
+      vendorCreditDTO,
+      entries,
+      { date: vendorCreditDTO.vendorCreditDate, side: 'purchase' },
+    );
+
     // Retreive the next vendor credit number.
     const autoNextNumber =
       await this.vendorCreditAutoIncrement.getNextCreditNumber();
@@ -71,14 +80,17 @@ export class VendorCreditDTOTransformService {
       autoNextNumber;
 
     const initialDTO = {
-      ...formatDateFields(omit(vendorCreditDTO, ['open', 'attachments']), [
-        'vendorCreditDate',
-      ]),
+      ...formatDateFields(
+        omit(vendorCreditDTO, ['open', 'attachments', 'isInclusiveTax']),
+        ['vendorCreditDate'],
+      ),
       amount,
       currencyCode: vendorCurrencyCode,
       exchangeRate: vendorCreditDTO.exchangeRate || 1,
       vendorCreditNumber,
-      entries,
+      entries: taxed?.entries ?? entries,
+      isInclusiveTax: taxed?.isInclusiveTax ?? false,
+      taxAmountWithheld: taxed?.taxAmountWithheld ?? null,
       ...(vendorCreditDTO.open &&
         !oldVendorCredit?.openedAt && {
           openedAt: moment().toMySqlDateTime(),

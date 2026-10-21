@@ -66,6 +66,13 @@ export class BillDTOTransformer {
       ...omit(entry, ['amount']),
     }));
     const asyncEntries = await composeAsync(
+      // Stores the line taxable amount and tax (`tax.calc_after_discount`).
+      async (entries) =>
+        this.taxDTOTransformer.assocEntriesTaxAmounts(entries, {
+          isInclusiveTax: billDTO.isInclusiveTax,
+          discount: billDTO.discount,
+          discountType: billDTO.discountType,
+        }),
       // Associate tax rate from tax id to entries, as of the bill date.
       // (`async/compose` only awaits `async` functions, never a returned promise.)
       async (entries) =>
@@ -75,6 +82,8 @@ export class BillDTOTransformer {
         ),
       // Associate tax rate id from tax code to entries.
       this.taxDTOTransformer.assocTaxRateIdFromCodeToEntries,
+      // Default tax rate from the item (`tax.default_from_item`).
+      this.taxDTOTransformer.assocDefaultTaxRateFromItems('purchase'),
       // Sets the default cost account to the bill entries.
       this.setBillEntriesDefaultAccounts(),
     )(initialEntries);

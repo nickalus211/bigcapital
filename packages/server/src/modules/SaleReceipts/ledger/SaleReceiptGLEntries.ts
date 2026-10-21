@@ -5,12 +5,14 @@ import { SaleReceipt } from '../models/SaleReceipt';
 import { AccountRepository } from '@/modules/Accounts/repositories/Account.repository';
 import { SaleReceiptGL } from './SaleReceiptGL';
 import { TenantModelProxy } from '@/modules/System/models/TenantBaseModel';
+import { TaxAccountsService } from '@/modules/TaxRates/TaxAccounts.service';
 
 @Injectable()
 export class SaleReceiptGLEntries {
   constructor(
     private readonly ledgerStorage: LedgerStorageService,
     private readonly accountRepository: AccountRepository,
+    private readonly taxAccounts: TaxAccountsService,
 
     @Inject(SaleReceipt.name)
     private readonly saleReceiptModel: TenantModelProxy<typeof SaleReceipt>,
@@ -37,10 +39,18 @@ export class SaleReceiptGLEntries {
     const otherChargesAccount =
       await this.accountRepository.findOrCreateOtherChargesAccount({}, trx);
 
+    // Output tax account, only for taxed receipts (`tax.extended_documents`).
+    const taxAccountId =
+      saleReceipt.taxAmountWithheld !== null &&
+      saleReceipt.taxAmountWithheld !== undefined
+        ? await this.taxAccounts.getOutputTaxAccountId(trx)
+        : null;
+
     // Retrieves the income ledger.
     const incomeLedger = new SaleReceiptGL(saleReceipt)
       .setDiscountAccountId(discountAccount.id)
       .setOtherChargesAccountId(otherChargesAccount.id)
+      .setTaxPayableAccountId(taxAccountId)
       .getIncomeLedger();
 
     // Commits the ledger entries to the storage.

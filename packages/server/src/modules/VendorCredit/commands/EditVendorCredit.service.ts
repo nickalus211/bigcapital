@@ -136,7 +136,11 @@ export class EditVendorCreditService {
     // and applied-to-bills amounts against the locked row.
     this.vendorCreditDTOTransform.validateCreditAmountNotBelowUsed(
       oldVendorCredit,
-      vendorCreditModel.amount,
+      // The creditable amount includes any exclusive tax.
+      vendorCreditModel.amount +
+        (vendorCreditModel.isInclusiveTax
+          ? 0
+          : vendorCreditModel.taxAmountWithheld || 0),
     );
     return { oldVendorCredit, vendorCreditModel };
   };

@@ -1,3 +1,4 @@
+import { SaleInvoiceTaxEntryDto } from '@/modules/SaleInvoices/dtos/SaleInvoiceTaxEntry.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { ItemEntryDto } from '@/modules/TransactionItemEntry/dto/ItemEntry.dto';
@@ -351,4 +352,35 @@ export class VendorCreditResponseDto {
     required: false,
   })
   updatedAt?: Date;
+
+  @ApiProperty({
+    description:
+      'Whether the line rates include tax (tax.extended_documents setting)',
+    example: false,
+    required: false,
+  })
+  isInclusiveTax?: boolean;
+
+  @ApiProperty({
+    description:
+      'Total tax on the lines; null when the document carries no tax (tax.extended_documents setting)',
+    example: 15,
+    required: false,
+    nullable: true,
+  })
+  taxAmountWithheld?: number | null;
+
+  @ApiProperty({
+    description: 'Formatted total tax on the lines',
+    example: '$15.00',
+    required: false,
+  })
+  taxAmountWithheldFormatted?: string;
+
+  @ApiProperty({
+    description: 'Tax lines, one per tax rate',
+    type: [SaleInvoiceTaxEntryDto],
+    required: false,
+  })
+  taxes?: SaleInvoiceTaxEntryDto[];
 }

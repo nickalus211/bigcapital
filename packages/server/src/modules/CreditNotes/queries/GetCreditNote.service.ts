@@ -25,6 +25,7 @@ export class GetCreditNoteService {
       .query()
       .findById(creditNoteId)
       .withGraphFetched('entries.item')
+      .withGraphFetched('taxes.taxRate')
       .withGraphFetched('customer')
       .withGraphFetched('branch')
       .withGraphFetched('attachments');

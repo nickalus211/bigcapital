@@ -10,6 +10,7 @@ export class CreditNoteAccrualGL {
   ARAccountId: number;
   discountAccountId: number;
   adjustmentAccountId: number;
+  taxPayableAccountId: number;
 
   /**
    * @param {CreditNote} creditNoteModel - Credit note model.
@@ -43,6 +44,22 @@ export class CreditNoteAccrualGL {
   public setAdjustmentAccountId(adjustmentAccountId: number) {
     this.adjustmentAccountId = adjustmentAccountId;
     return this;
+  }
+
+  public setTaxPayableAccountId(taxPayableAccountId: number) {
+    this.taxPayableAccountId = taxPayableAccountId;
+    return this;
+  }
+
+  /**
+   * Whether the credit note carries tax (`tax.extended_documents`).
+   * @returns {boolean}
+   */
+  private get isTaxed(): boolean {
+    return (
+      this.creditNoteModel.taxAmountWithheld !== null &&
+      this.creditNoteModel.taxAmountWithheld !== undefined
+    );
   }
 
   /**
@@ -115,7 +132,34 @@ export class CreditNoteAccrualGL {
       index: index + 2,
       itemId: entry.itemId,
       accountNormal: AccountNormal.CREDIT,
+      ...(this.isTaxed && {
+        taxRateId: entry.taxRateId,
+        taxRate: entry.taxRate,
+      }),
     };
+  }
+
+  /**
+   * Retrieves the entries reversing the output tax of the lines.
+   * @returns {ILedgerEntry[]}
+   */
+  private getTaxEntries(): ILedgerEntry[] {
+    if (!this.isTaxed) return [];
+
+    const commonEntry = this.creditNoteCommonEntry;
+
+    return this.creditNoteModel.entries
+      .filter((entry) => entry.taxAmount > 0)
+      .map((entry, index) => ({
+        ...commonEntry,
+        debit: entry.taxAmount * this.creditNoteModel.exchangeRate,
+        accountId: this.taxPayableAccountId,
+        index: index + 1,
+        indexGroup: 30,
+        accountNormal: AccountNormal.CREDIT,
+        taxRateId: entry.taxRateId,
+        taxRate: entry.taxRate,
+      }));
   }
 
   /**
@@ -171,7 +215,13 @@ export class CreditNoteAccrualGL {
     const discountEntry = this.discountEntry;
     const adjustmentEntry = this.adjustmentEntry;
 
-    return [AREntry, discountEntry, adjustmentEntry, ...itemsEntries];
+    return [
+      AREntry,
+      discountEntry,
+      adjustmentEntry,
+      ...itemsEntries,
+      ...this.getTaxEntries(),
+    ];
   }
 
   /**

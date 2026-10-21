@@ -71,6 +71,17 @@ export class ExpenseCategoryDto {
     description: 'The project id of the expense category',
   })
   projectId?: number;
+
+  @ToNumber()
+  @IsInt()
+  @IsOptional()
+  @ApiProperty({
+    example: 1,
+    required: false,
+    description:
+      'The tax rate id of the expense category. Used only while the tax.extended_documents setting is on.',
+  })
+  taxRateId?: number;
 }
 
 export class CommandExpenseDto {
@@ -169,6 +180,16 @@ export class CommandExpenseDto {
     ],
   })
   categories: ExpenseCategoryDto[];
+
+  @IsOptional()
+  @IsBoolean()
+  @ApiProperty({
+    description:
+      'Whether the category amounts include tax. Used only while the tax.extended_documents setting is on.',
+    required: false,
+    example: true,
+  })
+  isInclusiveTax?: boolean;
 
   @IsArray()
   @ValidateNested({ each: true })

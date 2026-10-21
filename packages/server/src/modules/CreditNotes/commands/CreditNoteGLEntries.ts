@@ -5,12 +5,14 @@ import { LedgerStorageService } from '@/modules/Ledger/LedgerStorage.service';
 import { CreditNote } from '../models/CreditNote';
 import { AccountRepository } from '@/modules/Accounts/repositories/Account.repository';
 import { TenantModelProxy } from '@/modules/System/models/TenantBaseModel';
+import { TaxAccountsService } from '@/modules/TaxRates/TaxAccounts.service';
 
 @Injectable()
 export class CreditNoteGLEntries {
   constructor(
     private readonly ledgerStorage: LedgerStorageService,
     private readonly accountRepository: AccountRepository,
+    private readonly taxAccounts: TaxAccountsService,
 
     @Inject(CreditNote.name)
     private readonly creditNoteModel: TenantModelProxy<typeof CreditNote>,
@@ -53,8 +55,16 @@ export class CreditNoteGLEntries {
     const adjustmentAccount =
       await this.accountRepository.findOrCreateOtherChargesAccount({});
 
+    // Output tax account, only for taxed credits (`tax.extended_documents`).
+    const taxAccountId =
+      creditNoteWithItems.taxAmountWithheld !== null &&
+      creditNoteWithItems.taxAmountWithheld !== undefined
+        ? await this.taxAccounts.getOutputTaxAccountId(trx)
+        : null;
+
     const creditNoteLedger = new CreditNoteAccrualGL(creditNoteWithItems)
       .setARAccountId(ARAccount.id)
+      .setTaxPayableAccountId(taxAccountId)
       .setDiscountAccountId(discountAccount.id)
       .setAdjustmentAccountId(adjustmentAccount.id)
       .getCreditNoteLedger();

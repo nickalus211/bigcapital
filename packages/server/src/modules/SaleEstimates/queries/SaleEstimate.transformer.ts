@@ -1,3 +1,4 @@
+import { SaleInvoiceTaxEntryTransformer } from '@/modules/SaleInvoices/queries/SaleInvoiceTaxEntry.transformer';
 import { Transformer } from '@/modules/Transformer/Transformer';
 import { SaleEstimate } from '../models/SaleEstimate';
 import { ItemEntryTransformer } from '@/modules/TransactionItemEntry/ItemEntry.transformer';
@@ -27,6 +28,8 @@ export class SaleEstimateTransfromer extends Transformer {
       'formattedCreatedAt',
       'entries',
       'attachments',
+      'taxes',
+      'taxAmountWithheldFormatted',
     ];
   };
 
@@ -154,6 +157,33 @@ export class SaleEstimateTransfromer extends Transformer {
    */
   protected totalLocalFormatted = (estimate: SaleEstimate): string => {
     return this.formatMoney(estimate.totalLocal, {
+      currencyCode: estimate.currencyCode,
+    });
+  };
+
+  /**
+   * Retrieves the tax lines (`tax.extended_documents`).
+   * @returns {Array}
+   */
+  protected taxes = (estimate: SaleEstimate) => {
+    return this.item(
+      estimate.taxes || [],
+      new SaleInvoiceTaxEntryTransformer(),
+      {
+        subtotal: estimate.subtotal,
+        isInclusiveTax: estimate.isInclusiveTax,
+        currencyCode: estimate.currencyCode,
+        entries: estimate.entries,
+      },
+    );
+  };
+
+  /**
+   * Retrieves the formatted tax amount.
+   * @returns {string}
+   */
+  protected taxAmountWithheldFormatted = (estimate: SaleEstimate): string => {
+    return this.formatNumber(estimate.taxAmountWithheld || 0, {
       currencyCode: estimate.currencyCode,
     });
   };

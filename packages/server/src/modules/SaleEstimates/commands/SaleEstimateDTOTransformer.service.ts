@@ -16,10 +16,12 @@ import { Customer } from '@/modules/Customers/models/Customer';
 import { ISaleEstimateDTO } from '../types/SaleEstimates.types';
 import { TenantModelProxy } from '@/modules/System/models/TenantBaseModel';
 import { CommandSaleEstimateDto } from '../dtos/SaleEstimate.dto';
+import { ExtendedDocumentsTaxService } from '@/modules/TaxRates/ExtendedDocumentsTax.service';
 
 @Injectable()
 export class SaleEstimateDTOTransformer {
   constructor(
+    private readonly extendedDocumentsTax: ExtendedDocumentsTaxService,
     @Inject(ItemEntry.name)
     private itemEntryModel: TenantModelProxy<typeof ItemEntry>,
 
@@ -65,16 +67,30 @@ export class SaleEstimateDTOTransformer {
       assocItemEntriesDefaultIndex,
     )(estimateDTO.entries);
 
+    // Tax on the lines (`tax.extended_documents`); null while it is off.
+    const taxed = await this.extendedDocumentsTax.transformDocumentEntries(
+      estimateDTO,
+      entries,
+      { date: estimateDTO.estimateDate, side: 'sell' },
+    );
+
     const initialDTO = {
       amount,
       ...formatDateFields(
-        omit(estimateDTO, ['delivered', 'entries', 'attachments']),
+        omit(estimateDTO, [
+          'delivered',
+          'entries',
+          'attachments',
+          'isInclusiveTax',
+        ]),
         ['estimateDate', 'expirationDate'],
       ),
       currencyCode: paymentCustomer.currencyCode,
       exchangeRate: estimateDTO.exchangeRate || 1,
       ...(estimateNumber ? { estimateNumber } : {}),
-      entries,
+      entries: taxed?.entries ?? entries,
+      isInclusiveTax: taxed?.isInclusiveTax ?? false,
+      taxAmountWithheld: taxed?.taxAmountWithheld ?? null,
       // Avoid rewrite the deliver date in edit mode when already published.
       ...(estimateDTO.delivered &&
         !oldSaleEstimate?.deliveredAt && {

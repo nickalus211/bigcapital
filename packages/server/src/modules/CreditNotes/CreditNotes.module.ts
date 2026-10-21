@@ -1,3 +1,4 @@
+import { TaxRatesModule } from '../TaxRates/TaxRate.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { BullBoardModule } from '@bull-board/nestjs';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
@@ -50,6 +51,7 @@ import { SendCreditNoteMailQueue } from './types/CreditNotes.types';
 
 @Module({
   imports: [
+    TaxRatesModule,
     TenancyModule,
     ItemsModule,
     BranchesModule,

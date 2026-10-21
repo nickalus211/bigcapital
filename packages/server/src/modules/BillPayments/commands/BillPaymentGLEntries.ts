@@ -9,12 +9,14 @@ import { BillPayment } from '../models/BillPayment';
 import { AccountRepository } from '@/modules/Accounts/repositories/Account.repository';
 import { TenancyContext } from '@/modules/Tenancy/TenancyContext.service';
 import { TenantModelProxy } from '@/modules/System/models/TenantBaseModel';
+import { TaxAccountsService } from '@/modules/TaxRates/TaxAccounts.service';
 
 @Injectable()
 export class BillPaymentGLEntries {
   constructor(
     private readonly ledgerStorage: LedgerStorageService,
     private readonly accountRepository: AccountRepository,
+    private readonly taxAccounts: TaxAccountsService,
     private readonly tenancyContext: TenancyContext,
 
     @Inject(BillPayment.name)
@@ -120,9 +122,9 @@ export class BillPaymentGLEntries {
     // Accrual basis ledger entries.
     const accrualLedger = billPaymentAccrualGL.getBillPaymentLedger();
 
-    // Find or create tax payable account.
-    const taxPayableAccount =
-      await this.accountRepository.findOrCreateTaxPayable({}, trx);
+    // Input tax account (`tax.input_tax_account_id`, else tax payable).
+    const taxPayableAccountId =
+      await this.taxAccounts.getInputTaxAccountId(trx);
     // Find or create purchase discount account.
     const purchaseDiscountAccount =
       await this.accountRepository.findOrCreatePurchaseDiscountAccount({}, trx);
@@ -131,7 +133,7 @@ export class BillPaymentGLEntries {
       await this.accountRepository.findOrCreateOtherExpensesAccount({}, trx);
 
     const billPaymentCashGL = new BillPaymentCashGL(billPayment)
-      .setTaxPayableAccountId(taxPayableAccount.id)
+      .setTaxPayableAccountId(taxPayableAccountId)
       .setPurchaseDiscountAccountId(purchaseDiscountAccount.id)
       .setOtherExpensesAccountId(otherExpensesAccount.id);
 

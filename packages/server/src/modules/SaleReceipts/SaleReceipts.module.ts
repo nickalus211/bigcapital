@@ -1,3 +1,4 @@
+import { TaxRatesModule } from '../TaxRates/TaxRate.module';
 import { Module } from '@nestjs/common';
 import { BullBoardModule } from '@bull-board/nestjs';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
@@ -55,6 +56,7 @@ import { ValidateBulkDeleteSaleReceiptsService } from './ValidateBulkDeleteSaleR
 @Module({
   controllers: [SaleReceiptsController],
   imports: [
+    TaxRatesModule,
     TenancyModule,
     ItemsModule,
     ChromiumlyTenancyModule,

@@ -1,3 +1,4 @@
+import { SaleInvoiceTaxEntryTransformer } from '@/modules/SaleInvoices/queries/SaleInvoiceTaxEntry.transformer';
 import { Transformer } from '@/modules/Transformer/Transformer';
 import { SaleReceipt } from '../models/SaleReceipt';
 import { ItemEntryTransformer } from '@/modules/TransactionItemEntry/ItemEntry.transformer';
@@ -27,6 +28,8 @@ export class SaleReceiptTransformer extends Transformer {
 
       'entries',
       'attachments',
+      'taxes',
+      'taxAmountWithheldFormatted',
     ];
   };
 
@@ -146,6 +149,33 @@ export class SaleReceiptTransformer extends Transformer {
    */
   protected paidFormatted = (receipt: SaleReceipt): string => {
     return this.formatNumber(receipt.paid, {
+      currencyCode: receipt.currencyCode,
+    });
+  };
+
+  /**
+   * Retrieves the tax lines (`tax.extended_documents`).
+   * @returns {Array}
+   */
+  protected taxes = (receipt: SaleReceipt) => {
+    return this.item(
+      receipt.taxes || [],
+      new SaleInvoiceTaxEntryTransformer(),
+      {
+        subtotal: receipt.subtotal,
+        isInclusiveTax: receipt.isInclusiveTax,
+        currencyCode: receipt.currencyCode,
+        entries: receipt.entries,
+      },
+    );
+  };
+
+  /**
+   * Retrieves the formatted tax amount.
+   * @returns {string}
+   */
+  protected taxAmountWithheldFormatted = (receipt: SaleReceipt): string => {
+    return this.formatNumber(receipt.taxAmountWithheld || 0, {
       currencyCode: receipt.currencyCode,
     });
   };

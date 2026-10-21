@@ -1,3 +1,4 @@
+import { TaxRatesModule } from '../TaxRates/TaxRate.module';
 import { Module } from '@nestjs/common';
 import { BullBoardModule } from '@bull-board/nestjs';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
@@ -52,6 +53,7 @@ import { SendSaleEstimateMailProcess } from './processes/SendSaleEstimateMail.pr
 
 @Module({
   imports: [
+    TaxRatesModule,
     TenancyModule,
     TenancyDatabaseModule,
     DynamicListModule,

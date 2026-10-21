@@ -4,6 +4,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Expense } from '../models/Expense.model';
 import { ILedger } from '@/modules/Ledger/types/Ledger.types';
 import { TenantModelProxy } from '@/modules/System/models/TenantBaseModel';
+import { TaxAccountsService } from '@/modules/TaxRates/TaxAccounts.service';
 
 @Injectable()
 export class ExpenseGLEntriesService {
@@ -13,6 +14,8 @@ export class ExpenseGLEntriesService {
   constructor(
     @Inject(Expense.name)
     private readonly expense: TenantModelProxy<typeof Expense>,
+
+    private readonly taxAccounts: TaxAccountsService,
   ) {}
 
   /**
@@ -32,7 +35,14 @@ export class ExpenseGLEntriesService {
       .withGraphFetched('paymentAccount')
       .throwIfNotFound();
 
-    return this.getExpenseLedger(expense);
+    // Input tax account, only for taxed expenses (`tax.extended_documents`).
+    const taxAccountId =
+      expense.taxAmountWithheld !== null &&
+      expense.taxAmountWithheld !== undefined
+        ? await this.taxAccounts.getInputTaxAccountId(trx)
+        : null;
+
+    return this.getExpenseLedger(expense, taxAccountId);
   };
 
   /**
@@ -40,8 +50,11 @@ export class ExpenseGLEntriesService {
    * @param {Expense} expense - Expense model.
    * @returns {ILedger}
    */
-  public getExpenseLedger = (expense: Expense): ILedger => {
-    const expenseGL = new ExpenseGL(expense);
+  public getExpenseLedger = (
+    expense: Expense,
+    taxAccountId: number | null = null,
+  ): ILedger => {
+    const expenseGL = new ExpenseGL(expense).setTaxAccountId(taxAccountId);
 
     return expenseGL.getExpenseLedger();
   };

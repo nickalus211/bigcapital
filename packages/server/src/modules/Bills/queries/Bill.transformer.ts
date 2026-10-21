@@ -229,6 +229,7 @@ export class BillTransformer extends Transformer {
       subtotal: bill.subtotal,
       isInclusiveTax: bill.isInclusiveTax,
       currencyCode: bill.currencyCode,
+      entries: bill.entries,
     });
   };
 

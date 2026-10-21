@@ -103,6 +103,7 @@ export class GetInvoicePaymentLinkMetaTransformer extends SaleInvoiceTransformer
         subtotal: invoice.subtotal,
         isInclusiveTax: invoice.isInclusiveTax,
         currencyCode: invoice.currencyCode,
+        entries: invoice.entries,
       },
     );
   };

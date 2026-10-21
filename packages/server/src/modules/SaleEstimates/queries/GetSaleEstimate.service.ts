@@ -28,6 +28,7 @@ export class GetSaleEstimate {
       .query()
       .findById(estimateId)
       .withGraphFetched('entries.item')
+      .withGraphFetched('taxes.taxRate')
       .withGraphFetched('customer')
       .withGraphFetched('branch')
       .withGraphFetched('attachments');

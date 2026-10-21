@@ -19,6 +19,7 @@ import {
   CreateSaleReceiptDto,
   EditSaleReceiptDto,
 } from '../dtos/SaleReceipt.dto';
+import { ExtendedDocumentsTaxService } from '@/modules/TaxRates/ExtendedDocumentsTax.service';
 
 @Injectable()
 export class SaleReceiptDTOTransformer {
@@ -32,6 +33,7 @@ export class SaleReceiptDTOTransformer {
    * @param {typeof ItemEntry} itemEntryModel - Item entry model.
    */
   constructor(
+    private readonly extendedDocumentsTax: ExtendedDocumentsTaxService,
     private readonly itemsEntriesService: ItemsEntriesService,
     private readonly branchDTOTransform: BranchTransactionDTOTransformer,
     private readonly warehouseDTOTransform: WarehouseTransactionDTOTransform,
@@ -83,10 +85,22 @@ export class SaleReceiptDTOTransformer {
       assocItemEntriesDefaultIndex,
     )(asyncEntries);
 
+    // Tax on the lines (`tax.extended_documents`); null while it is off.
+    const taxed = await this.extendedDocumentsTax.transformDocumentEntries(
+      saleReceiptDTO,
+      entries,
+      { date: saleReceiptDTO.receiptDate, side: 'sell' },
+    );
+
     const initialDTO = {
       amount,
       ...formatDateFields(
-        omit(saleReceiptDTO, ['closed', 'entries', 'attachments']),
+        omit(saleReceiptDTO, [
+          'closed',
+          'entries',
+          'attachments',
+          'isInclusiveTax',
+        ]),
         ['receiptDate'],
       ),
       currencyCode: paymentCustomer.currencyCode,
@@ -97,7 +111,9 @@ export class SaleReceiptDTOTransformer {
         !oldSaleReceipt?.closedAt && {
           closedAt: moment().toMySqlDateTime(),
         }),
-      entries,
+      entries: taxed?.entries ?? entries,
+      isInclusiveTax: taxed?.isInclusiveTax ?? false,
+      taxAmountWithheld: taxed?.taxAmountWithheld ?? null,
     };
     const asyncDto = await composeAsync(
       this.branchDTOTransform.transformDTO<SaleReceipt>,

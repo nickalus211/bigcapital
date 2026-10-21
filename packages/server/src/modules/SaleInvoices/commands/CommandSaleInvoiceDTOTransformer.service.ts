@@ -79,6 +79,13 @@ export class CommandSaleInvoiceDTOTransformer {
       ...entry,
     }));
     const asyncEntries = await composeAsync(
+      // Stores the line taxable amount and tax (`tax.calc_after_discount`).
+      async (entries) =>
+        this.taxDTOTransformer.assocEntriesTaxAmounts(entries, {
+          isInclusiveTax: saleInvoiceDTO.isInclusiveTax,
+          discount: saleInvoiceDTO.discount,
+          discountType: saleInvoiceDTO.discountType,
+        }),
       // Associate tax rate from tax id to entries, as of the invoice date.
       // (`async/compose` only awaits `async` functions, never a returned promise.)
       async (entries) =>
@@ -88,6 +95,8 @@ export class CommandSaleInvoiceDTOTransformer {
         ),
       // Associate tax rate id from tax code to entries.
       this.taxDTOTransformer.assocTaxRateIdFromCodeToEntries,
+      // Default tax rate from the item (`tax.default_from_item`).
+      this.taxDTOTransformer.assocDefaultTaxRateFromItems('sell'),
       // Sets default cost and sell account to invoice items entries.
       this.itemsEntriesService.setItemsEntriesDefaultAccounts,
     )(initialEntries);
@@ -157,11 +166,13 @@ export class CommandSaleInvoiceDTOTransformer {
   };
 
   /**
-   * Gets the due balance from the invoice entries.
+   * Gets the due balance from the invoice entries, after line discounts
+   * (as bills, credit notes and receipts do), so the receivable matches the
+   * income lines the ledger credits.
    * @param {IItemEntry[]} entries
    * @returns {number}
    */
   private getDueBalanceItemEntries = (entries: ItemEntry[]) => {
-    return sumBy(entries, (e) => e.amount);
+    return sumBy(entries, (e) => ItemEntry.calcAmount(e));
   };
 }

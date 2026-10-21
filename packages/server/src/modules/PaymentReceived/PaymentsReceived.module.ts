@@ -1,3 +1,4 @@
+import { TaxRatesModule } from '../TaxRates/TaxRate.module';
 import { Module } from '@nestjs/common';
 import { BullBoardModule } from '@bull-board/nestjs';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
@@ -100,6 +101,7 @@ import { ValidateBulkDeletePaymentReceivedService } from './ValidateBulkDeletePa
     AutoIncrementOrdersModule,
     LedgerModule,
     AccountsModule,
+    TaxRatesModule,
     MailNotificationModule,
     DynamicListModule,
     MailModule,

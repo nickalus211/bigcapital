@@ -20,6 +20,7 @@ export class ExpenseTransfromer extends Transformer {
       'categories',
       'attachments',
       'branch',
+      'taxAmountWithheldFormatted',
     ];
   };
 
@@ -30,6 +31,17 @@ export class ExpenseTransfromer extends Transformer {
    */
   protected formattedAmount = (expense: Expense): string => {
     return this.formatNumber(expense.totalAmount, {
+      currencyCode: expense.currencyCode,
+    });
+  };
+
+  /**
+   * Retrieves the formatted tax on the categories.
+   * @param {Expense} expense
+   * @returns {string}
+   */
+  protected taxAmountWithheldFormatted = (expense: Expense): string => {
+    return this.formatNumber(expense.taxAmountWithheld || 0, {
       currencyCode: expense.currencyCode,
     });
   };

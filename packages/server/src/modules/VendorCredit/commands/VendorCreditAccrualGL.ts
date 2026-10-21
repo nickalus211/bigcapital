@@ -9,6 +9,7 @@ export class VendorCreditAccrualGL {
   private APAccountId: number;
   private purchaseDiscountAccountId: number;
   private otherExpensesAccountId: number;
+  private taxPayableAccountId: number;
 
   constructor(private vendorCredit: VendorCredit) {}
 
@@ -40,6 +41,45 @@ export class VendorCreditAccrualGL {
   public setOtherExpensesAccountId(otherExpensesAccountId: number) {
     this.otherExpensesAccountId = otherExpensesAccountId;
     return this;
+  }
+
+  public setTaxPayableAccountId(taxPayableAccountId: number) {
+    this.taxPayableAccountId = taxPayableAccountId;
+    return this;
+  }
+
+  /**
+   * Whether the vendor credit carries tax (`tax.extended_documents`).
+   * @returns {boolean}
+   */
+  private get isTaxed(): boolean {
+    return (
+      this.vendorCredit.taxAmountWithheld !== null &&
+      this.vendorCredit.taxAmountWithheld !== undefined
+    );
+  }
+
+  /**
+   * Retrieves the entries reversing the input tax of the lines.
+   * @returns {ILedgerEntry[]}
+   */
+  public getTaxEntries(): ILedgerEntry[] {
+    if (!this.isTaxed) return [];
+
+    const commonEntry = this.vendorCreditGLCommonEntry;
+
+    return this.vendorCredit.entries
+      .filter((entry) => entry.taxAmount > 0)
+      .map((entry, index) => ({
+        ...commonEntry,
+        credit: entry.taxAmount * this.vendorCredit.exchangeRate,
+        accountId: this.taxPayableAccountId,
+        index: index + 1,
+        indexGroup: 30,
+        accountNormal: AccountNormal.CREDIT,
+        taxRateId: entry.taxRateId,
+        taxRate: entry.taxRate,
+      }));
   }
 
   /**
@@ -156,7 +196,13 @@ export class VendorCreditAccrualGL {
     const discountEntry = this.discountEntry;
     const adjustmentEntry = this.adjustmentEntry;
 
-    return [payableEntry, discountEntry, adjustmentEntry, ...itemsEntries];
+    return [
+      payableEntry,
+      discountEntry,
+      adjustmentEntry,
+      ...itemsEntries,
+      ...this.getTaxEntries(),
+    ];
   }
 
   /**

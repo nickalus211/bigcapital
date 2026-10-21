@@ -22,6 +22,7 @@ export class GetSaleReceipt {
       .query()
       .findById(saleReceiptId)
       .withGraphFetched('entries.item')
+      .withGraphFetched('taxes.taxRate')
       .withGraphFetched('customer')
       .withGraphFetched('depositAccount')
       .withGraphFetched('branch')

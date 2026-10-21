@@ -34,6 +34,10 @@ export class ItemEntry extends BaseModel {
 
   public taxRateId: number;
 
+  // Stored by the after-discount tax calculation; null on legacy rows.
+  public taxableAmount: number | null;
+  public lineTaxAmount: number | null;
+
   public warehouseId: number;
 
   item: Item;
@@ -152,9 +156,13 @@ export class ItemEntry extends BaseModel {
 
   /**
    * Tax amount withheld.
+   * The stored line tax wins; rows without one derive it from the rate.
    * @returns {number}
    */
   get taxAmount() {
+    if (this.lineTaxAmount !== null && this.lineTaxAmount !== undefined) {
+      return this.lineTaxAmount;
+    }
     return this.isInclusiveTax
       ? getInclusiveTaxAmount(this.amount, this.taxRate)
       : getExlusiveTaxAmount(this.amount, this.taxRate);

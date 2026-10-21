@@ -1,3 +1,4 @@
+import type { TaxRateTransaction } from '@/modules/TaxRates/models/TaxRateTransaction.model';
 import { Model, raw } from 'objection';
 import { Vendor } from '@/modules/Vendors/models/Vendor';
 import { Warehouse } from '@/modules/Warehouses/models/Warehouse.model';
@@ -14,12 +15,23 @@ import { InjectModelDefaultViews } from '@/modules/Views/decorators/InjectModelD
 import { VendorCreditDefaultViews } from '../constants';
 import { InjectAttachable } from '@/modules/Attachments/decorators/InjectAttachable.decorator';
 
+/**
+ * The creditable amount in SQL: the lines' amount plus any exclusive tax.
+ */
+const CREDIT_AMOUNT_SQL =
+  'COALESCE(AMOUNT) + IF(IS_INCLUSIVE_TAX, 0, COALESCE(TAX_AMOUNT_WITHHELD, 0))';
+
 @InjectAttachable()
 @ExportableModel()
 @ImportableModel()
 @InjectModelMeta(VendorCreditMeta)
 @InjectModelDefaultViews(VendorCreditDefaultViews)
 export class VendorCredit extends TenantBaseModel {
+  // Tax (`tax.extended_documents`); null on untaxed documents.
+  public isInclusiveTax: boolean;
+  public taxAmountWithheld: number | null;
+  public taxes?: TaxRateTransaction[];
+
   vendorId: number;
   amount: number;
   currencyCode: string;
@@ -120,7 +132,38 @@ export class VendorCredit extends TenantBaseModel {
    * @returns {number}
    */
   get total() {
-    return this.subtotal - this.discountAmount + this.adjustment;
+    return (
+      this.subtotal -
+      this.discountAmount +
+      this.adjustment +
+      this.exclusiveTaxAmount
+    );
+  }
+
+  /**
+   * Tax added on top of the lines. Inclusive tax is already in the line
+   * rates, and untaxed documents carry none.
+   * @returns {number}
+   */
+  get exclusiveTaxAmount(): number {
+    return this.isInclusiveTax ? 0 : this.taxAmountWithheld || 0;
+  }
+
+  /**
+   * Tax amount withheld in base currency.
+   * @returns {number}
+   */
+  get taxAmountWithheldLocal(): number {
+    return (this.taxAmountWithheld || 0) * this.exchangeRate;
+  }
+
+  /**
+   * Amount available to refund or apply: the lines' amount plus any
+   * exclusive tax. Matches `CREDIT_AMOUNT_SQL`.
+   * @returns {number}
+   */
+  get creditAmount(): number {
+    return this.amount + this.exclusiveTaxAmount;
   }
 
   /**
@@ -157,7 +200,7 @@ export class VendorCredit extends TenantBaseModel {
         query
           .where(
             raw(`COALESCE(REFUNDED_AMOUNT) + COALESCE(INVOICED_AMOUNT) <
-            COALESCE(AMOUNT)`),
+            ${CREDIT_AMOUNT_SQL}`),
           )
           .modify('published');
       },
@@ -169,7 +212,7 @@ export class VendorCredit extends TenantBaseModel {
         query
           .where(
             raw(`COALESCE(REFUNDED_AMOUNT) + COALESCE(INVOICED_AMOUNT) =
-            COALESCE(AMOUNT)`),
+            ${CREDIT_AMOUNT_SQL}`),
           )
           .modify('published');
       },
@@ -201,7 +244,7 @@ export class VendorCredit extends TenantBaseModel {
       sortByStatus(query, order) {
         const dir = sanitizeSortDirection(order);
         query.orderByRaw(
-          `COALESCE(REFUNDED_AMOUNT) + COALESCE(INVOICED_AMOUNT) = COALESCE(AMOUNT) ${dir}`,
+          `COALESCE(REFUNDED_AMOUNT) + COALESCE(INVOICED_AMOUNT) = ${CREDIT_AMOUNT_SQL} ${dir}`,
         );
       },
     };
@@ -219,6 +262,8 @@ export class VendorCredit extends TenantBaseModel {
    */
   static get virtualAttributes() {
     return [
+      'taxAmountWithheldLocal',
+      'creditAmount',
       'isDraft',
       'isPublished',
       'isOpen',
@@ -275,7 +320,10 @@ export class VendorCredit extends TenantBaseModel {
    * @returns {number}
    */
   get creditsRemaining() {
-    return Math.max(this.amount - this.refundedAmount - this.invoicedAmount, 0);
+    return Math.max(
+      this.creditAmount - this.refundedAmount - this.invoicedAmount,
+      0,
+    );
   }
 
   /**
@@ -297,7 +345,26 @@ export class VendorCredit extends TenantBaseModel {
     const { Document } = require('../../ChromiumlyTenancy/models/Document');
     const { Warehouse } = require('../../Warehouses/models/Warehouse.model');
 
+    const {
+      TaxRateTransaction,
+    } = require('../../TaxRates/models/TaxRateTransaction.model');
+
     return {
+      /**
+       * Tax rate transactions of the document.
+       */
+      taxes: {
+        relation: Model.HasManyRelation,
+        modelClass: TaxRateTransaction,
+        join: {
+          from: 'vendor_credits.id',
+          to: 'tax_rate_transactions.referenceId',
+        },
+        filter(builder) {
+          builder.where('reference_type', 'VendorCredit');
+        },
+      },
+
       /**
        * Vendor credit may belongs to vendor.
        */

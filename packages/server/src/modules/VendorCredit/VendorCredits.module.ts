@@ -1,3 +1,4 @@
+import { TaxRatesModule } from '../TaxRates/TaxRate.module';
 import { Module } from '@nestjs/common';
 import { CreateVendorCreditService } from './commands/CreateVendorCredit.service';
 import { DeleteVendorCreditService } from './commands/DeleteVendorCredit.service';
@@ -33,6 +34,7 @@ import { ValidateBulkDeleteVendorCreditsService } from './ValidateBulkDeleteVend
 
 @Module({
   imports: [
+    TaxRatesModule,
     ItemsModule,
     PdfTemplatesModule,
     ChromiumlyTenancyModule,

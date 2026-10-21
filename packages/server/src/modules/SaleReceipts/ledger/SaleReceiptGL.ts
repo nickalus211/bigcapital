@@ -10,6 +10,7 @@ export class SaleReceiptGL {
   private saleReceipt: SaleReceipt;
   private discountAccountId: number;
   private otherChargesAccountId: number;
+  private taxPayableAccountId: number;
 
   /**
    * Constructor method.
@@ -35,6 +36,22 @@ export class SaleReceiptGL {
   setOtherChargesAccountId(otherChargesAccountId: number) {
     this.otherChargesAccountId = otherChargesAccountId;
     return this;
+  }
+
+  setTaxPayableAccountId(taxPayableAccountId: number) {
+    this.taxPayableAccountId = taxPayableAccountId;
+    return this;
+  }
+
+  /**
+   * Whether the receipt carries tax (`tax.extended_documents`).
+   * @returns {boolean}
+   */
+  private get isTaxed(): boolean {
+    return (
+      this.saleReceipt.taxAmountWithheld !== null &&
+      this.saleReceipt.taxAmountWithheld !== undefined
+    );
   }
 
   /**
@@ -84,9 +101,36 @@ export class SaleReceiptGL {
         itemId: entry.itemId,
         // itemQuantity: entry.quantity,
         accountNormal: AccountNormal.CREDIT,
+        ...(this.isTaxed && {
+          taxRateId: entry.taxRateId,
+          taxRate: entry.taxRate,
+        }),
       };
     },
   );
+
+  /**
+   * Retrieves the output tax entries of the receipt lines.
+   * @returns {ILedgerEntry[]}
+   */
+  private getTaxEntries = (): ILedgerEntry[] => {
+    if (!this.isTaxed) return [];
+
+    const commonEntry = this.getIncomeGLCommonEntry();
+
+    return this.saleReceipt.entries
+      .filter((entry) => entry.taxAmount > 0)
+      .map((entry, index) => ({
+        ...commonEntry,
+        credit: entry.taxAmount * this.saleReceipt.exchangeRate,
+        accountId: this.taxPayableAccountId,
+        index: index + 1,
+        indexGroup: 30,
+        accountNormal: AccountNormal.CREDIT,
+        taxRateId: entry.taxRateId,
+        taxRate: entry.taxRate,
+      }));
+  };
 
   /**
    * Retrieves the receipt deposit GL deposit entry.
@@ -152,7 +196,13 @@ export class SaleReceiptGL {
     const discountEntry = this.getDiscountEntry();
     const adjustmentEntry = this.getAdjustmentEntry();
 
-    return [depositEntry, ...creditEntries, discountEntry, adjustmentEntry];
+    return [
+      depositEntry,
+      ...creditEntries,
+      ...this.getTaxEntries(),
+      discountEntry,
+      adjustmentEntry,
+    ];
   };
 
   /**

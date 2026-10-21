@@ -8,6 +8,12 @@ export class ExpenseCategory extends BaseModel {
   public projectId!: number;
   public description!: string;
 
+  // Tax (`tax.extended_documents`); null on untaxed lines.
+  public taxRateId?: number | null;
+  public taxRate?: number | null;
+  public taxableAmount?: number | null;
+  public lineTaxAmount?: number | null;
+
   /**
    * Table name
    */
@@ -19,7 +25,23 @@ export class ExpenseCategory extends BaseModel {
    * Virtual attributes.
    */
   static get virtualAttributes() {
-    return ['unallocatedCostAmount'];
+    return ['unallocatedCostAmount', 'taxAmount', 'amountExcludingTax'];
+  }
+
+  /**
+   * Tax on the line.
+   * @returns {number}
+   */
+  get taxAmount(): number {
+    return this.lineTaxAmount || 0;
+  }
+
+  /**
+   * The line amount posted to the expense account, without its tax.
+   * @returns {number}
+   */
+  get amountExcludingTax(): number {
+    return this.taxableAmount ?? this.amount;
   }
 
   /**

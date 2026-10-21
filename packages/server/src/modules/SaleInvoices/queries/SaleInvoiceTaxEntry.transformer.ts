@@ -1,3 +1,4 @@
+import { sumBy } from 'lodash';
 import { Transformer } from '@/modules/Transformer/Transformer';
 import {
   getExlusiveTaxAmount,
@@ -44,7 +45,8 @@ export class SaleInvoiceTaxEntryTransformer extends Transformer {
    * @returns {number}
    */
   protected taxRate = (taxEntry) => {
-    return taxEntry.taxAmount || taxEntry.taxRate.rate;
+    // The rate written with the document (dated versions included).
+    return taxEntry.rate ?? taxEntry.taxRate.rate;
   };
 
   /**
@@ -61,6 +63,15 @@ export class SaleInvoiceTaxEntryTransformer extends Transformer {
    * @param taxEntry
    */
   protected taxRateAmount = (taxEntry) => {
+    // Sum of the tax on the lines charged at this rate.
+    if (this.options.entries) {
+      return sumBy(
+        this.options.entries.filter(
+          (entry) => entry.taxRateId === taxEntry.taxRateId,
+        ),
+        (entry) => entry.taxAmount || 0,
+      );
+    }
     const taxRate = this.taxRate(taxEntry);
 
     return this.options.isInclusiveTax

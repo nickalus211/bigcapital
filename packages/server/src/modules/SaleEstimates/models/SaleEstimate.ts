@@ -1,3 +1,4 @@
+import type { TaxRateTransaction } from '@/modules/TaxRates/models/TaxRateTransaction.model';
 import * as moment from 'moment';
 import { Model } from 'objection';
 import { defaultTo } from 'lodash';
@@ -21,6 +22,11 @@ import { InjectAttachable } from '@/modules/Attachments/decorators/InjectAttacha
 @InjectModelMeta(SaleEstimateMeta)
 @InjectModelDefaultViews(SaleEstimateDefaultViews)
 export class SaleEstimate extends TenantBaseModel {
+  // Tax (`tax.extended_documents`); null on untaxed documents.
+  public isInclusiveTax: boolean;
+  public taxAmountWithheld: number | null;
+  public taxes?: TaxRateTransaction[];
+
   exchangeRate!: number;
   amount!: number;
 
@@ -78,6 +84,7 @@ export class SaleEstimate extends TenantBaseModel {
    */
   static get virtualAttributes() {
     return [
+      'taxAmountWithheldLocal',
       'localAmount',
       'isDelivered',
       'isExpired',
@@ -134,7 +141,29 @@ export class SaleEstimate extends TenantBaseModel {
   get total() {
     const adjustmentAmount = defaultTo(this.adjustment, 0);
 
-    return this.subtotal - this.discountAmount - adjustmentAmount;
+    return (
+      this.subtotal -
+      this.discountAmount -
+      adjustmentAmount +
+      this.exclusiveTaxAmount
+    );
+  }
+
+  /**
+   * Tax added on top of the lines. Inclusive tax is already in the line
+   * rates, and untaxed documents carry none.
+   * @returns {number}
+   */
+  get exclusiveTaxAmount(): number {
+    return this.isInclusiveTax ? 0 : this.taxAmountWithheld || 0;
+  }
+
+  /**
+   * Tax amount withheld in base currency.
+   * @returns {number}
+   */
+  get taxAmountWithheldLocal(): number {
+    return (this.taxAmountWithheld || 0) * this.exchangeRate;
   }
 
   /**
@@ -297,7 +326,26 @@ export class SaleEstimate extends TenantBaseModel {
       PdfTemplateModel,
     } = require('../../PdfTemplate/models/PdfTemplate');
 
+    const {
+      TaxRateTransaction,
+    } = require('../../TaxRates/models/TaxRateTransaction.model');
+
     return {
+      /**
+       * Tax rate transactions of the document.
+       */
+      taxes: {
+        relation: Model.HasManyRelation,
+        modelClass: TaxRateTransaction,
+        join: {
+          from: 'sales_estimates.id',
+          to: 'tax_rate_transactions.referenceId',
+        },
+        filter(builder) {
+          builder.where('reference_type', 'SaleEstimate');
+        },
+      },
+
       customer: {
         relation: Model.BelongsToOneRelation,
         modelClass: Customer,
