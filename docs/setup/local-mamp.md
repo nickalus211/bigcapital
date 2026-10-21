@@ -110,3 +110,12 @@ NODE_OPTIONS=--max-old-space-size=8192 pnpm run test:e2e
 
 Without the larger heap, ts-jest runs out of memory when the second spec
 file boots the app.
+
+## Known local issues
+
+- **No mail server:** a queued mail job (signup confirmation, invoice email)
+  that can't reach SMTP raises an unhandled rejection, which **crashes the
+  API process** (upstream). Restart the server, or point the `MAIL_*`
+  settings at a local catcher such as Mailpit.
+- **ClickHouse:** the analytics sync logs `ECONNREFUSED ::1:8123` errors
+  even with `CLICKHOUSE_ENABLED=false`. They're noise and don't fail requests.

@@ -114,6 +114,14 @@ unchanged**, and the new `tax.default_from_item` stays off.
   - UI: Preferences → Jamaica (GCT) page, Preview changes (a dry run;
     see the bug below), TRN on the customer form, Tax type in the tax rate
     dialog.
+- **Full server e2e suite on MAMP MySQL 5.7, one file per process: all
+  62 suites pass** (including `jamaica`, `sale-invoices`, `bills`,
+  `gl-sales`, `gl-purchases`, `payment-received`, `financial-statements`).
+- Bug found and fixed after the first M1 commit: the invoice and bill
+  transformers wrapped the dated rate lookup in a plain arrow function.
+  `async/compose` only awaits functions declared `async`, so **creating or
+  editing an invoice or bill hung** (fix: `2fb3c0054`). The baseline's
+  `sale-invoices` and `payment-received` suites caught it.
 - Bug found and fixed in testing: the SDK sends POST parameters as the
   body, so "Preview changes" first ran the **real** setup (harmless here,
   since it's idempotent). The endpoint now accepts `dry_run` in the body,
