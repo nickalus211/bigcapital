@@ -25,8 +25,8 @@ requirements are in [`Jamaican Accounting Software Features.md`](../Jamaican%20A
 | [M0](milestones/M0-foundation.md) | Docs, `jamaica` feature flag, hidden modules, light/dark/system theme | ✅ Done |
 | [M1](milestones/M1-jamaica-setup.md) | Jamaica setup: GCT rates with tax types, dated rate versions, `tax_parameters`, GCT input/output accounts, TRN on organization and contacts, setup service + CLI | ✅ Done |
 | [M2](milestones/M2-gct-engine.md) | GCT engine: tax after discounts (stored per line), tax on receipts, credit notes, vendor credits, estimates and expenses, input/output tax accounts, opt-in default tax from the item, tax-line and line-discount fixes | ✅ Done |
-| M3 | Tax Invoice: "Tax Invoice" PDF title, TRN/GCT numbers, per-line GCT, tax lines on receipt, credit note and estimate PDFs and emails, invoice/bill form preview after discounts, non-blocking compliance warnings in the API | ⏳ Next |
-| M4 | GCT return report (Form 4A style), zero-rated/exempt totals, input-tax apportionment | Planned |
+| [M3](milestones/M3-tax-invoice.md) | Tax Invoice: "Tax Invoice" PDF with TRNs and per-line GCT, non-blocking compliance warnings in the API and the invoice drawer, tax lines on receipt, credit note and estimate PDFs and emails, invoice/bill preview after discounts | ✅ Done |
+| M4 | GCT return report (Form 4A style), zero-rated/exempt totals, input-tax apportionment | ⏳ Next |
 | M5 | WHT 3% receivable on payments received, certificate tracking (S04 line F24) | Outline |
 | M6 | Customs/import landed cost (CIF, CD, SCF, EPL, ASD, CAF, import GCT, 5% advance GCT) | Outline |
 | M7 | Fixed asset register with capital allowances (dual book/tax ledgers) | Outline |

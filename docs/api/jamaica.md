@@ -94,3 +94,9 @@ value. Returns the same body as `GET`.
 | `gct_registration_number` | string |
 | `gct_registration_date` | ISO date |
 | `filing_frequency` | `monthly` |
+
+## Tax Invoices (M3)
+
+The `jamaica.gct_registered` and `jamaica.gct_registration_number` settings
+above now drive the Tax Invoice PDF and the `compliance_warnings` returned
+with invoices. See [tax-invoice.md](tax-invoice.md).

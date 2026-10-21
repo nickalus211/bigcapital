@@ -3,6 +3,42 @@
 Newest first. Every entry is backward compatible unless it is marked
 **BREAKING**, and none are.
 
+## M3: Tax Invoices (2026-10-21)
+
+Details and examples: [tax-invoice.md](tax-invoice.md). Additive only;
+nothing blocks a request.
+
+### Invoices: new response field `compliance_warnings`
+- On `POST`, `PUT` and `GET /api/sale-invoices/:id`: an array of
+  `{ code, message, lines? }` saying what the invoice is missing to qualify
+  as a Tax Invoice (GCT Act s.29). Always present. `[]` while the Jamaica
+  feature is off. Not on the list endpoint.
+
+### PDFs and emails
+- Invoice PDF/HTML for a GCT-registered organization: "Tax Invoice" title,
+  supplier and customer TRNs, GCT registration number, GCT % and GCT per
+  line, amounts excluding GCT.
+- Taxed receipts, credit notes and estimates (`tax.extended_documents`)
+  print their tax lines and their total with tax.
+- Invoice, receipt, estimate and credit note emails list the tax lines.
+
+### Webapp only
+- With `tax.calc_after_discount` on, the invoice and bill forms preview tax
+  after the document discount. Edit forms recompute line tax from the rate.
+  The API is unchanged.
+
+### Fixes that apply to every tenant
+- **Credit notes and manual journals created without a number** were saved
+  with the number `"{}"`. They now take the next auto-increment number.
+- **Receipt PDF** printed a placeholder number and sample notes.
+- **Webapp:** an invoice, bill, receipt, credit note or estimate opened for
+  editing showed a wrong total until a line was changed (the empty line's
+  amount was added as text, so 230 became "2300"). Saved figures were never
+  affected.
+
+### Invoice and estimate sync
+Requests are unchanged. Invoice responses gain `compliance_warnings`.
+
 ## M2: GCT engine (2026-10-21)
 
 Details and before/after examples: [document-tax.md](document-tax.md).

@@ -33,8 +33,8 @@ Before M0, the request above was rejected as an undeclared setting key.
 | `tax.default_from_item` | boolean | `false` | Since M2: lines that omit `tax_rate_id` use the item's default rate. **Opt-in; the Jamaica setup never sets it.** |
 | `tax.input_tax_account_id` | number | unset | Since M2: account for input tax (the setup sets `gct-input-tax`). Tax Payable when unset. |
 | `tax.output_tax_account_id` | number | unset | Since M2: account for output tax (the setup sets `tax-payable`). Tax Payable when unset. |
-| `jamaica.gct_registered` | boolean | `false` | M3: Tax Invoice title and compliance warnings |
-| `jamaica.gct_registration_number` | string | unset | M3: printed on Tax Invoices |
+| `jamaica.gct_registered` | boolean | `false` | Since M3: Tax Invoice PDF; switches the `compliance_warnings` checks ([tax-invoice.md](tax-invoice.md)) |
+| `jamaica.gct_registration_number` | string | unset | Since M3: printed on Tax Invoices |
 | `jamaica.gct_registration_date` | date | unset | |
 | `jamaica.filing_frequency` | string | `monthly` | M4: GCT return period |
 | `jamaica.apportionment_enabled` | boolean | `false` | M4: input tax apportionment |
