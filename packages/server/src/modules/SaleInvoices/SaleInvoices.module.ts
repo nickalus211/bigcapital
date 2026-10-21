@@ -1,3 +1,4 @@
+import { JamaicaModule } from '../Jamaica/Jamaica.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { TenancyModule } from '../Tenancy/Tenancy.module';
 import { TenancyDatabaseModule } from '../Tenancy/TenancyDB/TenancyDB.module';
@@ -71,6 +72,7 @@ import { ValidateBulkDeleteSaleInvoicesService } from './ValidateBulkDeleteSaleI
 
 @Module({
   imports: [
+    JamaicaModule,
     TenancyModule,
     TenancyDatabaseModule,
     PdfTemplatesModule,

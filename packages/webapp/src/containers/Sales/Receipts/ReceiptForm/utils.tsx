@@ -16,6 +16,7 @@ import {
 } from '@/containers/Entries/DocumentTax';
 import {
   updateItemsEntriesTotal,
+  assignEntriesTaxAmount,
   ensureEntriesHaveEmptyLine,
   getEntriesTotal,
 } from '@/containers/Entries/utils';
@@ -146,8 +147,13 @@ export function transformToEditForm(
       Math.max(MIN_LINES_NUMBER - receipt.entries.length, 0),
     ),
   ];
-  const entries = updateItemsEntriesTotal(
-    ensureEntriesHaveEmptyLine(defaultReceiptEntry)(initialEntries),
+  // Line tax from the rate, so the preview applies the document discount
+  // once (the stored line tax may already include it).
+  const entries = assignEntriesTaxAmount(
+    !!receipt.isInclusiveTax,
+    updateItemsEntriesTotal(
+      ensureEntriesHaveEmptyLine(defaultReceiptEntry)(initialEntries),
+    ),
   );
 
   const attachments = transformAttachmentsToForm(receipt);

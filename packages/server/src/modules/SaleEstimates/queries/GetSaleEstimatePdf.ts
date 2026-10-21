@@ -1,3 +1,4 @@
+import { getDocumentPdfTaxAttributes } from '@/modules/TaxRates/document-pdf-tax';
 import { Inject, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { GetSaleEstimate } from './GetSaleEstimate.service';
@@ -98,6 +99,8 @@ export class GetSaleEstimatePdf {
     return {
       ...brandingTemplate.attributes,
       ...transformEstimateToPdfTemplate(saleEstimate),
+      // Taxed documents (`tax.extended_documents`) print their tax lines.
+      ...getDocumentPdfTaxAttributes(saleEstimate),
     };
   }
 }

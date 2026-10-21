@@ -34,6 +34,9 @@ export interface CreditNoteEmailProps {
   adjustment?: string;
   adjustmentLabel?: string;
 
+  // # Taxes, one line per tax rate.
+  taxes?: Array<{ label: string; amount: string }>;
+
   // # Discount
   discount?: string;
   discountLabel?: string;
@@ -80,6 +83,7 @@ export const CreditNoteEmailTemplate: React.FC<
   // # Adjustment
   adjustment,
   adjustmentLabel = 'Adjustment',
+  taxes = [],
 
   // # Credit Note #
   creditNoteNumberLabel = 'Credit Note # {creditNoteNumber}',
@@ -177,6 +181,18 @@ export const CreditNoteEmailTemplate: React.FC<
                 </Column>
               </Row>
             )}
+
+            {taxes.map((tax, index) => (
+              <Row key={index} style={itemLineRowStyle}>
+                <Column width={'50%'}>
+                  <Text style={listItemLabelStyle}>{tax.label}</Text>
+                </Column>
+
+                <Column width={'50%'}>
+                  <Text style={listItemAmountStyle}>{tax.amount}</Text>
+                </Column>
+              </Row>
+            ))}
 
             <Row style={totalLineRowStyle}>
               <Column width={'50%'}>

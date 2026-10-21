@@ -1,3 +1,4 @@
+import { getDocumentPdfTaxAttributes } from '@/modules/TaxRates/document-pdf-tax';
 import { Inject, Injectable } from '@nestjs/common';
 import { renderCreditNotePaperTemplateHtml } from '@bigcapital/pdf-templates';
 import { GetCreditNoteService } from './GetCreditNote.service';
@@ -121,6 +122,8 @@ export class GetCreditNotePdf {
     return {
       ...brandingTemplate.attributes,
       ...transformCreditNoteToPdfTemplate(creditNote),
+      // Taxed documents (`tax.extended_documents`) print their tax lines.
+      ...getDocumentPdfTaxAttributes(creditNote),
     };
   }
 }

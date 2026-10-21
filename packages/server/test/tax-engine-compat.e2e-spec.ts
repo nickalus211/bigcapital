@@ -134,4 +134,41 @@ describe('Tax engine backward compatibility (e2e)', () => {
       legs.filter((leg) => leg.debit.amount || leg.credit.amount),
     ).toHaveLength(2);
   });
+
+  it('returns empty compliance warnings and a plain invoice PDF', async () => {
+    const created = await createInvoice({
+      entries: [{ index: 1, itemId, quantity: 1, rate: 100 }],
+    });
+    expect(created.body.compliance_warnings).toEqual([]);
+
+    const fetched = await request(app.getHttpServer())
+      .get(`/sale-invoices/${created.body.id}`)
+      .set(authHeaders())
+      .expect(200);
+    expect(fetched.body.compliance_warnings).toEqual([]);
+
+    const html = await request(app.getHttpServer())
+      .get(`/sale-invoices/${created.body.id}/html`)
+      .set(authHeaders())
+      .expect(200);
+    expect(html.text).not.toContain('Tax Invoice');
+    expect(html.text).not.toContain('TRN:');
+  });
+
+  it('numbers credit notes from the auto-increment', async () => {
+    const created = await request(app.getHttpServer())
+      .post('/credit-notes')
+      .set(authHeaders())
+      .send({
+        customerId,
+        creditNoteDate: '2023-01-01',
+        branchId: 1,
+        warehouseId: 1,
+        entries: [{ index: 1, itemId, quantity: 1, rate: 10 }],
+      })
+      .expect(201);
+
+    expect(created.body.credit_note_number).toMatch(/\d/);
+    expect(created.body.credit_note_number).not.toBe('{}');
+  });
 });

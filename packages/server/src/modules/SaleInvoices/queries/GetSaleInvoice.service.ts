@@ -8,6 +8,7 @@ import { CommandSaleInvoiceValidators } from '../commands/CommandSaleInvoiceVali
 import { events } from '@/common/events/events';
 import { TenantModelProxy } from '@/modules/System/models/TenantBaseModel';
 import { SaleInvoiceResponseDto } from '../dtos/SaleInvoiceResponse.dto';
+import { JamaicaTaxInvoiceService } from '@/modules/Jamaica/tax-invoice/JamaicaTaxInvoice.service';
 
 @Injectable()
 export class GetSaleInvoice {
@@ -15,6 +16,7 @@ export class GetSaleInvoice {
     private transformer: TransformerInjectable,
     private validators: CommandSaleInvoiceValidators,
     private eventPublisher: EventEmitter2,
+    private taxInvoice: JamaicaTaxInvoiceService,
 
     @Inject(SaleInvoice.name)
     private saleInvoiceModel: TenantModelProxy<typeof SaleInvoice>,
@@ -48,6 +50,11 @@ export class GetSaleInvoice {
       saleInvoice,
       new SaleInvoiceTransformer(),
     );
+    // Tax Invoice warnings (Jamaica); empty while the feature is off.
+    const complianceWarnings = await this.taxInvoice.getInvoiceWarnings(
+      saleInvoiceId,
+      trx,
+    );
     const eventPayload = {
       saleInvoiceId,
     };
@@ -56,6 +63,6 @@ export class GetSaleInvoice {
       events.saleInvoice.onViewed,
       eventPayload,
     );
-    return transformed;
+    return { ...transformed, complianceWarnings };
   }
 }

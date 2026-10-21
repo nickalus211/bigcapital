@@ -15,6 +15,7 @@ import {
 } from '@/containers/Entries/DocumentTax';
 import {
   updateItemsEntriesTotal,
+  assignEntriesTaxAmount,
   ensureEntriesHaveEmptyLine,
   getEntriesTotal,
 } from '@/containers/Entries/utils';
@@ -122,6 +123,9 @@ export function transformToEditForm(
   const entries = FF.pipe(
     initialEntries,
     updateItemsEntriesTotal,
+    // Line tax from the rate, so the preview applies the document discount
+    // once (the stored line tax may already include it).
+    assignEntriesTaxAmount(!!vendorCredit.isInclusiveTax),
     ensureEntriesHaveEmptyLine(defaultVendorCreditEntry),
   );
 

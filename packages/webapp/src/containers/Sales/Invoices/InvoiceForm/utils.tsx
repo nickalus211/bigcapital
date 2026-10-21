@@ -14,6 +14,7 @@ import {
   transformAttachmentsToRequest,
 } from '@/containers/Attachments/utils';
 import { convertBrandingTemplatesToOptions } from '@/containers/BrandingTemplates/BrandingTemplatesSelectFields';
+import { useAfterDiscountTaxRatio } from '@/containers/Entries/DocumentTax';
 import {
   updateItemsEntriesTotal,
   ensureEntriesHaveEmptyLine,
@@ -156,6 +157,9 @@ export function transformToEditForm(
   const entries = FF.pipe(
     initialEntries,
     updateItemsEntriesTotal,
+    // Line tax from the rate, so the preview applies the document discount
+    // once (the stored line tax may already include it).
+    assignEntriesTaxAmount(!!invoice.isInclusiveTax),
     ensureEntriesHaveEmptyLine(defaultInvoiceEntry),
   );
 
@@ -514,10 +518,21 @@ export const useInvoiceAggregatedTaxRates = (): AggregatedTaxRate[] => {
     () => aggregateItemEntriesTaxRates(values.currencyCode, taxRates),
     [values.currencyCode, taxRates],
   );
+  // With `tax.calc_after_discount` on, the document discount reduces the
+  // tax as it does on the server.
+  const ratio = useAfterDiscountTaxRatio();
+
   // Calculate the total tax amount of invoice entries.
   return React.useMemo(() => {
-    return aggregateTaxRates(values.entries) as AggregatedTaxRate[];
-  }, [aggregateTaxRates, values.entries]);
+    return aggregateTaxRates(values.entries).map((line) => {
+      const taxAmount = line.taxAmount * (1 - ratio);
+      return {
+        ...line,
+        taxAmount,
+        taxAmountFormatted: formattedAmount(taxAmount, values.currencyCode),
+      };
+    }) as AggregatedTaxRate[];
+  }, [aggregateTaxRates, values.entries, values.currencyCode, ratio]);
 };
 
 /**
@@ -527,10 +542,12 @@ export const useInvoiceAggregatedTaxRates = (): AggregatedTaxRate[] => {
 export const useInvoiceTotalTaxAmount = () => {
   const { values } = useFormikContext<InvoiceFormValues>();
 
+  const ratio = useAfterDiscountTaxRatio();
+
   return React.useMemo(() => {
     const filteredEntries = values.entries.filter((entry) => entry.taxAmount);
-    return sumBy(filteredEntries, 'taxAmount');
-  }, [values.entries]);
+    return sumBy(filteredEntries, 'taxAmount') * (1 - ratio);
+  }, [values.entries, ratio]);
 };
 
 /**

@@ -95,6 +95,26 @@ export class SaleInvoiceResponseDto {
   taxes?: SaleInvoiceTaxEntryDto[];
 
   @ApiProperty({
+    description:
+      'Tax Invoice warnings (Jamaica, GCT Act s.29). Never blocking; empty while the Jamaica feature is off. Each item: { code, message, lines? }',
+    required: false,
+    type: 'array',
+    items: {
+      type: 'object',
+      properties: {
+        code: { type: 'string', example: 'CUSTOMER_TRN_MISSING' },
+        message: { type: 'string' },
+        lines: { type: 'array', items: { type: 'number' } },
+      },
+    },
+  })
+  complianceWarnings?: Array<{
+    code: string;
+    message: string;
+    lines?: number[];
+  }>;
+
+  @ApiProperty({
     description: 'The date when the invoice was delivered',
     example: '2023-01-02',
     required: false,

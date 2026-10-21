@@ -23,6 +23,8 @@ interface InvoiceLine {
   quantity?: string;
   rate?: string;
   total?: string;
+  taxRate?: string;
+  taxAmount?: string;
   discount?: string;
 }
 
@@ -57,6 +59,11 @@ export interface InvoicePaperTemplateProps extends PaperTemplateProps {
   companyName?: string;
   bigtitle?: string;
 
+  /** Tax registration lines under the company address, e.g. "TRN: …". */
+  companyTaxNumbers?: string[];
+  /** Tax registration line under the customer address. */
+  customerTaxNumber?: string;
+
   // Address
   showCustomerAddress?: boolean;
   customerAddress?: string;
@@ -75,6 +82,11 @@ export interface InvoicePaperTemplateProps extends PaperTemplateProps {
   // # Line Discount
   lineDiscountLabel?: string;
   showLineDiscount?: boolean;
+
+  /** Shows each line's tax rate and tax amount (Tax Invoice). */
+  showLineTax?: boolean;
+  lineTaxRateLabel?: string;
+  lineTaxAmountLabel?: string;
 
   // Total
   showTotal?: boolean;
@@ -171,6 +183,16 @@ export function InvoicePaperTemplate({
   lineDiscountLabel = 'Discount',
   showLineDiscount = false,
 
+  // # Line tax
+  showLineTax = false,
+  lineTaxRateLabel = 'Tax %',
+  lineTaxAmountLabel = 'Tax',
+
+  // # Title and tax registration
+  bigtitle = 'Invoice',
+  companyTaxNumbers = [],
+  customerTaxNumber = '',
+
   // Totals
   showTotal = true,
   total = '$662.75',
@@ -222,7 +244,7 @@ export function InvoicePaperTemplate({
       <Stack spacing={24}>
         <Group align="start" spacing={10}>
           <Stack flex={1}>
-            <PaperTemplate.BigTitle title={'Invoice'} />
+            <PaperTemplate.BigTitle title={bigtitle} />
 
             <PaperTemplate.TermsList>
               {showInvoiceNumber && (
@@ -252,12 +274,16 @@ export function InvoicePaperTemplate({
           {showCompanyAddress && (
             <PaperTemplate.Address>
               <Box dangerouslySetInnerHTML={{ __html: companyAddress }} />
+              {companyTaxNumbers.map((taxNumber) => (
+                <Text key={taxNumber}>{taxNumber}</Text>
+              ))}
             </PaperTemplate.Address>
           )}
           {showCustomerAddress && (
             <PaperTemplate.Address>
               <strong>{billedToLabel}</strong>
               <Box dangerouslySetInnerHTML={{ __html: customerAddress }} />
+              {customerTaxNumber && <Text>{customerTaxNumber}</Text>}
             </PaperTemplate.Address>
           )}
         </PaperTemplate.AddressesGroup>
@@ -275,7 +301,7 @@ export function InvoicePaperTemplate({
                     </Text>
                   </Stack>
                 ),
-                thStyle: { width: '60%' },
+                thStyle: { width: showLineTax ? '40%' : '60%' },
               },
               {
                 label: lineQuantityLabel,
@@ -288,6 +314,18 @@ export function InvoicePaperTemplate({
                 accessor: 'discount',
                 align: 'right',
                 visible: showLineDiscount,
+              },
+              {
+                label: lineTaxRateLabel,
+                accessor: 'taxRate',
+                align: 'right',
+                visible: showLineTax,
+              },
+              {
+                label: lineTaxAmountLabel,
+                accessor: 'taxAmount',
+                align: 'right',
+                visible: showLineTax,
               },
               { label: lineTotalLabel, accessor: 'total', align: 'right' },
             ]}

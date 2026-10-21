@@ -16,6 +16,10 @@ export const transformReceiptToBrandingTemplateAttributes = (
       total: entry.totalFormatted,
     })),
     receiptNumber: saleReceipt.receiptNumber,
+    // The template reads the misspelt `receiptNumebr` attribute.
+    receiptNumebr: saleReceipt.receiptNumber,
+    customerNote: saleReceipt.receiptMessage || '',
+    termsConditions: saleReceipt.statement || '',
     receiptDate: saleReceipt.formattedReceiptDate,
     adjustment: saleReceipt.adjustmentFormatted,
     discount: saleReceipt.discountAmountFormatted,

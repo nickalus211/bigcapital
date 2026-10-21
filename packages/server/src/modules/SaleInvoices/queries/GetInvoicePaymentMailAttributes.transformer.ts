@@ -35,6 +35,8 @@ export class GetInvoicePaymentMailAttributesTransformer extends Transformer {
       'adjustment',
       'adjustmentLabel',
 
+      'taxes',
+
       'dueAmount',
       'dueAmountLabel',
 
@@ -107,6 +109,17 @@ export class GetInvoicePaymentMailAttributesTransformer extends Transformer {
 
   public adjustment(): string {
     return this.options.invoice?.adjustmentFormatted;
+  }
+
+  /**
+   * Tax lines, one per tax rate.
+   * @returns {Array<{ label: string; amount: string }>}
+   */
+  public taxes(): Array<{ label: string; amount: string }> {
+    return (this.options.invoice?.taxes || []).map((tax) => ({
+      label: `${tax.name} (${Number(tax.taxRate)}%)`,
+      amount: tax.taxRateAmountFormatted,
+    }));
   }
 
   public adjustmentLabel(): string {

@@ -25,6 +25,8 @@ export class GetCreditNoteMailTemplateAttributesTransformer extends Transformer 
       'adjustment',
       'adjustmentLabel',
 
+      'taxes',
+
       'viewButtonLabel',
       'viewButtonUrl',
 
@@ -137,6 +139,17 @@ export class GetCreditNoteMailTemplateAttributesTransformer extends Transformer 
    */
   public adjustment(): string {
     return this.options.creditNote?.adjustmentFormatted;
+  }
+
+  /**
+   * Tax lines, one per tax rate.
+   * @returns {Array<{ label: string; amount: string }>}
+   */
+  public taxes(): Array<{ label: string; amount: string }> {
+    return (this.options.creditNote?.taxes || []).map((tax) => ({
+      label: `${tax.name} (${Number(tax.taxRate)}%)`,
+      amount: tax.taxRateAmountFormatted,
+    }));
   }
 
   /**

@@ -10,6 +10,7 @@ import { PdfTemplateModel } from '@/modules/PdfTemplate/models/PdfTemplate';
 import { events } from '@/common/events/events';
 import { InvoicePdfTemplateAttributes } from '../SaleInvoice.types';
 import { TenantModelProxy } from '@/modules/System/models/TenantBaseModel';
+import { JamaicaTaxInvoiceService } from '@/modules/Jamaica/tax-invoice/JamaicaTaxInvoice.service';
 
 @Injectable()
 export class SaleInvoicePdf {
@@ -18,6 +19,7 @@ export class SaleInvoicePdf {
     private getInvoiceService: GetSaleInvoice,
     private invoiceBrandingTemplateService: SaleInvoicePdfTemplate,
     private eventPublisher: EventEmitter2,
+    private taxInvoice: JamaicaTaxInvoiceService,
 
     @Inject(SaleInvoice.name)
     private saleInvoiceModel: TenantModelProxy<typeof SaleInvoice>,
@@ -97,10 +99,15 @@ export class SaleInvoicePdf {
         templateId,
       );
 
+    // Tax Invoice fields for an organization registered for GCT (Jamaica).
+    const taxInvoiceAttributes =
+      await this.taxInvoice.getInvoicePdfAttributes(invoice);
+
     // Merge the branding template attributes with the invoice.
     return {
       ...brandingTemplate.attributes,
       ...transformInvoiceToPdfTemplate(invoice),
+      ...taxInvoiceAttributes,
     };
   }
 }

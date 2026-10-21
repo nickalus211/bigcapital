@@ -19,6 +19,10 @@ import {
 import { theme } from '../constants';
 
 export interface ReceiptPaperTemplateProps extends PaperTemplateProps {
+  // # Taxes, one line per tax rate.
+  showTaxes?: boolean;
+  taxes?: Array<{ label: string; amount: string }>;
+
   // # Company logo
   showCompanyLogo?: boolean;
   companyLogoUri?: string;
@@ -97,6 +101,10 @@ export interface ReceiptPaperTemplateProps extends PaperTemplateProps {
 }
 
 export function ReceiptPaperTemplate({
+  // # Taxes
+  showTaxes = true,
+  taxes = [],
+
   // # Colors
   primaryColor,
   secondaryColor,
@@ -264,6 +272,14 @@ export function ReceiptPaperTemplate({
                 amount={adjustment}
               />
             )}
+            {showTaxes &&
+              taxes.map((tax, index) => (
+                <PaperTemplate.TotalLine
+                  key={index}
+                  label={tax.label}
+                  amount={tax.amount}
+                />
+              ))}
             {showTotal && (
               <PaperTemplate.TotalLine
                 label={totalLabel}

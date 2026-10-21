@@ -40,6 +40,9 @@ export interface InvoicePaymentEmailProps {
   adjustment?: string;
   adjustmentLabel?: string;
 
+  // # Taxes, one line per tax rate.
+  taxes?: Array<{ label: string; amount: string }>;
+
   // # Discount
   discount?: string;
   discountLabel?: string;
@@ -105,6 +108,7 @@ export const InvoicePaymentEmail: React.FC<
   // # Adjustment
   adjustment,
   adjustmentLabel = 'Adjustment',
+  taxes = [],
 
   // # Invoice due amount
   dueAmountLabel = 'Due Amount',
@@ -200,6 +204,18 @@ export const InvoicePaymentEmail: React.FC<
                 </Column>
               </Row>
             )}
+
+            {taxes.map((tax, index) => (
+              <Row key={index} style={lineRowStyle}>
+                <Column width={'50%'}>
+                  <Text style={listItemLabelStyle}>{tax.label}</Text>
+                </Column>
+
+                <Column width={'50%'}>
+                  <Text style={listItemAmountStyle}>{tax.amount}</Text>
+                </Column>
+              </Row>
+            ))}
 
             <Row style={totalLineRowStyle}>
               <Column width={'50%'}>

@@ -1,3 +1,4 @@
+import { JamaicaTaxInvoiceService } from '@/modules/Jamaica/tax-invoice/JamaicaTaxInvoice.service';
 import { Injectable } from '@nestjs/common';
 import { CreateSaleInvoice } from './commands/CreateSaleInvoice.service';
 import { DeleteSaleInvoice } from './commands/DeleteSaleInvoice.service';
@@ -47,6 +48,7 @@ export class SaleInvoiceApplication {
     private saleInvoiceSmsNotificationService: SaleInvoiceSmsNotification,
     private bulkDeleteSaleInvoicesService: BulkDeleteSaleInvoicesService,
     private validateBulkDeleteSaleInvoicesService: ValidateBulkDeleteSaleInvoicesService,
+    private taxInvoice: JamaicaTaxInvoiceService,
   ) {}
 
   /**
@@ -54,8 +56,25 @@ export class SaleInvoiceApplication {
    * @param {ISaleInvoiceCreateDTO} saleInvoiceDTO
    * @returns {Promise<ISaleInvoice>}
    */
-  public createSaleInvoice(saleInvoiceDTO: CreateSaleInvoiceDto) {
-    return this.createSaleInvoiceService.createSaleInvoice(saleInvoiceDTO);
+  public async createSaleInvoice(saleInvoiceDTO: CreateSaleInvoiceDto) {
+    const saleInvoice =
+      await this.createSaleInvoiceService.createSaleInvoice(saleInvoiceDTO);
+
+    return this.withComplianceWarnings(saleInvoice);
+  }
+
+  /**
+   * Attaches the Tax Invoice warnings (Jamaica) to the saved invoice. They
+   * never block the request; the list is empty while the feature is off.
+   * @param {SaleInvoice} saleInvoice
+   */
+  private async withComplianceWarnings<T extends { id: number }>(
+    saleInvoice: T,
+  ): Promise<T & { complianceWarnings: unknown[] }> {
+    const complianceWarnings = await this.taxInvoice.getInvoiceWarnings(
+      saleInvoice.id,
+    );
+    return Object.assign(saleInvoice, { complianceWarnings });
   }
 
   /**
@@ -63,14 +82,15 @@ export class SaleInvoiceApplication {
    * @param {ISaleInvoiceEditDTO} saleInvoiceDTO
    * @returns {Promise<ISaleInvoice>}
    */
-  public editSaleInvoice(
+  public async editSaleInvoice(
     saleInvoiceId: number,
     saleInvoiceDTO: EditSaleInvoiceDto,
   ) {
-    return this.editSaleInvoiceService.editSaleInvoice(
+    const saleInvoice = await this.editSaleInvoiceService.editSaleInvoice(
       saleInvoiceId,
       saleInvoiceDTO,
     );
+    return this.withComplianceWarnings(saleInvoice);
   }
 
   /**

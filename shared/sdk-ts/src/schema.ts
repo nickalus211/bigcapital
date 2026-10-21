@@ -1057,6 +1057,112 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/jamaica/setup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Configures the organization for a Jamaican sole trader (idempotent). Turns on the Jamaica feature. */
+        post: operations["JamaicaController_setup"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/jamaica/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieves the Jamaica (GCT) settings. */
+        get: operations["JamaicaController_getSettings"];
+        /** Saves the Jamaica (GCT) settings. Omitted fields are unchanged. */
+        put: operations["JamaicaController_editSettings"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/tax-rates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieves the tax rates. */
+        get: operations["TaxRatesController_getTaxRates"];
+        put?: never;
+        /** Create a new tax rate. */
+        post: operations["TaxRatesController_createTaxRate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/tax-rates/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieves the tax rate details. */
+        get: operations["TaxRatesController_getTaxRate"];
+        /** Edit the given tax rate. */
+        put: operations["TaxRatesController_editTaxRate"];
+        post?: never;
+        /** Delete the given tax rate. */
+        delete: operations["TaxRatesController_deleteTaxRate"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/tax-rates/{id}/activate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Activate the given tax rate. */
+        put: operations["TaxRatesController_activateTaxRate"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/tax-rates/{id}/inactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Inactivate the given tax rate. */
+        put: operations["TaxRatesController_inactivateTaxRate"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/pdf-templates": {
         parameters: {
             query?: never;
@@ -1207,77 +1313,6 @@ export interface paths {
         /** Get presigned URL for attachment */
         get: operations["AttachmentsController_getAttachmentPresignedUrl"];
         put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/tax-rates": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Retrieves the tax rates. */
-        get: operations["TaxRatesController_getTaxRates"];
-        put?: never;
-        /** Create a new tax rate. */
-        post: operations["TaxRatesController_createTaxRate"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/tax-rates/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Retrieves the tax rate details. */
-        get: operations["TaxRatesController_getTaxRate"];
-        /** Edit the given tax rate. */
-        put: operations["TaxRatesController_editTaxRate"];
-        post?: never;
-        /** Delete the given tax rate. */
-        delete: operations["TaxRatesController_deleteTaxRate"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/tax-rates/{id}/activate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Activate the given tax rate. */
-        put: operations["TaxRatesController_activateTaxRate"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/tax-rates/{id}/inactivate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Inactivate the given tax rate. */
-        put: operations["TaxRatesController_inactivateTaxRate"];
         post?: never;
         delete?: never;
         options?: never;
@@ -1905,41 +1940,6 @@ export interface paths {
         put?: never;
         /** Publish the given expense transaction. */
         post: operations["ExpensesController_publishExpense"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/jamaica/setup": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Configures the organization for a Jamaican sole trader (idempotent). Turns on the Jamaica feature. */
-        post: operations["JamaicaController_setup"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/jamaica/settings": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Retrieves the Jamaica (GCT) settings. */
-        get: operations["JamaicaController_getSettings"];
-        /** Saves the Jamaica (GCT) settings. Omitted fields are unchanged. */
-        put: operations["JamaicaController_editSettings"];
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -7364,6 +7364,13 @@ export interface components {
             entries: components["schemas"]["ItemEntryDto"][];
             /** @description The tax entries of the invoice */
             taxes?: components["schemas"]["SaleInvoiceTaxEntryDto"][];
+            /** @description Tax Invoice warnings (Jamaica, GCT Act s.29). Never blocking; empty while the Jamaica feature is off. Each item: { code, message, lines? } */
+            complianceWarnings?: {
+                /** @example CUSTOMER_TRN_MISSING */
+                code?: string;
+                message?: string;
+                lines?: number[];
+            }[];
             /**
              * Format: date-time
              * @description The date when the invoice was delivered
@@ -7830,14 +7837,85 @@ export interface components {
              */
             expiryTime?: string;
         };
-        CreatePdfTemplateDto: Record<string, never>;
-        EditPdfTemplateDto: Record<string, never>;
-        UploadAttachmentDto: {
-            /** Format: binary */
-            file: string;
+        JamaicaSettingsResponseDto: {
+            /** @example true */
+            gctRegistered: boolean;
+            /** @example GCT-000123456 */
+            gctRegistrationNumber: string | null;
+            /** @example 2025-01-15 */
+            gctRegistrationDate: string | null;
+            /** @example monthly */
+            filingFrequency: string;
+            /** @example false */
+            apportionmentEnabled: boolean;
+            /**
+             * @description The organization's Taxpayer Registration Number (organization tax number).
+             * @example 123456789
+             */
+            trn: string | null;
+            /**
+             * @description When the Jamaica setup last ran.
+             * @example 2026-10-21T05:00:00.000Z
+             */
+            setupAt: string | null;
         };
-        LinkAttachmentDto: Record<string, never>;
-        UnlinkAttachmentDto: Record<string, never>;
+        JamaicaSetupResponseDto: {
+            /** @example false */
+            dryRun: boolean;
+            /**
+             * @example [
+             *       "tax_rate:GCT-STD"
+             *     ]
+             */
+            created: string[];
+            /**
+             * @example [
+             *       "account:tax-payable:name"
+             *     ]
+             */
+            updated: string[];
+            /**
+             * @example [
+             *       "account:gct-input-tax"
+             *     ]
+             */
+            skipped: string[];
+        };
+        JamaicaSetupDto: {
+            /**
+             * @description Report the changes without applying them.
+             * @example true
+             */
+            dryRun?: boolean;
+        };
+        EditJamaicaSettingsDto: {
+            /**
+             * @description Whether the business is registered for GCT.
+             * @example true
+             */
+            gctRegistered?: boolean;
+            /**
+             * @description The GCT registration number.
+             * @example GCT-000123456
+             */
+            gctRegistrationNumber?: string | null;
+            /**
+             * @description The GCT registration date (YYYY-MM-DD).
+             * @example 2025-01-15
+             */
+            gctRegistrationDate?: string | null;
+            /**
+             * @description The GCT return filing frequency.
+             * @example monthly
+             * @enum {string}
+             */
+            filingFrequency?: "monthly";
+            /**
+             * @description Apportion input GCT between taxable and exempt supplies on the GCT return.
+             * @example false
+             */
+            apportionmentEnabled?: boolean;
+        };
         TaxRateResponseDto: {
             /**
              * @description The unique identifier of the tax rate
@@ -7994,6 +8072,14 @@ export interface components {
              */
             active: boolean;
         };
+        CreatePdfTemplateDto: Record<string, never>;
+        EditPdfTemplateDto: Record<string, never>;
+        UploadAttachmentDto: {
+            /** Format: binary */
+            file: string;
+        };
+        LinkAttachmentDto: Record<string, never>;
+        UnlinkAttachmentDto: Record<string, never>;
         PaymentReceiveMailResponseDto: {
             /**
              * @description Whether the mail was successfully queued/sent
@@ -9365,85 +9451,6 @@ export interface components {
              *     ]
              */
             attachments: string[];
-        };
-        JamaicaSettingsResponseDto: {
-            /** @example true */
-            gctRegistered: boolean;
-            /** @example GCT-000123456 */
-            gctRegistrationNumber: string | null;
-            /** @example 2025-01-15 */
-            gctRegistrationDate: string | null;
-            /** @example monthly */
-            filingFrequency: string;
-            /** @example false */
-            apportionmentEnabled: boolean;
-            /**
-             * @description The organization's Taxpayer Registration Number (organization tax number).
-             * @example 123456789
-             */
-            trn: string | null;
-            /**
-             * @description When the Jamaica setup last ran.
-             * @example 2026-10-21T05:00:00.000Z
-             */
-            setupAt: string | null;
-        };
-        JamaicaSetupResponseDto: {
-            /** @example false */
-            dryRun: boolean;
-            /**
-             * @example [
-             *       "tax_rate:GCT-STD"
-             *     ]
-             */
-            created: string[];
-            /**
-             * @example [
-             *       "account:tax-payable:name"
-             *     ]
-             */
-            updated: string[];
-            /**
-             * @example [
-             *       "account:gct-input-tax"
-             *     ]
-             */
-            skipped: string[];
-        };
-        JamaicaSetupDto: {
-            /**
-             * @description Report the changes without applying them.
-             * @example true
-             */
-            dryRun?: boolean;
-        };
-        EditJamaicaSettingsDto: {
-            /**
-             * @description Whether the business is registered for GCT.
-             * @example true
-             */
-            gctRegistered?: boolean;
-            /**
-             * @description The GCT registration number.
-             * @example GCT-000123456
-             */
-            gctRegistrationNumber?: string | null;
-            /**
-             * @description The GCT registration date (YYYY-MM-DD).
-             * @example 2025-01-15
-             */
-            gctRegistrationDate?: string | null;
-            /**
-             * @description The GCT return filing frequency.
-             * @example monthly
-             * @enum {string}
-             */
-            filingFrequency?: "monthly";
-            /**
-             * @description Apportion input GCT between taxable and exempt supplies on the GCT return.
-             * @example false
-             */
-            apportionmentEnabled?: boolean;
         };
         WarehouseTransferEntryResponseDto: {
             /**
@@ -20401,6 +20408,282 @@ export interface operations {
             };
         };
     };
+    JamaicaController_setup: {
+        parameters: {
+            query?: {
+                /** @description Report the changes without applying them. Also accepted in the body. */
+                dry_run?: boolean;
+            };
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["JamaicaSetupDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JamaicaSetupResponseDto"];
+                };
+            };
+        };
+    };
+    JamaicaController_getSettings: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JamaicaSettingsResponseDto"];
+                };
+            };
+        };
+    };
+    JamaicaController_editSettings: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EditJamaicaSettingsDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JamaicaSettingsResponseDto"];
+                };
+            };
+        };
+    };
+    TaxRatesController_getTaxRates: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The tax rates have been successfully retrieved. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaxRateResponseDto"][];
+                };
+            };
+        };
+    };
+    TaxRatesController_createTaxRate: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateTaxRateDto"];
+            };
+        };
+        responses: {
+            /** @description The tax rate has been successfully created. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaxRateResponseDto"];
+                };
+            };
+        };
+    };
+    TaxRatesController_getTaxRate: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The tax rate details have been successfully retrieved. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaxRateResponseDto"];
+                };
+            };
+        };
+    };
+    TaxRatesController_editTaxRate: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EditTaxRateDto"];
+            };
+        };
+        responses: {
+            /** @description The tax rate has been successfully updated. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaxRateResponseDto"];
+                };
+            };
+        };
+    };
+    TaxRatesController_deleteTaxRate: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The tax rate has been successfully deleted. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaxRateResponseDto"];
+                };
+            };
+        };
+    };
+    TaxRatesController_activateTaxRate: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The tax rate has been successfully activated. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaxRateResponseDto"];
+                };
+            };
+        };
+    };
+    TaxRatesController_inactivateTaxRate: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The tax rate has been successfully inactivated. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaxRateResponseDto"];
+                };
+            };
+        };
+    };
     PdfTemplatesController_getPdfTemplates: {
         parameters: {
             query: {
@@ -20778,199 +21061,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
-            };
-        };
-    };
-    TaxRatesController_getTaxRates: {
-        parameters: {
-            query?: never;
-            header: {
-                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
-                Authorization: string;
-                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
-                "organization-id": string;
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description The tax rates have been successfully retrieved. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TaxRateResponseDto"][];
-                };
-            };
-        };
-    };
-    TaxRatesController_createTaxRate: {
-        parameters: {
-            query?: never;
-            header: {
-                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
-                Authorization: string;
-                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
-                "organization-id": string;
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateTaxRateDto"];
-            };
-        };
-        responses: {
-            /** @description The tax rate has been successfully created. */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TaxRateResponseDto"];
-                };
-            };
-        };
-    };
-    TaxRatesController_getTaxRate: {
-        parameters: {
-            query?: never;
-            header: {
-                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
-                Authorization: string;
-                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
-                "organization-id": string;
-            };
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description The tax rate details have been successfully retrieved. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TaxRateResponseDto"];
-                };
-            };
-        };
-    };
-    TaxRatesController_editTaxRate: {
-        parameters: {
-            query?: never;
-            header: {
-                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
-                Authorization: string;
-                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
-                "organization-id": string;
-            };
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["EditTaxRateDto"];
-            };
-        };
-        responses: {
-            /** @description The tax rate has been successfully updated. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TaxRateResponseDto"];
-                };
-            };
-        };
-    };
-    TaxRatesController_deleteTaxRate: {
-        parameters: {
-            query?: never;
-            header: {
-                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
-                Authorization: string;
-                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
-                "organization-id": string;
-            };
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description The tax rate has been successfully deleted. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TaxRateResponseDto"];
-                };
-            };
-        };
-    };
-    TaxRatesController_activateTaxRate: {
-        parameters: {
-            query?: never;
-            header: {
-                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
-                Authorization: string;
-                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
-                "organization-id": string;
-            };
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description The tax rate has been successfully activated. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TaxRateResponseDto"];
-                };
-            };
-        };
-    };
-    TaxRatesController_inactivateTaxRate: {
-        parameters: {
-            query?: never;
-            header: {
-                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
-                Authorization: string;
-                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
-                "organization-id": string;
-            };
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description The tax rate has been successfully inactivated. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TaxRateResponseDto"];
-                };
             };
         };
     };
@@ -22226,89 +22316,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
-            };
-        };
-    };
-    JamaicaController_setup: {
-        parameters: {
-            query?: {
-                /** @description Report the changes without applying them. Also accepted in the body. */
-                dry_run?: boolean;
-            };
-            header: {
-                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
-                Authorization: string;
-                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
-                "organization-id": string;
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["JamaicaSetupDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["JamaicaSetupResponseDto"];
-                };
-            };
-        };
-    };
-    JamaicaController_getSettings: {
-        parameters: {
-            query?: never;
-            header: {
-                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
-                Authorization: string;
-                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
-                "organization-id": string;
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["JamaicaSettingsResponseDto"];
-                };
-            };
-        };
-    };
-    JamaicaController_editSettings: {
-        parameters: {
-            query?: never;
-            header: {
-                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
-                Authorization: string;
-                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
-                "organization-id": string;
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["EditJamaicaSettingsDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["JamaicaSettingsResponseDto"];
-                };
             };
         };
     };

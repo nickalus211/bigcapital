@@ -1,3 +1,4 @@
+import { getDocumentPdfTaxAttributes } from '@/modules/TaxRates/document-pdf-tax';
 import { Inject, Injectable } from '@nestjs/common';
 import { GetSaleReceipt } from './GetSaleReceipt.service';
 import { SaleReceiptBrandingTemplate } from './SaleReceiptBrandingTemplate.service';
@@ -110,6 +111,8 @@ export class SaleReceiptsPdfService {
     return {
       ...brandingTemplate.attributes,
       ...transformReceiptToBrandingTemplateAttributes(saleReceipt),
+      // Taxed documents (`tax.extended_documents`) print their tax lines.
+      ...getDocumentPdfTaxAttributes(saleReceipt),
     };
   }
 }

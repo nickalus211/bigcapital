@@ -19,6 +19,10 @@ import {
 import { theme } from '../constants';
 
 export interface EstimatePaperTemplateProps extends PaperTemplateProps {
+  // # Taxes, one line per tax rate.
+  showTaxes?: boolean;
+  taxes?: Array<{ label: string; amount: string }>;
+
   // # Company
   showCompanyLogo?: boolean;
   companyLogoUri?: string;
@@ -99,6 +103,10 @@ export interface EstimatePaperTemplateProps extends PaperTemplateProps {
 }
 
 export function EstimatePaperTemplate({
+  // # Taxes
+  showTaxes = true,
+  taxes = [],
+
   primaryColor,
   secondaryColor,
 
@@ -276,6 +284,14 @@ export function EstimatePaperTemplate({
                 amount={adjustment}
               />
             )}
+            {showTaxes &&
+              taxes.map((tax, index) => (
+                <PaperTemplate.TotalLine
+                  key={index}
+                  label={tax.label}
+                  amount={tax.amount}
+                />
+              ))}
             {showTotal && (
               <PaperTemplate.TotalLine
                 label={totalLabel}

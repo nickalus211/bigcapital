@@ -17,6 +17,7 @@ import {
 import { getEntriesTotal } from '@/containers/Entries/utils';
 import {
   updateItemsEntriesTotal,
+  assignEntriesTaxAmount,
   ensureEntriesHaveEmptyLine,
 } from '@/containers/Entries/utils';
 import { useCurrentOrganizationBaseCurrency } from '@/hooks/query';
@@ -126,6 +127,9 @@ export function transformToEditForm(
   const entries = FF.pipe(
     initialEntries,
     updateItemsEntriesTotal,
+    // Line tax from the rate, so the preview applies the document discount
+    // once (the stored line tax may already include it).
+    assignEntriesTaxAmount(!!creditNote.isInclusiveTax),
     ensureEntriesHaveEmptyLine(defaultCreditNoteEntry),
   );
 

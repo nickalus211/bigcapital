@@ -24,6 +24,10 @@ interface CreditNoteLine {
 }
 
 export interface CreditNotePaperTemplateProps extends PaperTemplateProps {
+  // # Taxes, one line per tax rate.
+  showTaxes?: boolean;
+  taxes?: Array<{ label: string; amount: string }>;
+
   primaryColor?: string;
   secondaryColor?: string;
 
@@ -82,6 +86,10 @@ export interface CreditNotePaperTemplateProps extends PaperTemplateProps {
 }
 
 export function CreditNotePaperTemplate({
+  // # Taxes
+  showTaxes = true,
+  taxes = [],
+
   // # Colors
   primaryColor,
   secondaryColor,
@@ -224,6 +232,14 @@ export function CreditNotePaperTemplate({
                 border={PaperTemplateTotalBorder.Gray}
               />
             )}
+            {showTaxes &&
+              taxes.map((tax, index) => (
+                <PaperTemplate.TotalLine
+                  key={index}
+                  label={tax.label}
+                  amount={tax.amount}
+                />
+              ))}
             {showTotal && (
               <PaperTemplate.TotalLine
                 label={totalLabel}

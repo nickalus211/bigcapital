@@ -38,6 +38,9 @@ export interface ReceiptEmailTemplateProps {
   adjustment?: string;
   adjustmentLabel?: string;
 
+  // # Taxes, one line per tax rate.
+  taxes?: Array<{ label: string; amount: string }>;
+
   // # Subtotal
   subtotal?: string;
   subtotalLabel?: string;
@@ -65,6 +68,7 @@ export const ReceiptEmailTemplate: React.FC<
 
   // # ADjustment
   adjustmentLabel = 'Adjustment',
+  taxes = [],
   adjustment,
 
   // # Subtotal
@@ -152,6 +156,18 @@ export const ReceiptEmailTemplate: React.FC<
               </Column>
             </Row>
           )}
+
+          {taxes.map((tax, index) => (
+            <Row key={index} style={itemLineRowStyle}>
+              <Column width={'50%'}>
+                <Text style={listItemLabelStyle}>{tax.label}</Text>
+              </Column>
+
+              <Column width={'50%'}>
+                <Text style={listItemAmountStyle}>{tax.amount}</Text>
+              </Column>
+            </Row>
+          ))}
 
           <Row style={totalLineRowStyle}>
             <Column width={'50%'}>

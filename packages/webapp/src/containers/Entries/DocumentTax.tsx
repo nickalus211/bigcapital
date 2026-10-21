@@ -88,6 +88,19 @@ const getDiscountRatio = (values: DocumentTaxValues) => {
 };
 
 /**
+ * The share of tax the document discount removes, 0 to 1, while
+ * `tax.calc_after_discount` is on; otherwise 0. Multiply a tax preview by
+ * `1 - ratio`.
+ * @returns {number}
+ */
+export const useAfterDiscountTaxRatio = () => {
+  const { values } = useFormikContext<DocumentTaxValues>();
+  const { isCalcAfterDiscount } = useDocumentTaxSettings();
+
+  return isCalcAfterDiscount ? getDiscountRatio(values) : 0;
+};
+
+/**
  * Previews the tax lines of the document, one per tax rate. With
  * `tax.calc_after_discount` on, the document discount reduces the tax as it
  * does on the server.

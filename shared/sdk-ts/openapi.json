@@ -4063,6 +4063,510 @@
         ]
       }
     },
+    "/api/jamaica/setup": {
+      "post": {
+        "operationId": "JamaicaController_setup",
+        "summary": "Configures the organization for a Jamaican sole trader (idempotent). Turns on the Jamaica feature.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dry_run",
+            "required": false,
+            "in": "query",
+            "description": "Report the changes without applying them. Also accepted in the body.",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JamaicaSetupDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JamaicaSetupResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Jamaica"
+        ]
+      }
+    },
+    "/api/jamaica/settings": {
+      "get": {
+        "operationId": "JamaicaController_getSettings",
+        "summary": "Retrieves the Jamaica (GCT) settings.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JamaicaSettingsResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Jamaica"
+        ]
+      },
+      "put": {
+        "operationId": "JamaicaController_editSettings",
+        "summary": "Saves the Jamaica (GCT) settings. Omitted fields are unchanged.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditJamaicaSettingsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JamaicaSettingsResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Jamaica"
+        ]
+      }
+    },
+    "/api/tax-rates": {
+      "post": {
+        "operationId": "TaxRatesController_createTaxRate",
+        "summary": "Create a new tax rate.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTaxRateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The tax rate has been successfully created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaxRateResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tax Rates"
+        ]
+      },
+      "get": {
+        "operationId": "TaxRatesController_getTaxRates",
+        "summary": "Retrieves the tax rates.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The tax rates have been successfully retrieved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TaxRateResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tax Rates"
+        ]
+      }
+    },
+    "/api/tax-rates/{id}": {
+      "put": {
+        "operationId": "TaxRatesController_editTaxRate",
+        "summary": "Edit the given tax rate.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditTaxRateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The tax rate has been successfully updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaxRateResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tax Rates"
+        ]
+      },
+      "delete": {
+        "operationId": "TaxRatesController_deleteTaxRate",
+        "summary": "Delete the given tax rate.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The tax rate has been successfully deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaxRateResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tax Rates"
+        ]
+      },
+      "get": {
+        "operationId": "TaxRatesController_getTaxRate",
+        "summary": "Retrieves the tax rate details.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The tax rate details have been successfully retrieved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaxRateResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tax Rates"
+        ]
+      }
+    },
+    "/api/tax-rates/{id}/activate": {
+      "put": {
+        "operationId": "TaxRatesController_activateTaxRate",
+        "summary": "Activate the given tax rate.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The tax rate has been successfully activated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaxRateResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tax Rates"
+        ]
+      }
+    },
+    "/api/tax-rates/{id}/inactivate": {
+      "put": {
+        "operationId": "TaxRatesController_inactivateTaxRate",
+        "summary": "Inactivate the given tax rate.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The tax rate has been successfully inactivated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaxRateResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tax Rates"
+        ]
+      }
+    },
     "/api/pdf-templates": {
       "post": {
         "operationId": "PdfTemplatesController_createPdfTemplate",
@@ -4658,357 +5162,6 @@
         },
         "tags": [
           "Attachments"
-        ]
-      }
-    },
-    "/api/tax-rates": {
-      "post": {
-        "operationId": "TaxRatesController_createTaxRate",
-        "summary": "Create a new tax rate.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "Bearer bc_1234567890abcdef"
-            }
-          },
-          {
-            "name": "organization-id",
-            "in": "header",
-            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateTaxRateDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "The tax rate has been successfully created.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TaxRateResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Tax Rates"
-        ]
-      },
-      "get": {
-        "operationId": "TaxRatesController_getTaxRates",
-        "summary": "Retrieves the tax rates.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "Bearer bc_1234567890abcdef"
-            }
-          },
-          {
-            "name": "organization-id",
-            "in": "header",
-            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The tax rates have been successfully retrieved.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TaxRateResponseDto"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Tax Rates"
-        ]
-      }
-    },
-    "/api/tax-rates/{id}": {
-      "put": {
-        "operationId": "TaxRatesController_editTaxRate",
-        "summary": "Edit the given tax rate.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "Bearer bc_1234567890abcdef"
-            }
-          },
-          {
-            "name": "organization-id",
-            "in": "header",
-            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/EditTaxRateDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "The tax rate has been successfully updated.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TaxRateResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Tax Rates"
-        ]
-      },
-      "delete": {
-        "operationId": "TaxRatesController_deleteTaxRate",
-        "summary": "Delete the given tax rate.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "Bearer bc_1234567890abcdef"
-            }
-          },
-          {
-            "name": "organization-id",
-            "in": "header",
-            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The tax rate has been successfully deleted.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TaxRateResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Tax Rates"
-        ]
-      },
-      "get": {
-        "operationId": "TaxRatesController_getTaxRate",
-        "summary": "Retrieves the tax rate details.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "Bearer bc_1234567890abcdef"
-            }
-          },
-          {
-            "name": "organization-id",
-            "in": "header",
-            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The tax rate details have been successfully retrieved.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TaxRateResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Tax Rates"
-        ]
-      }
-    },
-    "/api/tax-rates/{id}/activate": {
-      "put": {
-        "operationId": "TaxRatesController_activateTaxRate",
-        "summary": "Activate the given tax rate.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "Bearer bc_1234567890abcdef"
-            }
-          },
-          {
-            "name": "organization-id",
-            "in": "header",
-            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The tax rate has been successfully activated.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TaxRateResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Tax Rates"
-        ]
-      }
-    },
-    "/api/tax-rates/{id}/inactivate": {
-      "put": {
-        "operationId": "TaxRatesController_inactivateTaxRate",
-        "summary": "Inactivate the given tax rate.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "Bearer bc_1234567890abcdef"
-            }
-          },
-          {
-            "name": "organization-id",
-            "in": "header",
-            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The tax rate has been successfully inactivated.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TaxRateResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Tax Rates"
         ]
       }
     },
@@ -7317,159 +7470,6 @@
         },
         "tags": [
           "Expenses"
-        ]
-      }
-    },
-    "/api/jamaica/setup": {
-      "post": {
-        "operationId": "JamaicaController_setup",
-        "summary": "Configures the organization for a Jamaican sole trader (idempotent). Turns on the Jamaica feature.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "Bearer bc_1234567890abcdef"
-            }
-          },
-          {
-            "name": "organization-id",
-            "in": "header",
-            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "dry_run",
-            "required": false,
-            "in": "query",
-            "description": "Report the changes without applying them. Also accepted in the body.",
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/JamaicaSetupDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/JamaicaSetupResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Jamaica"
-        ]
-      }
-    },
-    "/api/jamaica/settings": {
-      "get": {
-        "operationId": "JamaicaController_getSettings",
-        "summary": "Retrieves the Jamaica (GCT) settings.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "Bearer bc_1234567890abcdef"
-            }
-          },
-          {
-            "name": "organization-id",
-            "in": "header",
-            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/JamaicaSettingsResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Jamaica"
-        ]
-      },
-      "put": {
-        "operationId": "JamaicaController_editSettings",
-        "summary": "Saves the Jamaica (GCT) settings. Omitted fields are unchanged.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "Bearer bc_1234567890abcdef"
-            }
-          },
-          {
-            "name": "organization-id",
-            "in": "header",
-            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/EditJamaicaSettingsDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/JamaicaSettingsResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Jamaica"
         ]
       }
     },
@@ -28361,6 +28361,28 @@
               "$ref": "#/components/schemas/SaleInvoiceTaxEntryDto"
             }
           },
+          "complianceWarnings": {
+            "type": "array",
+            "description": "Tax Invoice warnings (Jamaica, GCT Act s.29). Never blocking; empty while the Jamaica feature is off. Each item: { code, message, lines? }",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "example": "CUSTOMER_TRN_MISSING"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "lines": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          },
           "deliveredAt": {
             "format": "date-time",
             "type": "string",
@@ -28962,33 +28984,140 @@
           }
         }
       },
-      "CreatePdfTemplateDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "EditPdfTemplateDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "UploadAttachmentDto": {
+      "JamaicaSettingsResponseDto": {
         "type": "object",
         "properties": {
-          "file": {
+          "gctRegistered": {
+            "type": "boolean",
+            "example": true
+          },
+          "gctRegistrationNumber": {
             "type": "string",
-            "format": "binary"
+            "nullable": true,
+            "example": "GCT-000123456"
+          },
+          "gctRegistrationDate": {
+            "type": "string",
+            "nullable": true,
+            "example": "2025-01-15"
+          },
+          "filingFrequency": {
+            "type": "string",
+            "example": "monthly"
+          },
+          "apportionmentEnabled": {
+            "type": "boolean",
+            "example": false
+          },
+          "trn": {
+            "type": "string",
+            "nullable": true,
+            "description": "The organization's Taxpayer Registration Number (organization tax number).",
+            "example": "123456789"
+          },
+          "setupAt": {
+            "type": "string",
+            "nullable": true,
+            "description": "When the Jamaica setup last ran.",
+            "example": "2026-10-21T05:00:00.000Z"
           }
         },
         "required": [
-          "file"
+          "gctRegistered",
+          "gctRegistrationNumber",
+          "gctRegistrationDate",
+          "filingFrequency",
+          "apportionmentEnabled",
+          "trn",
+          "setupAt"
         ]
       },
-      "LinkAttachmentDto": {
+      "JamaicaSetupResponseDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "dryRun": {
+            "type": "boolean",
+            "example": false
+          },
+          "created": {
+            "example": [
+              "tax_rate:GCT-STD"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "updated": {
+            "example": [
+              "account:tax-payable:name"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "skipped": {
+            "example": [
+              "account:gct-input-tax"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "dryRun",
+          "created",
+          "updated",
+          "skipped"
+        ]
       },
-      "UnlinkAttachmentDto": {
+      "JamaicaSetupDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "dryRun": {
+            "type": "boolean",
+            "description": "Report the changes without applying them.",
+            "example": true
+          }
+        }
+      },
+      "EditJamaicaSettingsDto": {
+        "type": "object",
+        "properties": {
+          "gctRegistered": {
+            "type": "boolean",
+            "description": "Whether the business is registered for GCT.",
+            "example": true
+          },
+          "gctRegistrationNumber": {
+            "type": "string",
+            "nullable": true,
+            "description": "The GCT registration number.",
+            "example": "GCT-000123456"
+          },
+          "gctRegistrationDate": {
+            "type": "string",
+            "nullable": true,
+            "description": "The GCT registration date (YYYY-MM-DD).",
+            "example": "2025-01-15"
+          },
+          "filingFrequency": {
+            "type": "string",
+            "description": "The GCT return filing frequency.",
+            "enum": [
+              "monthly"
+            ],
+            "example": "monthly"
+          },
+          "apportionmentEnabled": {
+            "type": "boolean",
+            "description": "Apportion input GCT between taxable and exempt supplies on the GCT return.",
+            "example": false
+          }
+        }
       },
       "TaxRateResponseDto": {
         "type": "object",
@@ -29204,6 +29333,34 @@
           "isCompound",
           "active"
         ]
+      },
+      "CreatePdfTemplateDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "EditPdfTemplateDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UploadAttachmentDto": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary"
+          }
+        },
+        "required": [
+          "file"
+        ]
+      },
+      "LinkAttachmentDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UnlinkAttachmentDto": {
+        "type": "object",
+        "properties": {}
       },
       "PaymentReceiveMailResponseDto": {
         "type": "object",
@@ -31355,141 +31512,6 @@
           "categories",
           "attachments"
         ]
-      },
-      "JamaicaSettingsResponseDto": {
-        "type": "object",
-        "properties": {
-          "gctRegistered": {
-            "type": "boolean",
-            "example": true
-          },
-          "gctRegistrationNumber": {
-            "type": "string",
-            "nullable": true,
-            "example": "GCT-000123456"
-          },
-          "gctRegistrationDate": {
-            "type": "string",
-            "nullable": true,
-            "example": "2025-01-15"
-          },
-          "filingFrequency": {
-            "type": "string",
-            "example": "monthly"
-          },
-          "apportionmentEnabled": {
-            "type": "boolean",
-            "example": false
-          },
-          "trn": {
-            "type": "string",
-            "nullable": true,
-            "description": "The organization's Taxpayer Registration Number (organization tax number).",
-            "example": "123456789"
-          },
-          "setupAt": {
-            "type": "string",
-            "nullable": true,
-            "description": "When the Jamaica setup last ran.",
-            "example": "2026-10-21T05:00:00.000Z"
-          }
-        },
-        "required": [
-          "gctRegistered",
-          "gctRegistrationNumber",
-          "gctRegistrationDate",
-          "filingFrequency",
-          "apportionmentEnabled",
-          "trn",
-          "setupAt"
-        ]
-      },
-      "JamaicaSetupResponseDto": {
-        "type": "object",
-        "properties": {
-          "dryRun": {
-            "type": "boolean",
-            "example": false
-          },
-          "created": {
-            "example": [
-              "tax_rate:GCT-STD"
-            ],
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "updated": {
-            "example": [
-              "account:tax-payable:name"
-            ],
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "skipped": {
-            "example": [
-              "account:gct-input-tax"
-            ],
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        },
-        "required": [
-          "dryRun",
-          "created",
-          "updated",
-          "skipped"
-        ]
-      },
-      "JamaicaSetupDto": {
-        "type": "object",
-        "properties": {
-          "dryRun": {
-            "type": "boolean",
-            "description": "Report the changes without applying them.",
-            "example": true
-          }
-        }
-      },
-      "EditJamaicaSettingsDto": {
-        "type": "object",
-        "properties": {
-          "gctRegistered": {
-            "type": "boolean",
-            "description": "Whether the business is registered for GCT.",
-            "example": true
-          },
-          "gctRegistrationNumber": {
-            "type": "string",
-            "nullable": true,
-            "description": "The GCT registration number.",
-            "example": "GCT-000123456"
-          },
-          "gctRegistrationDate": {
-            "type": "string",
-            "nullable": true,
-            "description": "The GCT registration date (YYYY-MM-DD).",
-            "example": "2025-01-15"
-          },
-          "filingFrequency": {
-            "type": "string",
-            "description": "The GCT return filing frequency.",
-            "enum": [
-              "monthly"
-            ],
-            "example": "monthly"
-          },
-          "apportionmentEnabled": {
-            "type": "boolean",
-            "description": "Apportion input GCT between taxable and exempt supplies on the GCT return.",
-            "example": false
-          }
-        }
       },
       "WarehouseTransferEntryResponseDto": {
         "type": "object",

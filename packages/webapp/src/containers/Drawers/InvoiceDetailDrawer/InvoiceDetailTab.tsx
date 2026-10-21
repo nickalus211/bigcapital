@@ -1,4 +1,5 @@
 import React from 'react';
+import { InvoiceComplianceWarnings } from './InvoiceComplianceWarnings';
 import { InvoiceDetailFooter } from './InvoiceDetailFooter';
 import { InvoiceDetailHeader } from './InvoiceDetailHeader';
 import { InvoiceDetailTable } from './InvoiceDetailTable';
@@ -11,6 +12,7 @@ import { CommercialDocBox } from '@/components';
 export function InvoiceDetailTab() {
   return (
     <CommercialDocBox>
+      <InvoiceComplianceWarnings />
       <InvoiceDetailHeader />
       <InvoiceDetailTable />
       <InvoiceDetailTableFooter />
