@@ -80,7 +80,8 @@ export class CommandSaleInvoiceDTOTransformer {
     }));
     const asyncEntries = await composeAsync(
       // Associate tax rate from tax id to entries, as of the invoice date.
-      (entries) =>
+      // (`async/compose` only awaits `async` functions, never a returned promise.)
+      async (entries) =>
         this.taxDTOTransformer.assocTaxRateFromTaxIdToEntries(
           entries,
           saleInvoiceDTO.invoiceDate,

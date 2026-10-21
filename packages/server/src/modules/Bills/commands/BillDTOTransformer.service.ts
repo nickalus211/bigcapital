@@ -67,7 +67,8 @@ export class BillDTOTransformer {
     }));
     const asyncEntries = await composeAsync(
       // Associate tax rate from tax id to entries, as of the bill date.
-      (entries) =>
+      // (`async/compose` only awaits `async` functions, never a returned promise.)
+      async (entries) =>
         this.taxDTOTransformer.assocTaxRateFromTaxIdToEntries(
           entries,
           billDTO.billDate,
