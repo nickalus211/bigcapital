@@ -158,6 +158,15 @@ export const getPreferenceRoutes = () => [
     exact: true,
   },
   {
+    path: `${BASE_URL}/appearance`,
+    component: lazy(() =>
+      import('@/containers/Preferences/Appearance/Appearance').then((m) => ({
+        default: m.Appearance,
+      })),
+    ),
+    exact: true,
+  },
+  {
     path: `${BASE_URL}/api-keys`,
     component: lazy(() =>
       import('@/containers/Preferences/ApiKeys/ApiKeys').then((m) => ({

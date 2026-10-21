@@ -61,4 +61,11 @@ export class GetDashboardBootMetaResponseDto {
     example: true,
   })
   isBigcapitalCloud: boolean;
+
+  @ApiProperty({
+    description: 'Modules hidden from the webapp (HIDDEN_MODULES env)',
+    type: [String],
+    example: ['stripe', 'subscription', 'workspaces'],
+  })
+  hiddenModules: string[];
 }

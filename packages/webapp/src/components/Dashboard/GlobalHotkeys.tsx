@@ -9,22 +9,12 @@ import { withDashboardActions } from '@/containers/Dashboard/withDashboardAction
 import { withDialogActions } from '@/containers/Dialog/withDialogActions';
 import { withUniversalSearchActions } from '@/containers/UniversalSearch/withUniversalSearchActions';
 import { getDashboardRoutes } from '@/routes/dashboard';
+import { useTheme } from '@/hooks/useTheme';
 
 interface GlobalHotkeyRoute {
   path: string;
   hotkey?: string;
 }
-
-// Toggle dark/light mode by toggling 'bp4-dark' class on body
-const handleToggleDarkMode = () => {
-  const body = document.body;
-
-  if (body.classList.contains('bp4-dark')) {
-    body.classList.remove('bp4-dark');
-  } else {
-    body.classList.add('bp4-dark');
-  }
-};
 
 type GlobalHotkeysProps = Pick<
   WithDashboardActionsProps,
@@ -45,6 +35,9 @@ function GlobalHotkeys({
 }: GlobalHotkeysProps) {
   const history = useHistory();
   const routes = getDashboardRoutes() as GlobalHotkeyRoute[];
+
+  // Keeps following the OS appearance while the theme is `system`.
+  const { toggleTheme } = useTheme();
 
   const globalHotkeys = routes
     .filter(({ hotkey }) => hotkey)
@@ -80,7 +73,7 @@ function GlobalHotkeys({
     }, 0);
   });
   useHotkeys('shift+h', () => {
-    handleToggleDarkMode();
+    toggleTheme();
   });
 
   return <div></div>;

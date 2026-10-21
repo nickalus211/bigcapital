@@ -4,7 +4,10 @@ import { Global, Module } from '@nestjs/common';
 import { knexSnakeCaseMappers } from 'objection';
 import { ClsModule, ClsService } from 'nestjs-cls';
 import { ConfigService } from '@nestjs/config';
-import { DATE_ONLY_COLUMNS_OPTIONS } from '@/common/constants/database.constants';
+import {
+  DATE_ONLY_COLUMNS_OPTIONS,
+  withSessionSqlMode,
+} from '@/common/constants/database.constants';
 import { TENANCY_DB_CONNECTION } from './TenancyDB.constants';
 import { UnitOfWork } from './UnitOfWork.service';
 
@@ -41,7 +44,7 @@ export const TenancyDatabaseProxyProvider = ClsModule.forFeatureAsync({
       seeds: {
         directory: configService.get('tenantDatabase.seedsDir'),
       },
-      pool: { min: 0, max: 7 },
+      pool: withSessionSqlMode({ min: 0, max: 7 }),
       ...knexSnakeCaseMappers({ upperCase: true }),
     });
     lruCache.set(database, knexInstance);

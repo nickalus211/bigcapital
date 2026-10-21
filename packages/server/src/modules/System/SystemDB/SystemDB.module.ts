@@ -1,7 +1,10 @@
 import Knex from 'knex';
 import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DATE_ONLY_COLUMNS_OPTIONS } from '@/common/constants/database.constants';
+import {
+  DATE_ONLY_COLUMNS_OPTIONS,
+  withSessionSqlMode,
+} from '@/common/constants/database.constants';
 import {
   SystemKnexConnection,
   SystemKnexConnectionConfigure,
@@ -31,7 +34,7 @@ const providers = [
       seeds: {
         directory: configService.get('systemDatabase.seedsDir'),
       },
-      pool: { min: 0, max: 7 },
+      pool: withSessionSqlMode({ min: 0, max: 7 }),
       ...knexSnakeCaseMappers({ upperCase: true }),
     }),
   },

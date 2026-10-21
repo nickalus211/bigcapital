@@ -2,12 +2,18 @@ import React from 'react';
 import type { PreferencesMenuItem } from './types';
 import { FormattedMessage as T } from '@/components';
 import { Features } from '@/constants/features';
+import { HiddenModule } from '@/hooks/useHiddenModules';
 
 export const PreferencesMenu: PreferencesMenuItem[] = [
   {
     text: <T id={'general'} />,
     disabled: false,
     href: '/preferences/general',
+  },
+  {
+    text: 'Appearance',
+    disabled: false,
+    href: '/preferences/appearance',
   },
   {
     text: 'Branding',
@@ -25,6 +31,7 @@ export const PreferencesMenu: PreferencesMenuItem[] = [
   {
     text: 'Payment Methods',
     href: '/preferences/payment-methods',
+    module: HiddenModule.Stripe,
   },
   {
     text: <T id={'preferences.estimates'} />,
@@ -49,10 +56,12 @@ export const PreferencesMenu: PreferencesMenuItem[] = [
   {
     text: <T id={'branches.label'} />,
     href: '/preferences/branches',
+    module: HiddenModule.Branches,
   },
   {
     text: <T id={'warehouses.label'} />,
     href: '/preferences/warehouses',
+    module: HiddenModule.Warehouses,
   },
   {
     text: <T id={'accountant'} />,

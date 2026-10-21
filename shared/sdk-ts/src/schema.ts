@@ -16435,6 +16435,15 @@ export interface components {
              * @example true
              */
             isBigcapitalCloud: boolean;
+            /**
+             * @description Modules hidden from the webapp (HIDDEN_MODULES env)
+             * @example [
+             *       "stripe",
+             *       "subscription",
+             *       "workspaces"
+             *     ]
+             */
+            hiddenModules: string[];
         };
         RolePermissionResponseDto: {
             /**

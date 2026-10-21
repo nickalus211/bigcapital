@@ -10,10 +10,29 @@
       content="Bigcapital Financial Managment Software"
     />
     <link rel="modulepreload" href="/manifest.json" />
-    <script type="module" src="/public/preload-theme.js"></script>
     <title>Bigcapital</title>
   </head>
-  <body class="bp4-dark">
+  <body>
+    <script>
+      // Applies the saved theme before first paint (see src/hooks/useTheme.ts).
+      (function () {
+        var preference = 'dark';
+        try {
+          preference = localStorage.getItem('theme') || 'dark';
+        } catch (e) {}
+        var isDark =
+          preference === 'system'
+            ? window.matchMedia('(prefers-color-scheme: dark)').matches
+            : preference !== 'light';
+
+        // The payment portal pages are always light.
+        if (window.location.pathname.startsWith('/payment')) {
+          isDark = false;
+        }
+        document.documentElement.classList.toggle('bp4-dark', isDark);
+        document.body.classList.toggle('bp4-dark', isDark);
+      })();
+    </script>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <div id="nprogress"></div>

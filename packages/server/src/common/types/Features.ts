@@ -5,6 +5,7 @@ export enum Features {
   LANDED_COST = 'landed_cost',
   SMS_NOTIFICATIONS = 'sms_notifications',
   SALES_TAX = 'sales_tax',
+  JAMAICA = 'jamaica',
 }
 
 export interface IFeatureAllItem {

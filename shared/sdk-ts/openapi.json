@@ -44615,12 +44615,25 @@
             "type": "boolean",
             "description": "Whether the app is running on Bigcapital Cloud",
             "example": true
+          },
+          "hiddenModules": {
+            "description": "Modules hidden from the webapp (HIDDEN_MODULES env)",
+            "example": [
+              "stripe",
+              "subscription",
+              "workspaces"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "required": [
           "abilities",
           "features",
-          "isBigcapitalCloud"
+          "isBigcapitalCloud",
+          "hiddenModules"
         ]
       },
       "RolePermissionResponseDto": {

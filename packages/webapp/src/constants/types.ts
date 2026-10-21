@@ -26,6 +26,7 @@ export interface PreferencesMenuItem {
   disabled?: boolean;
   href: string;
   feature?: string;
+  module?: string;
 }
 
 export interface QuickNewActionOption {

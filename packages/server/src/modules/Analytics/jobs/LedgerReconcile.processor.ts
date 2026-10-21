@@ -9,7 +9,10 @@ import {
 } from '../Analytics.constants';
 import { LedgerAnalyticsSyncService } from '../services/LedgerAnalyticsSync.service';
 import { LedgerAnalyticsDirtySet } from '../services/LedgerAnalyticsDirtySet.service';
-import { DATE_ONLY_COLUMNS_OPTIONS } from '@/common/constants/database.constants';
+import {
+  DATE_ONLY_COLUMNS_OPTIONS,
+  withSessionSqlMode,
+} from '@/common/constants/database.constants';
 
 @Processor({ name: LedgerAnalyticsReconcileQueue })
 export class LedgerReconcileProcessor extends WorkerHost {
@@ -108,7 +111,7 @@ export class LedgerReconcileProcessor extends WorkerHost {
         charset: 'utf8',
         ...DATE_ONLY_COLUMNS_OPTIONS,
       },
-      pool: { min: 0, max: 2 },
+      pool: withSessionSqlMode({ min: 0, max: 2 }),
     });
   }
 }

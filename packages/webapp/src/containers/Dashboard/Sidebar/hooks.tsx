@@ -20,6 +20,7 @@ import {
   useSidebarSubmenu,
   useFeatureCan,
 } from '@/hooks/state';
+import { useHiddenModules } from '@/hooks/useHiddenModules';
 import { filterValuesDeep, deepdash } from '@/utils';
 
 // deepdash's bundled typings wrongly require `childrenPath` to be an array of
@@ -161,10 +162,12 @@ function useFilterSidebarMenuAbility(
   const { predicate: predAbility } = useFilterSidebarItemAbilityPredicater();
   const { predicate: predSubscription } =
     useFilterSidebarItemSubscriptionPredicater();
+  const { isModuleHidden } = useHiddenModules();
 
   return deepdash.filterDeep(
     menu,
-    (item: ISidebarMenuItem) => predFeature(item) && predAbility(item),
+    (item: ISidebarMenuItem) =>
+      predFeature(item) && predAbility(item) && !isModuleHidden(item.module),
     deepDashConfig,
   );
 }

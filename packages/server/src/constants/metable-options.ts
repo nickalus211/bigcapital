@@ -303,5 +303,8 @@ export const SettingsOptions = {
     sales_tax: {
       type: 'boolean',
     },
+    jamaica: {
+      type: 'boolean',
+    },
   },
 };

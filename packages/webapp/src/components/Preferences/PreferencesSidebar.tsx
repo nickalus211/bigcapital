@@ -6,6 +6,7 @@ import PreferencesSidebarContainer from './PreferencesSidebarContainer';
 import { FormattedMessage as T } from '@/components';
 import { PreferencesMenu } from '@/constants/preferencesMenu';
 import { useFeatureCan } from '@/hooks/state/feature';
+import { useHiddenModules } from '@/hooks/useHiddenModules';
 
 import '@/style/pages/Preferences/Sidebar.scss';
 
@@ -16,9 +17,13 @@ export default function PreferencesSidebar() {
   const history = useHistory();
   const location = useLocation();
   const { featureCan } = useFeatureCan();
+  const { isModuleHidden } = useHiddenModules();
 
   const items = PreferencesMenu.filter((item) => {
     if (item.feature && !featureCan(item.feature)) {
+      return false;
+    }
+    if (isModuleHidden(item.module)) {
       return false;
     }
     return true;

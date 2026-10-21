@@ -22,6 +22,7 @@ import {
   TaxRateAction,
 } from '@/constants/abilityOption';
 import { Features } from '@/constants/features';
+import { HiddenModule } from '@/hooks/useHiddenModules';
 import {
   ISidebarMenuItemType,
   ISidebarMenuOverlayIds,
@@ -42,6 +43,7 @@ export interface SidebarMenuItem {
   dialogName?: DialogsName;
   divider?: boolean;
   feature?: string;
+  module?: string;
   permission?: SidebarMenuItemPermission;
   children?: SidebarMenuItem[];
 }
@@ -105,6 +107,7 @@ export const SidebarMenu: SidebarMenuItem[] = [
                 href: '/warehouses-transfers',
                 type: ISidebarMenuItemType.Link,
                 feature: Features.Warehouses,
+                module: HiddenModule.Warehouses,
               },
             ],
           },
@@ -145,6 +148,7 @@ export const SidebarMenu: SidebarMenuItem[] = [
                 href: '/warehouses-transfers/new',
                 type: ISidebarMenuItemType.Link,
                 feature: Features.Warehouses,
+                module: HiddenModule.Warehouses,
               },
             ],
           },

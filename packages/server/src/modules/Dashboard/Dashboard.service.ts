@@ -15,6 +15,7 @@ interface IDashboardBootMeta {
   abilities: IRoleAbility[];
   features: IFeatureAllItem[];
   isBigcapitalCloud: boolean;
+  hiddenModules: string[];
 }
 
 export class DashboardService {
@@ -41,6 +42,7 @@ export class DashboardService {
       abilities,
       features,
       isBigcapitalCloud: this.configService.get('hostedOnBigcapitalCloud'),
+      hiddenModules: this.configService.get('localization.hiddenModules') ?? [],
     };
   };
 

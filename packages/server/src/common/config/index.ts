@@ -23,6 +23,7 @@ import redis from './redis';
 import queue from './queue';
 import bullBoard from './bull-board';
 import clickhouse from './clickhouse';
+import localization from './localization';
 
 export const config = [
   app,
@@ -50,4 +51,5 @@ export const config = [
   queue,
   bullBoard,
   clickhouse,
+  localization,
 ];

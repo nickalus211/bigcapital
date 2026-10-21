@@ -49,6 +49,19 @@ export function FeaturesForm() {
         />
       </FFormGroup>
 
+      {/* ----------- Jamaica Localization ----------- */}
+      <FFormGroup
+        name={'features.jamaica'}
+        inline={true}
+        helperText={<T id={'features.jamaica.helper_text'} />}
+      >
+        <FSwitch
+          name={'features.jamaica'}
+          labelElement={<T id={'features.jamaica'} />}
+          large={true}
+        />
+      </FFormGroup>
+
       {/* ----------- SMS Notifications ----------- */}
       <FFormGroup
         name={'features.smsNotifications'}

@@ -13,3 +13,23 @@
 export const DATE_ONLY_COLUMNS_OPTIONS = {
   dateStrings: ['DATE'] as unknown as boolean,
 };
+
+/**
+ * Applies `DB_SQL_MODE` (when set) to every new connection of the pool, e.g.
+ * to drop `ONLY_FULL_GROUP_BY` on a MySQL server shared with other apps.
+ * Without the env the pool config is returned unchanged.
+ */
+export const withSessionSqlMode = <T extends object>(pool: T): T => {
+  const sqlMode = process.env.DB_SQL_MODE;
+
+  if (!sqlMode) return pool;
+
+  return {
+    ...pool,
+    afterCreate: (connection, done) => {
+      connection.query('SET SESSION sql_mode = ?', [sqlMode], (error) =>
+        done(error, connection),
+      );
+    },
+  };
+};

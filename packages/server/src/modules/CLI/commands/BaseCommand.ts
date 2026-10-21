@@ -3,7 +3,10 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Knex from 'knex';
 import { knexSnakeCaseMappers } from 'objection';
-import { DATE_ONLY_COLUMNS_OPTIONS } from '@/common/constants/database.constants';
+import {
+  DATE_ONLY_COLUMNS_OPTIONS,
+  withSessionSqlMode,
+} from '@/common/constants/database.constants';
 
 @Injectable()
 export abstract class BaseCommand extends CommandRunner {
@@ -30,7 +33,7 @@ export abstract class BaseCommand extends CommandRunner {
       seeds: {
         directory: this.configService.get('systemDatabase.seedsDir'),
       },
-      pool: { min: 0, max: 7 },
+      pool: withSessionSqlMode({ min: 0, max: 7 }),
       ...knexSnakeCaseMappers({ upperCase: true }),
     });
   }
@@ -58,10 +61,10 @@ export abstract class BaseCommand extends CommandRunner {
           this.configService.get('tenantDatabase.seedsDir') ||
           './src/database/seeds/core',
       },
-      pool: {
+      pool: withSessionSqlMode({
         min: 0,
         max: 5,
-      },
+      }),
       ...knexSnakeCaseMappers({ upperCase: true }),
     });
   }

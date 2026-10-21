@@ -36,6 +36,7 @@ import { AccountsModule } from '../Accounts/Accounts.module';
 import { ExpensesModule } from '../Expenses/Expenses.module';
 import { ItemCategoryModule } from '../ItemCategories/ItemCategory.module';
 import { TaxRatesModule } from '../TaxRates/TaxRate.module';
+import { JamaicaModule } from '../Jamaica/Jamaica.module';
 import { PdfTemplatesModule } from '../PdfTemplate/PdfTemplates.module';
 import { BranchesModule } from '../Branches/Branches.module';
 import { WarehousesModule } from '../Warehouses/Warehouses.module';
@@ -203,6 +204,7 @@ import { AppThrottleModule } from './AppThrottle.module';
     AccountsModule,
     ExpensesModule,
     TaxRatesModule,
+    JamaicaModule,
     PdfTemplatesModule,
     BranchesModule,
     WarehousesModule,

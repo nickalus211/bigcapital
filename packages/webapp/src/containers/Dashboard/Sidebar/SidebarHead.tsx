@@ -25,7 +25,15 @@ import {
   useCurrentOrganizationMetadata,
 } from '@/hooks/query';
 import { useAuthOrganizationId, useAuthActions } from '@/hooks/state';
+import { HiddenModule, useHiddenModules } from '@/hooks/useHiddenModules';
+import { ThemePreference, useTheme } from '@/hooks/useTheme';
 import { firstLettersArgs } from '@/utils';
+
+const THEME_OPTIONS: Array<{ value: ThemePreference; label: string }> = [
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+  { value: 'system', label: 'System' },
+];
 
 // Popover modifiers.
 const POPOVER_MODIFIERS = {
@@ -79,6 +87,14 @@ const DashboardOrganizationMenu = styled(Menu)`
       color: rgba(255, 255, 255, 0.6);
     }
   }
+
+  // Menu item with an open submenu (e.g. Appearance).
+  .bp4-submenu
+    .bp4-popover-target.bp4-popover-open
+    > .bp4-menu-item:not([class*='bp4-intent-']) {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+  }
 `;
 
 const DashboardSearchInput = styled(InputGroup)`
@@ -129,6 +145,10 @@ function SidebarHeadJSX({
   const switchOrganization = useSwitchOrganization();
   const { setLogout } = useAuthActions();
   const [searchQuery, setSearchQuery] = useState('');
+  const { isModuleHidden } = useHiddenModules();
+  const isWorkspacesHidden = isModuleHidden(HiddenModule.Workspaces);
+  const { preference: themePreference, setPreference: setThemePreference } =
+    useTheme();
 
   const filteredWorkspaces = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -199,121 +219,139 @@ function SidebarHeadJSX({
               </x.div>
               <MenuDivider />
 
-              <MenuItem
-                icon={<SidebarIcon icon={'list'} size={16} />}
-                text={<T id={'workspaces.view_all_workspaces'} />}
-                onClick={() => openDrawer(DRAWERS.ORGANIZATIONS_LIST)}
-              />
-              <MenuDivider />
-
-              {(workspaces?.length ?? 0) > WORKSPACES_SEARCH_MIN_COUNT && (
-                <x.div mb={'10px'} px={'2px'} flexShrink={0}>
-                  <DashboardSearchInput
-                    leftIcon="search"
-                    placeholder={intl.get(
-                      'workspaces.search_workspaces_short',
-                      { fallback: 'Search...' },
-                    )}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+              {!isWorkspacesHidden && (
+                <>
+                  <MenuItem
+                    icon={<SidebarIcon icon={'list'} size={16} />}
+                    text={<T id={'workspaces.view_all_workspaces'} />}
+                    onClick={() => openDrawer(DRAWERS.ORGANIZATIONS_LIST)}
                   />
-                </x.div>
-              )}
+                  <MenuDivider />
 
-              <x.div flex="1" minHeight={0} overflowY="auto">
-                {filteredWorkspaces?.map((workspace) => {
-                  const name =
-                    workspace.metadata?.name || workspace.organizationId;
-                  const initials = firstLettersArgs(...(name || '').split(' '));
-                  const isActive =
-                    workspace.organizationId === currentOrganizationId;
-                  const isDisabled =
-                    !workspace.isReady || workspace.isBuildRunning;
+                  {(workspaces?.length ?? 0) > WORKSPACES_SEARCH_MIN_COUNT && (
+                    <x.div mb={'10px'} px={'2px'} flexShrink={0}>
+                      <DashboardSearchInput
+                        leftIcon="search"
+                        placeholder={intl.get(
+                          'workspaces.search_workspaces_short',
+                          { fallback: 'Search...' },
+                        )}
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                      />
+                    </x.div>
+                  )}
 
-                  return (
-                    <MenuItem
-                      key={workspace.organizationId}
-                      className={`org-workspace-item ${isActive ? 'is-active' : ''}`}
-                      disabled={isDisabled}
-                      onClick={() =>
-                        handleSwitchWorkspace(workspace.organizationId)
-                      }
-                      text={
-                        <x.div
-                          display="flex"
-                          alignItems="center"
-                          gap={3}
-                          w="100%"
-                        >
-                          {workspace.metadata?.logoUri ? (
-                            <x.img
-                              src={workspace.metadata.logoUri}
-                              alt={name}
-                              w={'28px'}
-                              h={'28px'}
-                              borderRadius={'10px'}
-                              objectFit="cover"
-                              flexShrink={0}
-                            />
-                          ) : (
+                  <x.div flex="1" minHeight={0} overflowY="auto">
+                    {filteredWorkspaces?.map((workspace) => {
+                      const name =
+                        workspace.metadata?.name || workspace.organizationId;
+                      const initials = firstLettersArgs(
+                        ...(name || '').split(' '),
+                      );
+                      const isActive =
+                        workspace.organizationId === currentOrganizationId;
+                      const isDisabled =
+                        !workspace.isReady || workspace.isBuildRunning;
+
+                      return (
+                        <MenuItem
+                          key={workspace.organizationId}
+                          className={`org-workspace-item ${isActive ? 'is-active' : ''}`}
+                          disabled={isDisabled}
+                          onClick={() =>
+                            handleSwitchWorkspace(workspace.organizationId)
+                          }
+                          text={
                             <x.div
-                              w={'28px'}
-                              h={'28px'}
-                              borderRadius={'10px'}
-                              backgroundColor="#5c7c99"
                               display="flex"
                               alignItems="center"
-                              justifyContent="center"
-                              fontSize={12}
-                              color="#fff"
-                              flexShrink={0}
+                              gap={3}
+                              w="100%"
                             >
-                              {initials}
+                              {workspace.metadata?.logoUri ? (
+                                <x.img
+                                  src={workspace.metadata.logoUri}
+                                  alt={name}
+                                  w={'28px'}
+                                  h={'28px'}
+                                  borderRadius={'10px'}
+                                  objectFit="cover"
+                                  flexShrink={0}
+                                />
+                              ) : (
+                                <x.div
+                                  w={'28px'}
+                                  h={'28px'}
+                                  borderRadius={'10px'}
+                                  backgroundColor="#5c7c99"
+                                  display="flex"
+                                  alignItems="center"
+                                  justifyContent="center"
+                                  fontSize={12}
+                                  color="#fff"
+                                  flexShrink={0}
+                                >
+                                  {initials}
+                                </x.div>
+                              )}
+                              <x.span
+                                flex={1}
+                                overflow="hidden"
+                                textOverflow="ellipsis"
+                                whiteSpace="nowrap"
+                                fontWeight={isActive ? 500 : undefined}
+                              >
+                                {name}
+                              </x.span>
+                              {isActive && (
+                                <Icon
+                                  icon={'tick'}
+                                  iconSize={14}
+                                  color="#48aff0"
+                                  style={{ flexShrink: 0 }}
+                                />
+                              )}
                             </x.div>
-                          )}
-                          <x.span
-                            flex={1}
-                            overflow="hidden"
-                            textOverflow="ellipsis"
-                            whiteSpace="nowrap"
-                            fontWeight={isActive ? 500 : undefined}
-                          >
-                            {name}
-                          </x.span>
-                          {isActive && (
-                            <Icon
-                              icon={'tick'}
-                              iconSize={14}
-                              color="#48aff0"
-                              style={{ flexShrink: 0 }}
-                            />
-                          )}
-                        </x.div>
-                      }
-                    />
-                  );
-                })}
-
-                {searchQuery && filteredWorkspaces.length === 0 && (
-                  <x.div
-                    py={'12px'}
-                    px={'10px'}
-                    fontSize={13}
-                    color="rgba(255, 255, 255, 0.5)"
-                  >
-                    {intl.get('workspaces.no_workspaces_found', {
-                      fallback: 'No workspaces found.',
+                          }
+                        />
+                      );
                     })}
-                  </x.div>
-                )}
-              </x.div>
 
-              <MenuDivider />
-              <MenuItem
-                icon={<SidebarIcon icon={'plus'} size={16} />}
-                text={<T id={'workspaces.create_workspace'} />}
-                onClick={() => openDrawer(DRAWERS.CREATE_WORKSPACE)}
-              />
+                    {searchQuery && filteredWorkspaces.length === 0 && (
+                      <x.div
+                        py={'12px'}
+                        px={'10px'}
+                        fontSize={13}
+                        color="rgba(255, 255, 255, 0.5)"
+                      >
+                        {intl.get('workspaces.no_workspaces_found', {
+                          fallback: 'No workspaces found.',
+                        })}
+                      </x.div>
+                    )}
+                  </x.div>
+
+                  <MenuDivider />
+                  <MenuItem
+                    icon={<SidebarIcon icon={'plus'} size={16} />}
+                    text={<T id={'workspaces.create_workspace'} />}
+                    onClick={() => openDrawer(DRAWERS.CREATE_WORKSPACE)}
+                  />
+                  <MenuDivider />
+                </>
+              )}
+              <MenuItem icon={'contrast'} text={'Appearance'}>
+                {THEME_OPTIONS.map((option) => (
+                  <MenuItem
+                    key={option.value}
+                    text={option.label}
+                    data-testId={`theme-option-${option.value}`}
+                    icon={themePreference === option.value ? 'tick' : 'blank'}
+                    onClick={() => setThemePreference(option.value)}
+                  />
+                ))}
+              </MenuItem>
               <MenuDivider />
               <MenuItem
                 icon={<SidebarIcon icon={'log-out'} size={16} />}
