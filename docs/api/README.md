@@ -18,6 +18,11 @@ that the sync keeps working without code changes.
 6. **Omitted is different from explicit `null`.** Where a setting fills
    defaults (e.g. the default tax from the item), an omitted field gets the
    default. An explicit `null` means "none".
+7. **Bug fixes are the one exception to rule 3.** A fix that makes a
+   document's figures match its own ledger applies to every tenant. Each one
+   is listed under "Fixes that apply to every tenant" in the changelog, with
+   the before and after values. M2 has two: invoice tax line amounts and
+   invoice balances with line discounts.
 
 ## Wire format
 
@@ -30,4 +35,5 @@ queries to camelCase for its DTOs, and converts responses back to snake_case
 - [CHANGELOG.md](CHANGELOG.md): every change, newest first, tagged with its
   milestone.
 - `<area>.md`: endpoint detail with before/after request and response
-  examples, e.g. [dashboard.md](dashboard.md), [settings.md](settings.md).
+  examples, e.g. [dashboard.md](dashboard.md), [settings.md](settings.md),
+  [document-tax.md](document-tax.md).

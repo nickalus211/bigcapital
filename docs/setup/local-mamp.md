@@ -111,6 +111,28 @@ NODE_OPTIONS=--max-old-space-size=8192 pnpm run test:e2e
 Without the larger heap, ts-jest runs out of memory when the second spec
 file boots the app.
 
+To run one suite, add `--forceExit`. Without it, Jest prints the results
+and then waits forever on open Redis and queue handles:
+
+```bash
+NODE_OPTIONS=--max-old-space-size=8192 npx jest --config ./test/jest-e2e.json \
+  test/jamaica-gct.e2e-spec.ts --forceExit
+```
+
+### Without MAMP (Docker)
+
+The M2 run used MariaDB 10.6 and Redis 7 containers instead:
+
+```bash
+docker run -d --name bc-mariadb -e MARIADB_ROOT_PASSWORD=root -p 3306:3306 mariadb:10.6
+docker run -d --name bc-redis -p 6379:6379 redis:7
+docker exec bc-mariadb mariadb -uroot -proot -e "CREATE USER 'bigcapital'@'%' IDENTIFIED BY 'bigcapital'; GRANT ALL PRIVILEGES ON *.* TO 'bigcapital'@'%' WITH GRANT OPTION; CREATE DATABASE bigcapital_system CHARACTER SET utf8 COLLATE utf8_general_ci;"
+```
+
+Then use `DB_HOST=127.0.0.1` in `.env`, leave `DB_SQL_MODE` unset, and follow
+steps 5 to 7. MariaDB returns booleans as `1`/`0`, so assert them with
+`toBeTruthy()` rather than `toBe(true)`.
+
 ## Known local issues
 
 - **No mail server:** a queued mail job (signup confirmation, invoice email)

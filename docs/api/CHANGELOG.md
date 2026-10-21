@@ -3,6 +3,65 @@
 Newest first. Every entry is backward compatible unless it is marked
 **BREAKING**, and none are.
 
+## M2: GCT engine (2026-10-21)
+
+Details and before/after examples: [document-tax.md](document-tax.md).
+Requests are unchanged or gain optional fields. Responses gain fields. Two
+fixes change numbers for every tenant (last section).
+
+### Invoices and bills
+- With `tax.calc_after_discount` on, tax is charged after the line discount
+  and the line's share of the document discount, rounded to cents per line.
+  Only documents created or edited while the setting is on are affected.
+- New response fields on every item entry: `taxable_amount` and
+  `line_tax_amount` (`null` when not stored, e.g. every line saved before M2).
+- Output tax posts to `tax.output_tax_account_id` and input tax to
+  `tax.input_tax_account_id` (Tax Payable when unset), including the cash
+  basis entries of payments received and bill payments.
+- With `tax.default_from_item` on, a line that omits `tax_rate_id` and
+  `tax_code` takes the item's sell or purchase tax rate. `tax_rate_id: null`
+  still means no tax. **Off by default; the Jamaica setup leaves it off.**
+
+### Sale receipts, credit notes, vendor credits, estimates
+- New optional request field `is_inclusive_tax`. The existing
+  `entries[].tax_rate_id` / `entries[].tax_code` take effect while
+  `tax.extended_documents` is on. While it is off, both are ignored as before.
+- New response fields: `is_inclusive_tax`, `tax_amount_withheld` (`null` when
+  untaxed), `tax_amount_withheld_formatted`, `taxes[]`, and
+  `entries[].taxable_amount` / `line_tax_amount`.
+- `total` includes exclusive tax. Taxed receipts, credit notes and vendor
+  credits post tax lines to the ledger.
+- Credit notes and vendor credits: `credits_remaining` and the open/closed
+  filters include exclusive tax on taxed credits.
+
+### Expenses
+- New optional request fields `is_inclusive_tax` and
+  `categories[].tax_rate_id`, used while `tax.extended_documents` is on.
+- New response fields: `is_inclusive_tax`, `tax_amount_withheld`,
+  `tax_amount_withheld_formatted`, and on categories `tax_rate_id`,
+  `tax_rate`, `taxable_amount`, `line_tax_amount`, `tax_amount`,
+  `amount_excluding_tax`.
+- `total_amount` is the amount paid, so it includes exclusive tax.
+
+### Settings
+The `tax.*` options from M1 now take effect: see
+[settings.md](settings.md#tax-and-jamaica-groups-m1).
+
+### Fixes that apply to every tenant
+- **Invoice `taxes[].tax_rate_amount`** is the sum of the tax on the lines at
+  that rate. It used to be the rate applied to the whole subtotal, which
+  overstated it when some lines were untaxed. `taxes[].tax_rate` is the rate
+  stored with the document.
+- **Invoice `balance`, `subtotal` and `total` subtract line discounts**, as
+  bills already did. Invoices with a line discount used to post an
+  unbalanced journal. Invoices without line discounts are unchanged, and
+  saved invoices keep their stored balance until they are edited.
+
+### Invoice and estimate sync
+An integration that sends no tax and no line discounts sees no change, as
+long as `tax.default_from_item` stays off. If it sends line discounts on
+invoices, see the balance fix above.
+
 ## M1: Jamaica setup (2026-10-21)
 
 All changes are additive. The invoice and estimate endpoints used by the

@@ -28,17 +28,20 @@ Before M0, the request above was rejected as an undeclared setting key.
 
 | Option | Type | Default | Effect |
 |---|---|---|---|
-| `tax.calc_after_discount` | boolean | `false` | M2: GCT is calculated after line discounts on new or edited documents |
-| `tax.extended_documents` | boolean | `false` | M2: tax on receipts, credit notes, vendor credits, expenses and estimates |
-| `tax.default_from_item` | boolean | `false` | M2: lines that omit tax use the item's default rate. **Opt-in; the Jamaica setup never sets it.** |
-| `tax.input_tax_account_id` | number | unset | M2: account for input GCT (the setup sets `gct-input-tax`) |
-| `tax.output_tax_account_id` | number | unset | M2: account for output GCT (the setup sets `tax-payable`) |
+| `tax.calc_after_discount` | boolean | `false` | Since M2: tax after line and document discounts, stored per line, on documents created or edited while on |
+| `tax.extended_documents` | boolean | `false` | Since M2: tax on receipts, credit notes, vendor credits, expenses and estimates |
+| `tax.default_from_item` | boolean | `false` | Since M2: lines that omit `tax_rate_id` use the item's default rate. **Opt-in; the Jamaica setup never sets it.** |
+| `tax.input_tax_account_id` | number | unset | Since M2: account for input tax (the setup sets `gct-input-tax`). Tax Payable when unset. |
+| `tax.output_tax_account_id` | number | unset | Since M2: account for output tax (the setup sets `tax-payable`). Tax Payable when unset. |
 | `jamaica.gct_registered` | boolean | `false` | M3: Tax Invoice title and compliance warnings |
 | `jamaica.gct_registration_number` | string | unset | M3: printed on Tax Invoices |
 | `jamaica.gct_registration_date` | date | unset | |
 | `jamaica.filing_frequency` | string | `monthly` | M4: GCT return period |
 | `jamaica.apportionment_enabled` | boolean | `false` | M4: input tax apportionment |
 | `jamaica.setup_at` | string | unset | Written by the Jamaica setup |
+
+How the `tax.*` options change each document: [document-tax.md](document-tax.md).
+In the webapp they are under Preferences → Jamaica (GCT) → **Tax calculation**.
 
 The typed endpoints `GET/PUT /api/jamaica/settings` ([jamaica.md](jamaica.md))
 are the preferred way to read and write the `jamaica` group.
