@@ -196,6 +196,14 @@ export const financialReportMenus: FinancialSection[] = [
         ability: ReportsAction.READ_SALES_TAX_LIABILITY_SUMMARY,
         feature: Features.SalesTax,
       },
+      {
+        title: 'GCT Return',
+        desc: 'Output and input GCT for a period, laid out like the TAJ GCT return',
+        link: '/financial-reports/gct-return',
+        subject: AbilitySubject.Report,
+        ability: ReportsAction.READ_SALES_TAX_LIABILITY_SUMMARY,
+        feature: Features.Jamaica,
+      },
     ],
   },
   {

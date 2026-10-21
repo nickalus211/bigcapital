@@ -1057,6 +1057,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/jamaica/gct-return": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GCT return (Form 4A style) for a period: supplies by tax type, output and input tax, apportionment and net GCT. */
+        get: operations["JamaicaController_getGctReturn"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/jamaica/setup": {
         parameters: {
             query?: never;
@@ -7880,6 +7897,73 @@ export interface components {
              *     ]
              */
             skipped: string[];
+        };
+        GctReturnOrganizationDto: {
+            name: string;
+            trn: string | null;
+            gctRegistered: boolean;
+            gctRegistrationNumber: string | null;
+        };
+        GctReturnRateLineDto: {
+            taxRateId: number;
+            code: string;
+            name: string;
+            rate: number;
+            taxableAmount: number;
+            taxAmount: number;
+        };
+        GctReturnSuppliesDto: {
+            standardRated: components["schemas"]["GctReturnRateLineDto"][];
+            standardRatedAmount: number;
+            zeroRatedAmount: number;
+            exemptAmount: number;
+            outOfScopeAmount: number;
+            /** @description Sales whose tax rate has no tax type */
+            unclassifiedAmount: number;
+            /** @description Sales with no tax rate */
+            noTaxRateAmount: number;
+            /** @description Standard + zero-rated + exempt */
+            totalAmount: number;
+        };
+        GctReturnPurchasesDto: {
+            standardRated: components["schemas"]["GctReturnRateLineDto"][];
+            standardRatedAmount: number;
+            zeroRatedAndExemptAmount: number;
+            inputTax: number;
+        };
+        GctReturnApportionmentDto: {
+            enabled: boolean;
+            taxableSuppliesAmount: number;
+            totalSuppliesAmount: number;
+            /** @description Claimable share of input tax, 0 to 1 */
+            ratio: number;
+            claimableInputTax: number;
+            disallowedInputTax: number;
+        };
+        GctReturnWarningDto: {
+            code: string;
+            message: string;
+        };
+        GctReturnResponseDto: {
+            fromDate: string;
+            toDate: string;
+            /** @description Last working day of the following month */
+            dueDate: string;
+            currencyCode: string;
+            organization: components["schemas"]["GctReturnOrganizationDto"];
+            supplies: components["schemas"]["GctReturnSuppliesDto"];
+            outputTax: number;
+            purchases: components["schemas"]["GctReturnPurchasesDto"];
+            apportionment: components["schemas"]["GctReturnApportionmentDto"];
+            /** @description Output tax less claimable input tax */
+            netGct: number;
+            /** @enum {string} */
+            position: "payable" | "refundable" | "nil";
+            /** @description Number of documents counted, by type */
+            documents: {
+                [key: string]: number;
+            };
+            warnings: components["schemas"]["GctReturnWarningDto"][];
         };
         JamaicaSetupDto: {
             /**
@@ -20404,6 +20488,35 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GenerateSaleInvoiceSharableLinkResponseDto"];
+                };
+            };
+        };
+    };
+    JamaicaController_getGctReturn: {
+        parameters: {
+            query?: {
+                /** @description Period start (YYYY-MM-DD). Default: first day of last month. */
+                fromDate?: string;
+                /** @description Period end (YYYY-MM-DD). Default: last day of last month. */
+                toDate?: string;
+            };
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GctReturnResponseDto"];
                 };
             };
         };

@@ -22,11 +22,11 @@ import {
   TaxRateAction,
 } from '@/constants/abilityOption';
 import { Features } from '@/constants/features';
-import { HiddenModule } from '@/hooks/useHiddenModules';
 import {
   ISidebarMenuItemType,
   ISidebarMenuOverlayIds,
 } from '@/containers/Dashboard/Sidebar/interfaces';
+import { HiddenModule } from '@/hooks/useHiddenModules';
 
 export interface SidebarMenuItemPermission {
   subject: string;
@@ -732,6 +732,16 @@ export const SidebarMenu: SidebarMenuItem[] = [
             href: '/financial-reports/sales-tax-liability-summary',
             type: ISidebarMenuItemType.Link,
             feature: Features.SalesTax,
+            permission: {
+              subject: AbilitySubject.Report,
+              ability: ReportsAction.READ_SALES_TAX_LIABILITY_SUMMARY,
+            },
+          },
+          {
+            text: 'GCT Return',
+            href: '/financial-reports/gct-return',
+            type: ISidebarMenuItemType.Link,
+            feature: Features.Jamaica,
             permission: {
               subject: AbilitySubject.Report,
               ability: ReportsAction.READ_SALES_TAX_LIABILITY_SUMMARY,

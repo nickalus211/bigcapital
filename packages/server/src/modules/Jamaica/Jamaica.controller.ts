@@ -24,6 +24,9 @@ import { PreferencesAction } from '@/modules/Settings/Settings.types';
 import { JamaicaSetupService } from './setup/JamaicaSetup.service';
 import { JamaicaSettingsService } from './settings/JamaicaSettings.service';
 import { JamaicaFeatureGuard } from './JamaicaFeatureGuard';
+import { GctReturnService } from './gct-return/GctReturn.service';
+import { GctReturnQueryDto, GctReturnResponseDto } from './dtos/GctReturn.dto';
+import { ReportsAction } from '@/modules/FinancialStatements/types/Report.types';
 import {
   EditJamaicaSettingsDto,
   JamaicaSetupDto,
@@ -33,14 +36,37 @@ import {
 
 @Controller('jamaica')
 @ApiTags('Jamaica')
-@ApiExtraModels(JamaicaSettingsResponseDto, JamaicaSetupResponseDto)
+@ApiExtraModels(
+  JamaicaSettingsResponseDto,
+  JamaicaSetupResponseDto,
+  GctReturnResponseDto,
+)
 @ApiCommonHeaders()
 @UseGuards(AuthorizationGuard, PermissionGuard)
 export class JamaicaController {
   constructor(
     private readonly setupService: JamaicaSetupService,
     private readonly settingsService: JamaicaSettingsService,
+    private readonly gctReturnService: GctReturnService,
   ) {}
+
+  @Get('gct-return')
+  @UseGuards(JamaicaFeatureGuard)
+  @RequirePermission(
+    ReportsAction.READ_SALES_TAX_LIABILITY_SUMMARY,
+    AbilitySubject.Report,
+  )
+  @ApiOperation({
+    summary:
+      'GCT return (Form 4A style) for a period: supplies by tax type, output and input tax, apportionment and net GCT.',
+  })
+  @ApiResponse({
+    status: 200,
+    schema: { $ref: getSchemaPath(GctReturnResponseDto) },
+  })
+  getGctReturn(@Query() query: GctReturnQueryDto) {
+    return this.gctReturnService.getGctReturn(query);
+  }
 
   @Post('setup')
   @RequirePermission(PreferencesAction.Mutate, AbilitySubject.Preferences)

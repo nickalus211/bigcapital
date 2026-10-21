@@ -492,6 +492,20 @@ export const getDashboardRoutes = () => [
     subscriptionActive: [SUBSCRIPTION_TYPE.MAIN],
   },
   {
+    path: '/financial-reports/gct-return',
+    component: lazy(() =>
+      import('@/containers/FinancialStatements/GctReturn/GctReturn').then(
+        (m) => ({ default: m.GctReturn }),
+      ),
+    ),
+    breadcrumb: 'GCT Return',
+    pageTitle: 'GCT Return',
+    backLink: true,
+    sidebarExpand: false,
+    feature: Features.Jamaica,
+    subscriptionActive: [SUBSCRIPTION_TYPE.MAIN],
+  },
+  {
     path: '/financial-reports/sales-tax-liability-summary',
     component: lazy(() =>
       import(

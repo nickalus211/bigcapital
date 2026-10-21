@@ -8,6 +8,7 @@ import { JamaicaSetupService } from './setup/JamaicaSetup.service';
 import { JamaicaSetupOnOrganizationBuildSubscriber } from './setup/JamaicaSetupOnOrganizationBuild.subscriber';
 import { JamaicaSettingsService } from './settings/JamaicaSettings.service';
 import { JamaicaTaxInvoiceService } from './tax-invoice/JamaicaTaxInvoice.service';
+import { GctReturnService } from './gct-return/GctReturn.service';
 
 /**
  * Jamaica localization (GCT, TAJ reporting, sole-trader tax).
@@ -23,6 +24,7 @@ import { JamaicaTaxInvoiceService } from './tax-invoice/JamaicaTaxInvoice.servic
     JamaicaSettingsService,
     JamaicaSetupOnOrganizationBuildSubscriber,
     JamaicaTaxInvoiceService,
+    GctReturnService,
   ],
   exports: [JamaicaFeatureGuard, JamaicaSetupService, JamaicaTaxInvoiceService],
 })

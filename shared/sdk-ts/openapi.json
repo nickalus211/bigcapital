@@ -4063,6 +4063,68 @@
         ]
       }
     },
+    "/api/jamaica/gct-return": {
+      "get": {
+        "operationId": "JamaicaController_getGctReturn",
+        "summary": "GCT return (Form 4A style) for a period: supplies by tax type, output and input tax, apportionment and net GCT.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fromDate",
+            "required": false,
+            "in": "query",
+            "description": "Period start (YYYY-MM-DD). Default: first day of last month.",
+            "schema": {
+              "example": "2026-09-01",
+              "type": "string"
+            }
+          },
+          {
+            "name": "toDate",
+            "required": false,
+            "in": "query",
+            "description": "Period end (YYYY-MM-DD). Default: last day of last month.",
+            "schema": {
+              "example": "2026-09-30",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GctReturnResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Jamaica"
+        ]
+      }
+    },
     "/api/jamaica/setup": {
       "post": {
         "operationId": "JamaicaController_setup",
@@ -29072,6 +29134,253 @@
           "created",
           "updated",
           "skipped"
+        ]
+      },
+      "GctReturnOrganizationDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "trn": {
+            "type": "string",
+            "nullable": true
+          },
+          "gctRegistered": {
+            "type": "boolean"
+          },
+          "gctRegistrationNumber": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "name",
+          "trn",
+          "gctRegistered",
+          "gctRegistrationNumber"
+        ]
+      },
+      "GctReturnRateLineDto": {
+        "type": "object",
+        "properties": {
+          "taxRateId": {
+            "type": "number"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "rate": {
+            "type": "number"
+          },
+          "taxableAmount": {
+            "type": "number"
+          },
+          "taxAmount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "taxRateId",
+          "code",
+          "name",
+          "rate",
+          "taxableAmount",
+          "taxAmount"
+        ]
+      },
+      "GctReturnSuppliesDto": {
+        "type": "object",
+        "properties": {
+          "standardRated": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GctReturnRateLineDto"
+            }
+          },
+          "standardRatedAmount": {
+            "type": "number"
+          },
+          "zeroRatedAmount": {
+            "type": "number"
+          },
+          "exemptAmount": {
+            "type": "number"
+          },
+          "outOfScopeAmount": {
+            "type": "number"
+          },
+          "unclassifiedAmount": {
+            "type": "number",
+            "description": "Sales whose tax rate has no tax type"
+          },
+          "noTaxRateAmount": {
+            "type": "number",
+            "description": "Sales with no tax rate"
+          },
+          "totalAmount": {
+            "type": "number",
+            "description": "Standard + zero-rated + exempt"
+          }
+        },
+        "required": [
+          "standardRated",
+          "standardRatedAmount",
+          "zeroRatedAmount",
+          "exemptAmount",
+          "outOfScopeAmount",
+          "unclassifiedAmount",
+          "noTaxRateAmount",
+          "totalAmount"
+        ]
+      },
+      "GctReturnPurchasesDto": {
+        "type": "object",
+        "properties": {
+          "standardRated": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GctReturnRateLineDto"
+            }
+          },
+          "standardRatedAmount": {
+            "type": "number"
+          },
+          "zeroRatedAndExemptAmount": {
+            "type": "number"
+          },
+          "inputTax": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "standardRated",
+          "standardRatedAmount",
+          "zeroRatedAndExemptAmount",
+          "inputTax"
+        ]
+      },
+      "GctReturnApportionmentDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "taxableSuppliesAmount": {
+            "type": "number"
+          },
+          "totalSuppliesAmount": {
+            "type": "number"
+          },
+          "ratio": {
+            "type": "number",
+            "description": "Claimable share of input tax, 0 to 1"
+          },
+          "claimableInputTax": {
+            "type": "number"
+          },
+          "disallowedInputTax": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "enabled",
+          "taxableSuppliesAmount",
+          "totalSuppliesAmount",
+          "ratio",
+          "claimableInputTax",
+          "disallowedInputTax"
+        ]
+      },
+      "GctReturnWarningDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ]
+      },
+      "GctReturnResponseDto": {
+        "type": "object",
+        "properties": {
+          "fromDate": {
+            "type": "string"
+          },
+          "toDate": {
+            "type": "string"
+          },
+          "dueDate": {
+            "type": "string",
+            "description": "Last working day of the following month"
+          },
+          "currencyCode": {
+            "type": "string"
+          },
+          "organization": {
+            "$ref": "#/components/schemas/GctReturnOrganizationDto"
+          },
+          "supplies": {
+            "$ref": "#/components/schemas/GctReturnSuppliesDto"
+          },
+          "outputTax": {
+            "type": "number"
+          },
+          "purchases": {
+            "$ref": "#/components/schemas/GctReturnPurchasesDto"
+          },
+          "apportionment": {
+            "$ref": "#/components/schemas/GctReturnApportionmentDto"
+          },
+          "netGct": {
+            "type": "number",
+            "description": "Output tax less claimable input tax"
+          },
+          "position": {
+            "type": "string",
+            "enum": [
+              "payable",
+              "refundable",
+              "nil"
+            ]
+          },
+          "documents": {
+            "type": "object",
+            "description": "Number of documents counted, by type",
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GctReturnWarningDto"
+            }
+          }
+        },
+        "required": [
+          "fromDate",
+          "toDate",
+          "dueDate",
+          "currencyCode",
+          "organization",
+          "supplies",
+          "outputTax",
+          "purchases",
+          "apportionment",
+          "netGct",
+          "position",
+          "documents",
+          "warnings"
         ]
       },
       "JamaicaSetupDto": {

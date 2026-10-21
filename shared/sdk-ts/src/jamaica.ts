@@ -9,6 +9,7 @@ import {
 export const JAMAICA_ROUTES = {
   SETUP: '/api/jamaica/setup',
   SETTINGS: '/api/jamaica/settings',
+  GCT_RETURN: '/api/jamaica/gct-return',
 } as const satisfies Record<string, keyof paths>;
 
 export type JamaicaSettings = OpResponseBody<
@@ -20,6 +21,26 @@ export type EditJamaicaSettingsBody = OpRequestBody<
 export type JamaicaSetupReport = OpResponseBody<
   OpForPath<typeof JAMAICA_ROUTES.SETUP, 'post'>
 >;
+export type GctReturn = OpResponseBody<
+  OpForPath<typeof JAMAICA_ROUTES.GCT_RETURN, 'get'>
+>;
+export interface GctReturnQuery {
+  fromDate?: string;
+  toDate?: string;
+}
+
+/**
+ * Retrieves the GCT return (Form 4A style) of the given period.
+ */
+export async function fetchGctReturn(
+  fetcher: ApiFetcher,
+  query: GctReturnQuery = {},
+): Promise<GctReturn> {
+  const get = fetcher.path(JAMAICA_ROUTES.GCT_RETURN).method('get').create();
+  const { data } = await get(query as never);
+  return data;
+}
+
 export type JamaicaSetupBody = OpRequestBody<
   OpForPath<typeof JAMAICA_ROUTES.SETUP, 'post'>
 >;
