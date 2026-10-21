@@ -3,6 +3,24 @@
 Newest first. Every entry is backward compatible unless it is marked
 **BREAKING**, and none are.
 
+## Fix: estimate adjustment (2026-10-22)
+
+Applies to every tenant.
+
+- **Estimate `total` adds the `adjustment`.** The server used to subtract
+  it, while the webapp form added it. The total isn't stored, so every
+  estimate with an adjustment now returns the corrected total, saved ones
+  included.
+
+| Estimate | Before | After |
+|---|---|---|
+| subtotal 100, discount 5, adjustment 10 | `total: 85` | `total: 105` |
+| no adjustment | unchanged | unchanged |
+
+Affects `GET /api/sale-estimates/:id`, the list endpoint, and the estimate
+PDF and email totals. Invoices made from an estimate were never affected,
+because they compute their own totals.
+
 ## M3: Tax Invoices (2026-10-21)
 
 Details and examples: [tax-invoice.md](tax-invoice.md). Additive only;

@@ -171,4 +171,30 @@ describe('Tax engine backward compatibility (e2e)', () => {
     expect(created.body.credit_note_number).toMatch(/\d/);
     expect(created.body.credit_note_number).not.toBe('{}');
   });
+
+  it('adds the estimate adjustment to its total', async () => {
+    const created = await request(app.getHttpServer())
+      .post('/sale-estimates')
+      .set(authHeaders())
+      .send({
+        customerId,
+        estimateDate: '2023-01-01',
+        expirationDate: '2023-02-01',
+        estimateNumber: faker.string.uuid(),
+        branchId: 1,
+        warehouseId: 1,
+        discountType: 'amount',
+        discount: 5,
+        adjustment: 10,
+        entries: [{ index: 1, itemId, quantity: 1, rate: 100 }],
+      })
+      .expect(201);
+
+    const res = await request(app.getHttpServer())
+      .get(`/sale-estimates/${created.body.id}`)
+      .set(authHeaders())
+      .expect(200);
+
+    expect(res.body.total).toBe(105);
+  });
 });

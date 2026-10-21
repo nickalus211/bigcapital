@@ -178,9 +178,7 @@ process, with no Jest retries used:
   - A credit note or vendor credit's creditable amount ignores its document
     discount and adjustment.
   - An expense category's `unallocated_cost_amount` uses the amount with tax.
-  - **The estimate `total` subtracts the adjustment on the server**, while
-    the webapp adds it. If your quote sync sends `adjustment`, the stored
-    total is wrong. This is upstream behaviour and M2 doesn't change it. Ask
-    if you want it fixed.
+  - ~~The estimate `total` subtracts the adjustment on the server.~~ Fixed
+    after M3: see the changelog entry "Fix: estimate adjustment".
 - Turning `tax.calc_after_discount` off again leaves the stored line tax on
   documents saved while it was on, until they are edited.
