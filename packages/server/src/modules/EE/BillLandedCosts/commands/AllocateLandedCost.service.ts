@@ -48,13 +48,14 @@ export class AllocateLandedCostService extends BaseLandedCostService {
   public async allocateLandedCost(
     allocateCostDTO: AllocateBillLandedCostDto,
     billId: number,
+    trx?: Knex.Transaction,
   ): Promise<BillLandedCost> {
     // Retrieve total cost of allocated items.
     const amount = this.getAllocateItemsCostTotal(allocateCostDTO);
 
     // Retrieve the purchase invoice or throw not found error.
     const bill = await this.billModel()
-      .query()
+      .query(trx)
       .findById(billId)
       .withGraphFetched('entries')
       .throwIfNotFound();
@@ -63,12 +64,14 @@ export class AllocateLandedCostService extends BaseLandedCostService {
     const costTransaction = await this.getLandedCostOrThrowError(
       allocateCostDTO.transactionType,
       allocateCostDTO.transactionId,
+      trx,
     );
     // Retrieve landed cost transaction entries.
     const costTransactionEntry = await this.getLandedCostEntry(
       allocateCostDTO.transactionType,
       allocateCostDTO.transactionId,
       allocateCostDTO.transactionEntryId,
+      trx,
     );
     // Validates allocate cost items association with the purchase invoice entries.
     this.validateAllocateCostItems(bill.entries, allocateCostDTO.items);
@@ -103,6 +106,6 @@ export class AllocateLandedCostService extends BaseLandedCostService {
       } as IAllocatedLandedCostCreatedPayload);
 
       return billLandedCost;
-    });
+    }, trx);
   }
 }

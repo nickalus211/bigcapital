@@ -14,6 +14,7 @@ import { Expense } from '@/modules/Expenses/models/Expense.model';
 import { TaxRateModel } from '@/modules/TaxRates/models/TaxRate.model';
 import { TaxRateVersion } from '@/modules/TaxRates/models/TaxRateVersion.model';
 import { ItemEntry } from '@/modules/TransactionItemEntry/models/ItemEntry';
+import { CustomsEntry } from '../customs/models/CustomsEntry.model';
 import {
   calcGctReturn,
   getGctReturnDueDate,
@@ -87,6 +88,8 @@ export class GctReturnService {
     private readonly taxRateVersionModel: TenantModelProxy<
       typeof TaxRateVersion
     >,
+    @Inject(CustomsEntry.name)
+    private readonly customsEntryModel: TenantModelProxy<typeof CustomsEntry>,
   ) {}
 
   /**
@@ -123,6 +126,9 @@ export class GctReturnService {
     const apportionmentEnabled = !!get('apportionment_enabled');
 
     const { lines, documents } = await this.loadLines(fromDate, toDate);
+    const customsEntries = await this.customsEntryModel()
+      .query()
+      .whereBetween('entryDate', [fromDate, toDate]);
     const result = calcGctReturn(
       lines,
       taxRates.map((rate) => ({
@@ -133,6 +139,11 @@ export class GctReturnService {
         taxType: rate.taxType ?? null,
       })),
       { apportionmentEnabled },
+      {
+        taxableAmount: sumBy(customsEntries, (e) => Number(e.importGctBase)),
+        importGct: sumBy(customsEntries, (e) => Number(e.importGctAmount)),
+        advanceGct: sumBy(customsEntries, (e) => Number(e.advanceGctAmount)),
+      },
     );
     const meta = metadata as {
       name?: string;
@@ -154,7 +165,7 @@ export class GctReturnService {
           (get('gct_registration_number') as string) || null,
       },
       ...result,
-      documents,
+      documents: { ...documents, customsEntries: customsEntries.length },
       warnings,
     };
   }

@@ -143,6 +143,7 @@ export const TransactionTypes = {
   RefundCreditNote: 'transaction_type.refund_credit_note',
   RefundVendorCredit: 'transaction_type.refund_vendor_credit',
   LandedCost: 'transaction_type.landed_cost',
+  CustomsEntry: 'transaction_type.customs_entry',
   WarehouseTransfer: 'transaction_type.warehouse_transfer',
   CashflowTransaction: CashflowTransactionTypes,
 };

@@ -55,6 +55,16 @@ describe('BaseLandedCostService', () => {
       }
     });
 
+    it('allows allocating to some of the bill entries', () => {
+      const billEntries = [{ id: 1 }, { id: 2 }];
+
+      expect(() =>
+        service.validateAllocateCostItemsPublic(billEntries, [
+          { entryId: 2, cost: 50 },
+        ]),
+      ).not.toThrow();
+    });
+
     it('does not throw when all the allocate items are associated with bill entries', () => {
       const billEntries = [{ id: 1 }, { id: 2 }];
       const allocateItems = [

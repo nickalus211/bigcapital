@@ -31,7 +31,12 @@ import { ValidateBulkDeleteExpensesService } from './ValidateBulkDeleteExpenses.
     TaxRatesModule,
   ],
   controllers: [ExpensesController],
-  exports: [CreateExpense, ExpensesExportable, ExpensesImportable],
+  exports: [
+    CreateExpense,
+    DeleteExpense,
+    ExpensesExportable,
+    ExpensesImportable,
+  ],
   providers: [
     CreateExpense,
     ExpenseDTOTransformer,

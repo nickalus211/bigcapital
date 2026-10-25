@@ -60,6 +60,14 @@ export interface GctReturnApportionment {
   disallowedInputTax: number;
 }
 
+/** GCT paid at customs on imports in the period (customs entries). */
+export interface GctReturnImports {
+  /** CIF + duties: the value import GCT was charged on. */
+  taxableAmount: number;
+  importGct: number;
+  advanceGct: number;
+}
+
 export interface GctReturnResult {
   supplies: GctReturnSupplies;
   outputTax: number;
@@ -67,10 +75,17 @@ export interface GctReturnResult {
     standardRated: GctReturnRateLine[];
     standardRatedAmount: number;
     zeroRatedAndExemptAmount: number;
+    /** Import GCT paid at customs; part of `inputTax`. */
+    importGct: { taxableAmount: number; taxAmount: number };
     inputTax: number;
   };
   apportionment: GctReturnApportionment;
-  /** Output tax less claimable input tax. Negative means a refund is due. */
+  /** Advance GCT paid at customs, credited against the GCT due. */
+  advanceGctCredit: number;
+  /**
+   * Output tax less claimable input tax and the advance GCT credit.
+   * Negative means a refund is due.
+   */
   netGct: number;
   position: 'payable' | 'refundable' | 'nil';
 }
@@ -118,6 +133,7 @@ export const calcGctReturn = (
   lines: GctReturnLine[],
   taxRates: GctReturnTaxRate[],
   options: { apportionmentEnabled: boolean },
+  imports: GctReturnImports = { taxableAmount: 0, importGct: 0, advanceGct: 0 },
 ): GctReturnResult => {
   const ratesById = Object.fromEntries(taxRates.map((r) => [r.id, r]));
   const typeOf = (line: GctReturnLine) =>
@@ -155,9 +171,12 @@ export const calcGctReturn = (
 
   // Purchases.
   const standardPurchases = ofType('purchase', 'standard');
-  const inputTax = total(
-    lines.filter((line) => line.side === 'purchase'),
-    'taxAmount',
+  const importGct = cents(imports.importGct || 0);
+  const inputTax = cents(
+    total(
+      lines.filter((line) => line.side === 'purchase'),
+      'taxAmount',
+    ) + importGct,
   );
   const purchases = {
     standardRated: rateLines(standardPurchases, ratesById),
@@ -166,6 +185,10 @@ export const calcGctReturn = (
       [...ofType('purchase', 'zero_rated'), ...ofType('purchase', 'exempt')],
       'taxableAmount',
     ),
+    importGct: {
+      taxableAmount: cents(imports.taxableAmount || 0),
+      taxAmount: importGct,
+    },
     inputTax,
   };
 
@@ -178,7 +201,8 @@ export const calcGctReturn = (
       : 1;
   const claimableInputTax = cents(inputTax * ratio);
 
-  const netGct = cents(outputTax - claimableInputTax);
+  const advanceGctCredit = cents(imports.advanceGct || 0);
+  const netGct = cents(outputTax - claimableInputTax - advanceGctCredit);
 
   return {
     supplies,
@@ -192,6 +216,7 @@ export const calcGctReturn = (
       claimableInputTax,
       disallowedInputTax: cents(inputTax - claimableInputTax),
     },
+    advanceGctCredit,
     netGct,
     position: netGct > 0 ? 'payable' : netGct < 0 ? 'refundable' : 'nil',
   };

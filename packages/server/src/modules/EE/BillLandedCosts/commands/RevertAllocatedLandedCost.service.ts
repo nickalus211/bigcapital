@@ -34,12 +34,17 @@ export class RevertAllocatedLandedCost extends BaseLandedCostService {
    * @param  {number} landedCostId - Landed cost id.
    * @return {Promise<void>}
    */
-  public async deleteAllocatedLandedCost(landedCostId: number): Promise<{
+  public async deleteAllocatedLandedCost(
+    landedCostId: number,
+    trx?: Knex.Transaction,
+  ): Promise<{
     landedCostId: number;
   }> {
     // Retrieves the bill landed cost.
-    const oldBillLandedCost =
-      await this.getBillLandedCostOrThrowError(landedCostId);
+    const oldBillLandedCost = await this.getBillLandedCostOrThrowError(
+      landedCostId,
+      trx,
+    );
     //  Deletes landed cost with associated transactions.
     return this.uow.withTransaction(async (trx: Knex.Transaction) => {
       // Delete landed cost transaction with associated locate entries.
@@ -53,7 +58,7 @@ export class RevertAllocatedLandedCost extends BaseLandedCostService {
       } as IAllocatedLandedCostDeletedPayload);
 
       return { landedCostId };
-    });
+    }, trx);
   }
 
   /**

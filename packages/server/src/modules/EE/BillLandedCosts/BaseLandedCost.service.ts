@@ -1,3 +1,4 @@
+import { Knex } from 'knex';
 import { Inject } from '@nestjs/common';
 import { difference, sumBy } from 'lodash';
 import {
@@ -40,10 +41,10 @@ export class BaseLandedCostService {
     const purchaseInvoiceItems = purchaseInvoiceEntries.map((e) => e.id);
     const landedCostItemsIds = landedCostItems.map((item) => item.entryId);
 
-    // Not found items ids.
+    // Allocate items that aren't entries of the purchase invoice.
     const notFoundItemsIds = difference(
-      purchaseInvoiceItems,
       landedCostItemsIds,
+      purchaseInvoiceItems,
     );
     // Throw items ids not found service error.
     if (notFoundItemsIds.length > 0) {
@@ -95,9 +96,10 @@ export class BaseLandedCostService {
   public getLandedCostOrThrowError = async (
     transactionType: LandedCostTransactionType,
     transactionId: number,
+    trx?: Knex.Transaction,
   ) => {
     const Model = await this.transactionLandedCost.getModel(transactionType);
-    const model = await Model().query().findById(transactionId);
+    const model = await Model().query(trx).findById(transactionId);
 
     if (!model) {
       throw new ServiceError(ERRORS.LANDED_COST_TRANSACTION_NOT_FOUND);
@@ -119,12 +121,13 @@ export class BaseLandedCostService {
     transactionType: string,
     transactionId: number,
     transactionEntryId: number,
+    trx?: Knex.Transaction,
   ): Promise<any> => {
     const Model = await this.transactionLandedCost.getModel(transactionType);
     const relation = CONFIG.COST_TYPES[transactionType].entries;
 
     const entry = await Model()
-      .relatedQuery(relation)
+      .relatedQuery(relation, trx)
       .for(transactionId)
       .findOne('id', transactionEntryId)
       .where('landedCost', true)
@@ -178,10 +181,11 @@ export class BaseLandedCostService {
    */
   public getBillLandedCostOrThrowError = async (
     landedCostId: number,
+    trx?: Knex.Transaction,
   ): Promise<BillLandedCost> => {
     // Retrieve the bill landed cost model.
     const billLandedCost = await this.billLandedCostModel()
-      .query()
+      .query(trx)
       .findById(landedCostId);
 
     if (!billLandedCost) {

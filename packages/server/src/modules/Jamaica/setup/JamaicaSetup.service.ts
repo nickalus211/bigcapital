@@ -377,6 +377,8 @@ export class JamaicaSetupService {
     const settings = await this.settings();
     const desired = [
       { group: 'features', key: 'jamaica', value: true, force: true },
+      // Customs entries (M6) allocate duties to bills as landed costs.
+      { group: 'features', key: 'landed_cost', value: true },
       { group: 'tax', key: 'calc_after_discount', value: true },
       { group: 'tax', key: 'extended_documents', value: true },
       {

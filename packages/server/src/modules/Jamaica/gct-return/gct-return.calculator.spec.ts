@@ -141,6 +141,49 @@ describe('calcGctReturn', () => {
   });
 });
 
+describe('calcGctReturn imports', () => {
+  it('adds import GCT to input tax and credits advance GCT', () => {
+    const result = calcGctReturn(
+      [sale(1, 1000, 150)],
+      rates,
+      {
+        apportionmentEnabled: false,
+      },
+      { taxableAmount: 120800, importGct: 18120, advanceGct: 6040 },
+    );
+
+    expect(result.purchases.importGct).toEqual({
+      taxableAmount: 120800,
+      taxAmount: 18120,
+    });
+    expect(result.purchases.inputTax).toBe(18120);
+    expect(result.advanceGctCredit).toBe(6040);
+    // 150 − 18,120 − 6,040
+    expect(result.netGct).toBe(-24010);
+    expect(result.position).toBe('refundable');
+  });
+
+  it('apportions import GCT like other input tax', () => {
+    const result = calcGctReturn(
+      [sale(1, 600, 90), sale(3, 400)],
+      rates,
+      { apportionmentEnabled: true },
+      { taxableAmount: 1000, importGct: 150, advanceGct: 0 },
+    );
+    expect(result.apportionment.claimableInputTax).toBe(90);
+    expect(result.netGct).toBe(0);
+  });
+
+  it('changes nothing without imports', () => {
+    const result = calcGctReturn([sale(1, 1000, 150)], rates, {
+      apportionmentEnabled: false,
+    });
+    expect(result.advanceGctCredit).toBe(0);
+    expect(result.purchases.importGct.taxAmount).toBe(0);
+    expect(result.netGct).toBe(150);
+  });
+});
+
 describe('getGctReturnDueDate', () => {
   it('is the last day of the next month', () => {
     expect(getGctReturnDueDate('2026-10-31')).toBe('2026-11-30'); // Mon

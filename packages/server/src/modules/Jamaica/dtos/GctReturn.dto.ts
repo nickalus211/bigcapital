@@ -46,11 +46,23 @@ class GctReturnSuppliesDto {
   totalAmount: number;
 }
 
+class GctReturnImportGctDto {
+  @ApiProperty({ description: 'CIF + duties the import GCT was charged on' })
+  taxableAmount: number;
+  @ApiProperty() taxAmount: number;
+}
+
 class GctReturnPurchasesDto {
   @ApiProperty({ type: [GctReturnRateLineDto] })
   standardRated: GctReturnRateLineDto[];
   @ApiProperty() standardRatedAmount: number;
   @ApiProperty() zeroRatedAndExemptAmount: number;
+  @ApiProperty({
+    type: GctReturnImportGctDto,
+    description:
+      'Import GCT paid at customs (customs entries); part of input_tax',
+  })
+  importGct: GctReturnImportGctDto;
   @ApiProperty() inputTax: number;
 }
 
@@ -91,7 +103,14 @@ export class GctReturnResponseDto {
   purchases: GctReturnPurchasesDto;
   @ApiProperty({ type: GctReturnApportionmentDto })
   apportionment: GctReturnApportionmentDto;
-  @ApiProperty({ description: 'Output tax less claimable input tax' })
+  @ApiProperty({
+    description: 'Advance GCT paid at customs, credited against the GCT due',
+  })
+  advanceGctCredit: number;
+  @ApiProperty({
+    description:
+      'Output tax less claimable input tax and the advance GCT credit',
+  })
   netGct: number;
   @ApiProperty({ enum: ['payable', 'refundable', 'nil'] })
   position: 'payable' | 'refundable' | 'nil';
