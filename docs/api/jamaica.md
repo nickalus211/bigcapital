@@ -104,3 +104,13 @@ with invoices. See [tax-invoice.md](tax-invoice.md).
 ## `GET /api/jamaica/gct-return` (M4)
 
 The GCT return for a period. See [gct-return.md](gct-return.md).
+
+## Withholding tax (M5)
+
+- `GET|POST /api/jamaica/wht-certificates`,
+  `GET|PUT|DELETE /api/jamaica/wht-certificates/:id`
+- `GET /api/jamaica/wht-summary?year=`
+
+See [withholding-tax.md](withholding-tax.md). Since M5 the setup also sets
+`tax.withholding_account_id` and seeds the `wht.specified_services_rate`
+parameter; re-run it on organizations set up earlier.

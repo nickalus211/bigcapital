@@ -128,6 +128,36 @@ describe('Payment Received (e2e)', () => {
       .expect(200);
   });
 
+  it('deposits the full amount when no withholding tax is sent', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/payments-received')
+      .set('organization-id', orgainzationId)
+      .set('Authorization', AuthorizationHeader)
+      .send(requestPaymentReceivedBody(invoice.id))
+      .expect(201);
+
+    const payment = await request(app.getHttpServer())
+      .get(`/payments-received/${response.body.id}`)
+      .set('organization-id', orgainzationId)
+      .set('Authorization', AuthorizationHeader)
+      .expect(200);
+
+    expect(payment.body.withholding_tax_amount).toBeNull();
+    expect(payment.body.deposit_amount).toBe(payment.body.amount);
+    expect(payment.body.formatted_withholding_tax_amount).toBe('');
+
+    const legs = await request(app.getHttpServer())
+      .get('/reports/transactions-by-reference')
+      .query({ referenceType: 'PaymentReceive', referenceId: response.body.id })
+      .set('organization-id', orgainzationId)
+      .set('Authorization', AuthorizationHeader)
+      .expect(200);
+    const depositDebit = legs.body.transactions
+      .filter((t) => t.account_id === 1000)
+      .reduce((sum, t) => sum + Number(t.debit?.amount ?? t.debit ?? 0), 0);
+    expect(depositDebit).toBe(payment.body.amount);
+  });
+
   it('/payments-received/:id/invoices (GET)', async () => {
     const response = await request(app.getHttpServer())
       .post('/payments-received')

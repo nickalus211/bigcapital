@@ -38,4 +38,5 @@ queries to camelCase for its DTOs, and converts responses back to snake_case
 - `<area>.md`: endpoint detail with before/after request and response
   examples, e.g. [dashboard.md](dashboard.md), [settings.md](settings.md),
   [document-tax.md](document-tax.md), [tax-invoice.md](tax-invoice.md),
+  [withholding-tax.md](withholding-tax.md),
   [gct-return.md](gct-return.md).

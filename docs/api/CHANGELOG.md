@@ -3,6 +3,48 @@
 Newest first. Every entry is backward compatible unless it is marked
 **BREAKING**, and none are.
 
+## M5: Withholding tax (2026-10-25)
+
+Details and examples: [withholding-tax.md](withholding-tax.md). Additive
+only.
+
+### Payments received: new optional request field `withholding_tax_amount`
+- Tax the customer withheld from the payment. The deposit account is debited
+  with `amount − withholding_tax_amount` and the withheld part with
+  `tax.withholding_account_id` (else the `wht-receivable` account). A/R is
+  still credited with the full `amount`.
+- Omitted on create: no withholding, identical to before. Omitted on edit:
+  the stored value is kept. `0` or `null` clears it.
+- New error `WITHHOLDING_TAX_EXCEEDS_AMOUNT` (400), only when the field is
+  sent above the amount.
+
+### Payments received: new response fields
+- `withholding_tax_amount` (`null` when none), `deposit_amount`,
+  `local_deposit_amount`, `local_withholding_tax_amount`,
+  `formatted_withholding_tax_amount` (`""` when none),
+  `formatted_deposit_amount`. On every payment; without withholding,
+  `deposit_amount` equals `amount`.
+
+### New endpoints (Jamaica feature)
+- `GET|POST /api/jamaica/wht-certificates`,
+  `GET|PUT|DELETE /api/jamaica/wht-certificates/:id`: withholding tax
+  certificates.
+- `GET /api/jamaica/wht-summary?year=`: withheld vs certified tax per
+  customer and the S04 line F24 credit.
+
+### Settings and setup
+- New setting `tax.withholding_account_id`. The Jamaica setup sets it to
+  the `wht-receivable` account and seeds the `wht.specified_services_rate`
+  tax parameter (3, unverified). Re-run `POST /api/jamaica/setup` on
+  organizations set up before M5; it only adds what is missing.
+
+### Migrations
+- `payment_receives.withholding_tax_amount` (nullable).
+- New table `wht_certificates`.
+
+### Invoice and estimate sync
+No change. Payment sync is unchanged unless it sends the new field.
+
 ## M4: GCT return (2026-10-22)
 
 Details: [gct-return.md](gct-return.md). Additive only.

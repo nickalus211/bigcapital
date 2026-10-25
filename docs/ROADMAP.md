@@ -27,8 +27,8 @@ requirements are in [`Jamaican Accounting Software Features.md`](../Jamaican%20A
 | [M2](milestones/M2-gct-engine.md) | GCT engine: tax after discounts (stored per line), tax on receipts, credit notes, vendor credits, estimates and expenses, input/output tax accounts, opt-in default tax from the item, tax-line and line-discount fixes | ✅ Done |
 | [M3](milestones/M3-tax-invoice.md) | Tax Invoice: "Tax Invoice" PDF with TRNs and per-line GCT, non-blocking compliance warnings in the API and the invoice drawer, tax lines on receipt, credit note and estimate PDFs and emails, invoice/bill preview after discounts | ✅ Done |
 | [M4](milestones/M4-gct-return.md) | GCT return (Form 4A style): supplies by tax type, output/input tax, apportionment, net GCT and due date; Reports → GCT Return | ✅ Done |
-| M5 | WHT 3% receivable on payments received, certificate tracking (S04 line F24) | ⏳ Next |
-| M6 | Customs/import landed cost (CIF, CD, SCF, EPL, ASD, CAF, import GCT, 5% advance GCT) | Outline |
+| [M5](milestones/M5-withholding-tax.md) | Withholding tax: tax withheld by customers on payments received (receivable account), WHT certificates, yearly summary and S04 line F24 credit; Reports → Withholding Tax | ✅ Done |
+| M6 | Customs/import landed cost (CIF, CD, SCF, EPL, ASD, CAF, import GCT, 5% advance GCT) | ⏳ Next |
 | M7 | Fixed asset register with capital allowances (dual book/tax ledgers) | Outline |
 | M8 | S04/S04A self-employed income tax engine (NIS, NHT, Education Tax, bands, loss carry-forward) | Outline |
 | M9 | Compliance/TCC dashboard and deadline reminders | Outline |
@@ -56,5 +56,7 @@ accountant or TAJ before the related milestone ships:
   a Dutch PwC source for it.
 - Record retention: the document says 7 years, while the Revenue
   Administration Act audit window is 6 years.
+- Withholding tax (M5): the 3% rate, the specified services and payment
+  threshold, and whether the S04 credit needs the payers' certificates.
 - Every rate and threshold: GCT 15%/25%/10%, the J$15M GCT registration
   threshold, NIS/NHT/Education Tax rates, income tax thresholds and bands.
