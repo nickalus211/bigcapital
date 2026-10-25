@@ -9,6 +9,12 @@ import { JamaicaSetupOnOrganizationBuildSubscriber } from './setup/JamaicaSetupO
 import { JamaicaSettingsService } from './settings/JamaicaSettings.service';
 import { JamaicaTaxInvoiceService } from './tax-invoice/JamaicaTaxInvoice.service';
 import { GctReturnService } from './gct-return/GctReturn.service';
+import { RegisterTenancyModel } from '../Tenancy/TenancyModels/Tenancy.module';
+import { WhtCertificate } from './withholding/models/WhtCertificate.model';
+import { WhtCertificatesService } from './withholding/WhtCertificates.service';
+import { WhtSummaryService } from './withholding/WhtSummary.service';
+
+const models = [RegisterTenancyModel(WhtCertificate)];
 
 /**
  * Jamaica localization (GCT, TAJ reporting, sole-trader tax).
@@ -16,7 +22,7 @@ import { GctReturnService } from './gct-return/GctReturn.service';
  * stays mergeable with upstream Bigcapital.
  */
 @Module({
-  imports: [TenancyModule, FeaturesModule, TaxRatesModule],
+  imports: [TenancyModule, FeaturesModule, TaxRatesModule, ...models],
   controllers: [JamaicaController],
   providers: [
     JamaicaFeatureGuard,
@@ -25,6 +31,8 @@ import { GctReturnService } from './gct-return/GctReturn.service';
     JamaicaSetupOnOrganizationBuildSubscriber,
     JamaicaTaxInvoiceService,
     GctReturnService,
+    WhtCertificatesService,
+    WhtSummaryService,
   ],
   exports: [JamaicaFeatureGuard, JamaicaSetupService, JamaicaTaxInvoiceService],
 })

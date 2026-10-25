@@ -323,6 +323,9 @@ export const SettingsOptions = {
     output_tax_account_id: {
       type: 'number',
     },
+    withholding_account_id: {
+      type: 'number',
+    },
   },
   jamaica: {
     gct_registered: {

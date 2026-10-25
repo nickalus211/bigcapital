@@ -88,6 +88,21 @@ export class PaymentReceivedGLEntries {
   };
 
   /**
+   * The account the withheld tax posts to; only looked up (and created when
+   * missing) for payments that have withholding tax.
+   * @param {PaymentReceived} paymentReceive
+   * @param {Knex.Transaction} trx
+   * @returns {Promise<number | null>}
+   */
+  private getWithholdingTaxAccountId = async (
+    paymentReceive: PaymentReceived,
+    trx?: Knex.Transaction,
+  ): Promise<number | null> => {
+    if (!(paymentReceive.withholdingTaxAmount > 0)) return null;
+    return this.taxAccounts.getWithholdingTaxAccountId(trx);
+  };
+
+  /**
    * Retrieves the payment receive accrual basis ledger.
    * @param {PaymentReceived} paymentReceive - Payment received.
    * @param {string} baseCurrencyCode - Base currency code.
@@ -111,11 +126,16 @@ export class PaymentReceivedGLEntries {
       'exchange-grain-loss',
     )) as Account;
 
+    const withholdingTaxAccountId = await this.getWithholdingTaxAccountId(
+      paymentReceive,
+      trx,
+    );
     const paymentReceivedAccrualGL = new PaymentReceivedAccrualGL(
       paymentReceive,
     )
       .setARAccountId(receivableAccount.id)
       .setExchangeGainOrLossAccountId(exGainLossAccount.id)
+      .setWithholdingTaxAccountId(withholdingTaxAccountId)
       .setBaseCurrencyCode(baseCurrencyCode);
 
     return paymentReceivedAccrualGL.getLedger();
@@ -141,8 +161,13 @@ export class PaymentReceivedGLEntries {
     const otherChargesAccount =
       await this.accountRepository.findOrCreateOtherChargesAccount({}, trx);
 
+    const withholdingTaxAccountId = await this.getWithholdingTaxAccountId(
+      paymentReceive,
+      trx,
+    );
     const paymentReceivedCashGL = new PaymentReceivedCashGL(paymentReceive)
       .setTaxPayableAccountId(taxPayableAccountId)
+      .setWithholdingTaxAccountId(withholdingTaxAccountId)
       .setDiscountAccountId(discountAccount.id)
       .setOtherChargesAccountId(otherChargesAccount.id);
 

@@ -22,6 +22,7 @@ export class PaymentReceivedCashGL {
   private taxPayableAccountId: number;
   private discountAccountId: number;
   private otherChargesAccountId: number;
+  private withholdingTaxAccountId: number | null = null;
 
   /**
    * Constructor method.
@@ -46,6 +47,24 @@ export class PaymentReceivedCashGL {
    * @param {number} discountAccountId - Discount account id.
    * @returns {PaymentReceivedCashGL}
    */
+  /**
+   * Sets the receivable account of the tax the customer withheld.
+   * @param {number | null} withholdingTaxAccountId
+   */
+  setWithholdingTaxAccountId(withholdingTaxAccountId: number | null) {
+    this.withholdingTaxAccountId = withholdingTaxAccountId;
+    return this;
+  }
+
+  /**
+   * Share of the payment the customer withheld as tax, 0 to 1.
+   * @returns {number}
+   */
+  private get withholdingShare(): number {
+    const { amount, withholdingTaxAmount } = this.paymentReceived;
+    return amount > 0 ? (withholdingTaxAmount || 0) / amount : 0;
+  }
+
   setDiscountAccountId(discountAccountId: number) {
     this.discountAccountId = discountAccountId;
     return this;
@@ -124,16 +143,33 @@ export class PaymentReceivedCashGL {
    * @param {PaymentReceivedEntry} entry - Payment received entry.
    * @returns {ILedgerEntry}
    */
-  private getPaymentEntryDepositEntry = (
+  private getPaymentEntryDepositEntries = (
     entry: PaymentReceivedEntry,
-  ): ILedgerEntry => {
-    return {
-      ...this.cashEntriesCommonEntry,
-      debit: this.getPaymentEntryLocalAmount(entry),
-      accountId: this.paymentReceived.depositAccountId,
-      index: 1,
-      accountNormal: AccountNormal.DEBIT,
-    };
+  ): ILedgerEntry[] => {
+    const localAmount = this.getPaymentEntryLocalAmount(entry);
+    // The withheld tax is spread over the invoices paid, by amount.
+    const withheld = localAmount * this.withholdingShare;
+
+    return [
+      {
+        ...this.cashEntriesCommonEntry,
+        debit: localAmount - withheld,
+        accountId: this.paymentReceived.depositAccountId,
+        index: 1,
+        accountNormal: AccountNormal.DEBIT,
+      },
+      ...(withheld
+        ? [
+            {
+              ...this.cashEntriesCommonEntry,
+              debit: withheld,
+              accountId: this.withholdingTaxAccountId,
+              index: 1,
+              accountNormal: AccountNormal.DEBIT,
+            },
+          ]
+        : []),
+    ];
   };
 
   /**
@@ -252,7 +288,7 @@ export class PaymentReceivedCashGL {
     }
 
     return [
-      this.getPaymentEntryDepositEntry(entry),
+      ...this.getPaymentEntryDepositEntries(entry),
       ...this.getPaymentEntryIncomeEntries(invoice, ratio),
       ...this.getPaymentEntryTaxEntries(invoice, ratio),
       ...this.getPaymentEntryDiscountEntry(invoice, ratio),

@@ -20,6 +20,8 @@ export class PaymentReceived extends TenantBaseModel {
   customerId: number;
   paymentDate: string;
   amount: number;
+  /** Tax the customer withheld; the deposit is `amount` less this. */
+  withholdingTaxAmount?: number | null;
   currencyCode: string;
   referenceNo: string;
   depositAccountId: number;
@@ -56,7 +58,37 @@ export class PaymentReceived extends TenantBaseModel {
    * Virtual attributes.
    */
   static get virtualAttributes() {
-    return ['localAmount'];
+    return [
+      'localAmount',
+      'depositAmount',
+      'localDepositAmount',
+      'localWithholdingTaxAmount',
+    ];
+  }
+
+  /**
+   * Amount that reached the deposit account: the payment less the tax the
+   * customer withheld.
+   * @returns {number}
+   */
+  get depositAmount() {
+    return this.amount - (this.withholdingTaxAmount || 0);
+  }
+
+  /**
+   * Deposit amount in base currency.
+   * @returns {number}
+   */
+  get localDepositAmount() {
+    return this.depositAmount * this.exchangeRate;
+  }
+
+  /**
+   * Withheld tax in base currency.
+   * @returns {number}
+   */
+  get localWithholdingTaxAmount() {
+    return (this.withholdingTaxAmount || 0) * this.exchangeRate;
   }
 
   /**

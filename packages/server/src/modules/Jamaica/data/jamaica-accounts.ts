@@ -8,6 +8,7 @@ export interface JamaicaAccountSeed {
 
 export const GCT_INPUT_TAX_SLUG = 'gct-input-tax';
 export const TAX_PAYABLE_SLUG = 'tax-payable';
+export const WHT_RECEIVABLE_SLUG = 'wht-receivable';
 
 /**
  * Accounts added to the chart of accounts for a Jamaican sole trader.
@@ -22,7 +23,7 @@ export const JAMAICA_ACCOUNTS: JamaicaAccountSeed[] = [
     description: 'Recoverable GCT paid on purchases and expenses.',
   },
   {
-    slug: 'wht-receivable',
+    slug: WHT_RECEIVABLE_SLUG,
     name: 'Withholding Tax Receivable',
     accountType: 'other-current-asset',
     code: '10012',

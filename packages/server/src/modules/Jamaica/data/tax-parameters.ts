@@ -14,7 +14,7 @@ export interface TaxParameterSeed {
 }
 
 /**
- * GCT parameters. Income tax, NIS, NHT and Education Tax parameters are
+ * GCT and withholding tax parameters. Income tax, NIS, NHT and Education Tax parameters are
  * added with the S04 engine (M8).
  */
 export const JAMAICA_TAX_PARAMETERS: TaxParameterSeed[] = [
@@ -45,6 +45,13 @@ export const JAMAICA_TAX_PARAMETERS: TaxParameterSeed[] = [
     jurisdiction: JAMAICA_JURISDICTION,
     key: 'gct.return_due',
     value: { rule: 'last_working_day_of_following_month' },
+    effectiveFrom: SEED_EFFECTIVE_FROM,
+    sourceNote: UNVERIFIED_SOURCE_NOTE,
+  },
+  {
+    jurisdiction: JAMAICA_JURISDICTION,
+    key: 'wht.specified_services_rate',
+    value: 3,
     effectiveFrom: SEED_EFFECTIVE_FROM,
     sourceNote: UNVERIFIED_SOURCE_NOTE,
   },

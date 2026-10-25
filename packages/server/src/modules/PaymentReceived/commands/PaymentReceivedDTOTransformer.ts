@@ -56,6 +56,14 @@ export class PaymentReceiveDTOTransformer {
 
     this.validators.validatePaymentNoRequire(paymentReceiveNo);
 
+    // The withheld tax is part of the payment, so it can't exceed it. An
+    // edit that omits the field keeps the stored amount.
+    this.validators.validateWithholdingTaxAmount(
+      paymentReceiveDTO.withholdingTaxAmount ??
+        oldPaymentReceive?.withholdingTaxAmount,
+      amount,
+    );
+
     const entries = R.compose(
       // Associate the default index to each item entry line.
       assocItemEntriesDefaultIndex,

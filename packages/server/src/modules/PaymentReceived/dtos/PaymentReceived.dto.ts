@@ -8,6 +8,7 @@ import {
   IsArray,
   IsNotEmpty,
   IsInt,
+  Min,
   ValidateNested,
 } from 'class-validator';
 import { ToNumber } from '@/common/decorators/Validators';
@@ -97,6 +98,18 @@ export class CommandPaymentReceivedDto {
     example: '123456',
   })
   paymentReceiveNo?: string;
+
+  @IsOptional()
+  @ToNumber()
+  @IsNumber()
+  @Min(0)
+  @ApiProperty({
+    description:
+      'Tax the customer withheld from the payment (e.g. Jamaica 3% withholding tax). The deposit account receives amount − withholding_tax_amount; the withheld part is a receivable (tax.withholding_account_id).',
+    required: false,
+    example: 30,
+  })
+  withholdingTaxAmount?: number;
 
   @IsOptional()
   @IsString()

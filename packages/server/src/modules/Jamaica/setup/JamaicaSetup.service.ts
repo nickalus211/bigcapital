@@ -25,6 +25,7 @@ import {
   JAMAICA_ACCOUNTS,
   JAMAICA_ACCOUNT_RENAMES,
   TAX_PAYABLE_SLUG,
+  WHT_RECEIVABLE_SLUG,
 } from '../data/jamaica-accounts';
 import { TaxPayableAccount } from '@/modules/Accounts/Accounts.constants';
 
@@ -33,6 +34,12 @@ export interface JamaicaSetupReport {
   created: string[];
   updated: string[];
   skipped: string[];
+}
+
+interface JamaicaSetupAccountIds {
+  inputTaxId: number;
+  outputTaxId: number;
+  withholdingTaxId?: number;
 }
 
 class DryRunRollback extends Error {}
@@ -95,7 +102,7 @@ export class JamaicaSetupService {
       updated: [],
       skipped: [],
     };
-    let accountIds: { inputTaxId: number; outputTaxId: number };
+    let accountIds: JamaicaSetupAccountIds;
 
     try {
       await this.uow.withTransaction(async (trx: Knex.Transaction) => {
@@ -240,7 +247,7 @@ export class JamaicaSetupService {
 
   /**
    * Upserts the Jamaica accounts and tidies the default chart of accounts.
-   * @returns {Promise<{ inputTaxId: number; outputTaxId: number }>}
+   * @returns {Promise<JamaicaSetupAccountIds>}
    */
   private async setupAccounts(
     report: JamaicaSetupReport,
@@ -304,7 +311,15 @@ export class JamaicaSetupService {
       .query(trx)
       .findOne({ slug: GCT_INPUT_TAX_SLUG });
 
-    return { inputTaxId: inputTax.id, outputTaxId: taxPayable.id };
+    const whtReceivable = await this.accountModel()
+      .query(trx)
+      .findOne({ slug: WHT_RECEIVABLE_SLUG });
+
+    return {
+      inputTaxId: inputTax.id,
+      outputTaxId: taxPayable.id,
+      withholdingTaxId: whtReceivable?.id,
+    };
   }
 
   /**
@@ -356,7 +371,7 @@ export class JamaicaSetupService {
    */
   private async setupSettings(
     report: JamaicaSetupReport,
-    accountIds: { inputTaxId: number; outputTaxId: number } | undefined,
+    accountIds: JamaicaSetupAccountIds | undefined,
     dryRun: boolean,
   ) {
     const settings = await this.settings();
@@ -373,6 +388,11 @@ export class JamaicaSetupService {
         group: 'tax',
         key: 'output_tax_account_id',
         value: accountIds?.outputTaxId,
+      },
+      {
+        group: 'tax',
+        key: 'withholding_account_id',
+        value: accountIds?.withholdingTaxId,
       },
       {
         group: 'jamaica',

@@ -5,6 +5,19 @@ import { AccountRepository } from '@/modules/Accounts/repositories/Account.repos
 import { TenantModelProxy } from '@/modules/System/models/TenantBaseModel';
 import { TaxSettingsService } from './TaxSettings.service';
 
+/** The account tax withheld by customers posts to, when none is set. */
+export const WithholdingTaxReceivableAccount = {
+  name: 'Withholding Tax Receivable',
+  slug: 'wht-receivable',
+  accountType: 'other-current-asset',
+  code: '10012',
+  description:
+    'Tax withheld by customers on specified services, claimable against income tax.',
+  active: true,
+  index: 1,
+  predefined: true,
+};
+
 /**
  * Resolves the accounts that sales and purchase tax post to. Output tax
  * (sales) and input tax (purchases) use `tax.output_tax_account_id` and
@@ -39,6 +52,35 @@ export class TaxAccountsService {
   public async getInputTaxAccountId(trx?: Knex.Transaction): Promise<number> {
     const { inputTaxAccountId } = await this.taxSettings.getTaxSettings();
     return this.resolveAccountId(inputTaxAccountId, trx);
+  }
+
+  /**
+   * Retrieves the account debited with tax a customer withheld from a
+   * payment: `tax.withholding_account_id` when set, else the
+   * `wht-receivable` account, created when missing.
+   * @param {Knex.Transaction} trx
+   * @returns {Promise<number>}
+   */
+  public async getWithholdingTaxAccountId(
+    trx?: Knex.Transaction,
+  ): Promise<number> {
+    const { withholdingTaxAccountId } = await this.taxSettings.getTaxSettings();
+
+    if (withholdingTaxAccountId) {
+      const account = await this.accountModel()
+        .query(trx)
+        .findById(withholdingTaxAccountId);
+      if (account) return account.id;
+    }
+    const existing = await this.accountModel()
+      .query(trx)
+      .findOne({ slug: WithholdingTaxReceivableAccount.slug });
+    if (existing) return existing.id;
+
+    const created = await this.accountModel()
+      .query(trx)
+      .insertAndFetch({ ...WithholdingTaxReceivableAccount });
+    return created.id;
   }
 
   /**

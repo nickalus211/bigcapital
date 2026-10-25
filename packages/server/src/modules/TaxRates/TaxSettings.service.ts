@@ -13,6 +13,8 @@ export interface TaxSettings {
   inputTaxAccountId: number | null;
   /** Account credited with output tax on sales. Tax payable when unset. */
   outputTaxAccountId: number | null;
+  /** Account debited with tax customers withhold from payments. */
+  withholdingTaxAccountId: number | null;
 }
 
 /**
@@ -44,6 +46,7 @@ export class TaxSettingsService {
       defaultFromItem: !!get('default_from_item', false),
       inputTaxAccountId: toAccountId(get('input_tax_account_id')),
       outputTaxAccountId: toAccountId(get('output_tax_account_id')),
+      withholdingTaxAccountId: toAccountId(get('withholding_account_id')),
     };
   }
 }

@@ -26,6 +26,7 @@ export interface IPaymentReceivedCreateDTO {
   depositAccountId: number;
   paymentReceiveNo?: string;
   statement?: string;
+  withholdingTaxAmount?: number;
   entries: IPaymentReceivedEntryDTO[];
 
   branchId?: number;
@@ -43,6 +44,7 @@ export interface IPaymentReceivedEditDTO {
   statement: string;
   entries: IPaymentReceivedEntryDTO[];
   branchId?: number;
+  withholdingTaxAmount?: number;
   attachments?: AttachmentLinkDTO[];
 }
 

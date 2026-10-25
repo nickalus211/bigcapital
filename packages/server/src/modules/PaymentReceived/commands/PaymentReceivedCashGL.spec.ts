@@ -242,4 +242,30 @@ describe('PaymentReceivedCashGL', () => {
     expect(totalDebit).toBeCloseTo(totalCredit, 2);
     expect(findEntry(entries, 100).debit).toBe(825);
   });
+
+  it('debits the withheld tax to the withholding tax account', () => {
+    const first = buildInvoice([buildItemEntry()], { totalLocal: 1000 });
+    const second = buildInvoice([buildItemEntry({ totalExcludingTax: 500 })], {
+      id: 11,
+      totalLocal: 500,
+    });
+    const payment = {
+      ...buildPayment(),
+      amount: 1500,
+      withholdingTaxAmount: 45,
+      entries: [buildPaymentEntry(first, 1000), buildPaymentEntry(second, 500)],
+    } as unknown as PaymentReceived;
+
+    const entries = buildGL(payment)
+      .setWithholdingTaxAccountId(600)
+      .GLEntries();
+    const sumOf = (accountId: number, field: 'debit' | 'credit') =>
+      entries
+        .filter((entry) => entry.accountId === accountId)
+        .reduce((total, entry) => total + entry[field], 0);
+
+    expect(sumOf(100, 'debit')).toBeCloseTo(1455, 6);
+    expect(sumOf(600, 'debit')).toBeCloseTo(45, 6);
+    expect(sumOf(500, 'credit')).toBe(1500);
+  });
 });

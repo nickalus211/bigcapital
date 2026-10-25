@@ -17,6 +17,8 @@ export class PaymentReceiveTransfromer extends Transformer {
       'formattedCreatedAt',
       'formattedAmount',
       'formattedExchangeRate',
+      'formattedWithholdingTaxAmount',
+      'formattedDepositAmount',
       'entries',
       'attachments',
     ];
@@ -70,6 +72,32 @@ export class PaymentReceiveTransfromer extends Transformer {
    */
   protected formattedAmount = (payment: PaymentReceived): string => {
     return this.formatNumber(payment.amount, {
+      currencyCode: payment.currencyCode,
+    });
+  };
+
+  /**
+   * Retrieves the formatted tax the customer withheld, empty when none.
+   * @param {PaymentReceived} payment
+   * @returns {string}
+   */
+  protected formattedWithholdingTaxAmount = (
+    payment: PaymentReceived,
+  ): string => {
+    if (!payment.withholdingTaxAmount) return '';
+
+    return this.formatNumber(payment.withholdingTaxAmount, {
+      currencyCode: payment.currencyCode,
+    });
+  };
+
+  /**
+   * Retrieves the formatted amount deposited (amount less withheld tax).
+   * @param {PaymentReceived} payment
+   * @returns {string}
+   */
+  protected formattedDepositAmount = (payment: PaymentReceived): string => {
+    return this.formatNumber(payment.depositAmount, {
       currencyCode: payment.currencyCode,
     });
   };

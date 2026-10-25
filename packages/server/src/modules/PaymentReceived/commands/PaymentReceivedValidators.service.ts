@@ -208,6 +208,23 @@ export class PaymentReceivedValidators {
   }
 
   /**
+   * Validates the withheld tax is not more than the payment amount.
+   * @param {number} withholdingTaxAmount
+   * @param {number} amount
+   */
+  public validateWithholdingTaxAmount(
+    withholdingTaxAmount: number | undefined,
+    amount: number,
+  ) {
+    if ((withholdingTaxAmount || 0) > amount) {
+      throw new ServiceError(
+        ERRORS.WITHHOLDING_TAX_EXCEEDS_AMOUNT,
+        'The withholding tax amount can not exceed the payment amount.',
+      );
+    }
+  }
+
+  /**
    * Validate the payment customer whether modified.
    * @param {EditPaymentReceivedDto} paymentReceiveDTO
    * @param {PaymentReceived} oldPaymentReceive

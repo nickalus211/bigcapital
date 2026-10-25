@@ -75,6 +75,37 @@ export class PaymentReceivedResponseDto {
   @ApiProperty({ description: 'The formatted amount', example: '100.00' })
   formattedAmount: string;
 
+  @ApiProperty({
+    description:
+      'Tax the customer withheld from the payment (Jamaica WHT). Null when none.',
+    example: 30,
+    required: false,
+    nullable: true,
+  })
+  withholdingTaxAmount?: number | null;
+
+  @ApiProperty({
+    description: 'Formatted withheld tax; empty when none.',
+    example: '30.00',
+    required: false,
+  })
+  formattedWithholdingTaxAmount?: string;
+
+  @ApiProperty({
+    description:
+      'Amount deposited to the deposit account: amount − withholding_tax_amount.',
+    example: 970,
+    required: false,
+  })
+  depositAmount?: number;
+
+  @ApiProperty({
+    description: 'Formatted deposit amount.',
+    example: '970.00',
+    required: false,
+  })
+  formattedDepositAmount?: string;
+
   @ApiProperty({ description: 'The formatted total', example: '100.00 USD' })
   formattedTotal: string;
 

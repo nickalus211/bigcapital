@@ -10,6 +10,7 @@ export class PaymentReceivedAccrualGL {
   private ARAccountId: number;
   private exchangeGainOrLossAccountId: number;
   private baseCurrencyCode: string;
+  private withholdingTaxAccountId: number | null = null;
 
   /**
    * Constructor method.
@@ -44,6 +45,15 @@ export class PaymentReceivedAccrualGL {
    * @param {string} baseCurrencyCode - Base currency code.
    * @returns {PaymentReceivedAccrualGL}
    */
+  /**
+   * Sets the receivable account of the tax the customer withheld.
+   * @param {number | null} withholdingTaxAccountId
+   */
+  setWithholdingTaxAccountId(withholdingTaxAccountId: number | null) {
+    this.withholdingTaxAccountId = withholdingTaxAccountId;
+    return this;
+  }
+
   setBaseCurrencyCode(baseCurrencyCode: string) {
     this.baseCurrencyCode = baseCurrencyCode;
     return this;
@@ -141,11 +151,32 @@ export class PaymentReceivedAccrualGL {
 
     return {
       ...commonJournal,
-      debit: this.paymentReceived.localAmount,
+      // The customer withheld part of the payment; the rest was deposited.
+      debit: this.paymentReceived.localDepositAmount,
       accountId: this.paymentReceived.depositAccountId,
       index: 2,
       accountNormal: AccountNormal.DEBIT,
     };
+  }
+
+  /**
+   * Retrieves the receivable entry of the tax the customer withheld.
+   * @returns {ILedgerEntry[]}
+   */
+  private get paymentWithholdingTaxEntries(): ILedgerEntry[] {
+    const amount = this.paymentReceived.localWithholdingTaxAmount;
+
+    return amount
+      ? [
+          {
+            ...this.paymentReceiveCommonEntry,
+            debit: amount,
+            accountId: this.withholdingTaxAccountId,
+            index: 2,
+            accountNormal: AccountNormal.DEBIT,
+          },
+        ]
+      : [];
   }
 
   /**
@@ -186,7 +217,12 @@ export class PaymentReceivedAccrualGL {
     // Exchange gain/loss entries.
     const gainLossEntries = this.paymentExchangeGainLossEntry;
 
-    return [paymentDepositEntry, receivableEntry, ...gainLossEntries];
+    return [
+      paymentDepositEntry,
+      ...this.paymentWithholdingTaxEntries,
+      receivableEntry,
+      ...gainLossEntries,
+    ];
   }
 
   /**
