@@ -23,7 +23,9 @@ that the sync keeps working without code changes.
    is listed under "Fixes that apply to every tenant" in the changelog, with
    the before and after values. M2 has two (invoice tax line amounts and
    invoice balances with line discounts); M3 has three (credit note and
-   journal numbering, the receipt PDF, and webapp edit totals).
+   journal numbering, the receipt PDF, and webapp edit totals); the estimate
+   adjustment fix is one; M6 has one (landed cost allocation to some of a
+   bill's lines).
 
 ## Wire format
 
@@ -39,4 +41,5 @@ queries to camelCase for its DTOs, and converts responses back to snake_case
   examples, e.g. [dashboard.md](dashboard.md), [settings.md](settings.md),
   [document-tax.md](document-tax.md), [tax-invoice.md](tax-invoice.md),
   [withholding-tax.md](withholding-tax.md),
+  [customs-entries.md](customs-entries.md),
   [gct-return.md](gct-return.md).

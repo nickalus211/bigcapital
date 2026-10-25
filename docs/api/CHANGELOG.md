@@ -3,6 +3,60 @@
 Newest first. Every entry is backward compatible unless it is marked
 **BREAKING**, and none are.
 
+## M6: Customs entries (2026-10-25)
+
+Details and examples: [customs-entries.md](customs-entries.md). Additive
+only for the API; one landed cost fix applies to every tenant.
+
+### New endpoints (Jamaica feature, expense permissions)
+- `POST /api/jamaica/customs-entries/calculate`: works out CIF, Customs
+  Duty, SCF, EPL, import GCT and advance GCT, and the allocation to the
+  bill's inventory lines, without saving.
+- `GET|POST /api/jamaica/customs-entries`,
+  `GET|PUT|DELETE /api/jamaica/customs-entries/:id`. Saving posts the duties
+  as an expense allocated to the goods bill as a landed cost, import GCT to
+  GCT Input Tax, and advance GCT to Advance GCT.
+
+### GCT return: new response fields
+- `purchases.import_gct` (`taxable_amount`, `tax_amount`), included in
+  `purchases.input_tax`; `advance_gct_credit`, subtracted in `net_gct`;
+  `documents.customs_entries`. All zero without customs entries, so
+  existing figures don't change.
+
+### Expenses
+- Deleting an expense that a customs entry posted fails with
+  `CUSTOMS_ENTRY_EXPENSE` (400). Other expenses are unaffected.
+
+### Ledger
+- New reference type `CustomsEntry` (label "Customs Entry") in the
+  transactions reports.
+
+### Setup
+- The Jamaica setup adds the Advance GCT (10013) and Customs Duties & Fees
+  (40014) accounts, the `customs.scf_rate`, `customs.epl_rate`,
+  `customs.import_gct_rate` and `customs.advance_gct_rate` parameters
+  (unverified), and turns on `features.landed_cost` when unset. Re-run it on
+  organizations set up earlier.
+
+### Migrations
+- New table `customs_entries`.
+
+### Fixes that apply to every tenant
+- **Landed cost allocation to some of a bill's lines was refused.**
+  `POST /api/landed-cost/bills/:billId/allocate` required `items` to list
+  every line of the bill (otherwise `LANDED_COST_ITEMS_IDS_NOT_FOUND`), and
+  accepted ids of lines from other bills. It now accepts any subset of the
+  bill's lines and refuses lines that aren't on the bill.
+
+  | `items` (bill lines 1, 2) | Before | After |
+  |---|---|---|
+  | `[1, 2]` | allocated | allocated |
+  | `[2]` | 400 | allocated |
+  | `[1, 2, 99]` | allocated | 400 |
+
+### Invoice and estimate sync
+No change.
+
 ## M5: Withholding tax (2026-10-25)
 
 Details and examples: [withholding-tax.md](withholding-tax.md). Additive

@@ -28,8 +28,8 @@ requirements are in [`Jamaican Accounting Software Features.md`](../Jamaican%20A
 | [M3](milestones/M3-tax-invoice.md) | Tax Invoice: "Tax Invoice" PDF with TRNs and per-line GCT, non-blocking compliance warnings in the API and the invoice drawer, tax lines on receipt, credit note and estimate PDFs and emails, invoice/bill preview after discounts | ✅ Done |
 | [M4](milestones/M4-gct-return.md) | GCT return (Form 4A style): supplies by tax type, output/input tax, apportionment, net GCT and due date; Reports → GCT Return | ✅ Done |
 | [M5](milestones/M5-withholding-tax.md) | Withholding tax: tax withheld by customers on payments received (receivable account), WHT certificates, yearly summary and S04 line F24 credit; Reports → Withholding Tax | ✅ Done |
-| M6 | Customs/import landed cost (CIF, CD, SCF, EPL, ASD, CAF, import GCT, 5% advance GCT) | ⏳ Next |
-| M7 | Fixed asset register with capital allowances (dual book/tax ledgers) | Outline |
+| [M6](milestones/M6-customs-entries.md) | Customs entries (C78): CIF, CD, SCF, EPL, ASD, SCT, CAF into inventory cost via landed cost; import GCT as input tax and advance GCT credited on the GCT return; Purchases → Customs Entries | ✅ Done |
+| M7 | Fixed asset register with capital allowances (dual book/tax ledgers) | ⏳ Next |
 | M8 | S04/S04A self-employed income tax engine (NIS, NHT, Education Tax, bands, loss carry-forward) | Outline |
 | M9 | Compliance/TCC dashboard and deadline reminders | Outline |
 | M10 | RAiS export package | Outline |
@@ -56,6 +56,8 @@ accountant or TAJ before the related milestone ships:
   a Dutch PwC source for it.
 - Record retention: the document says 7 years, while the Revenue
   Administration Act audit window is 6 years.
+- Customs (M6): the SCF and EPL rates (0.3% and 0.5% or 0.85%), the import
+  GCT base, and the base, rate and timing of the advance GCT credit.
 - Withholding tax (M5): the 3% rate, the specified services and payment
   threshold, and whether the S04 credit needs the payers' certificates.
 - Every rate and threshold: GCT 15%/25%/10%, the J$15M GCT registration

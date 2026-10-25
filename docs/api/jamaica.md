@@ -114,3 +114,13 @@ The GCT return for a period. See [gct-return.md](gct-return.md).
 See [withholding-tax.md](withholding-tax.md). Since M5 the setup also sets
 `tax.withholding_account_id` and seeds the `wht.specified_services_rate`
 parameter; re-run it on organizations set up earlier.
+
+## Customs entries (M6)
+
+- `POST /api/jamaica/customs-entries/calculate`
+- `GET|POST /api/jamaica/customs-entries`,
+  `GET|PUT|DELETE /api/jamaica/customs-entries/:id`
+
+See [customs-entries.md](customs-entries.md). Since M6 the setup also adds
+the Advance GCT and Customs Duties & Fees accounts, the `customs.*` rate
+parameters, and turns on landed costs.
