@@ -140,7 +140,28 @@ used.
   placeholders. The GCT Return for the month showed "Imports · GCT paid at
   customs" and the advance GCT credit.
 
-**Full server e2e suite:** running; results follow in the next commit.
+**Full server e2e suite: 68 files, 389/389 tests passed**, one file per
+process, with no Jest retries used:
+
+| | | | |
+|---|---|---|---|
+| `accounts` 10/10 | `api-keys` 2/2 | `attachments` 1/1 | `auth` 3/3 |
+| `balance-sheet` 41/41 | `bank-rules` 5/5 | `banking-accounts` 2/2 | `banking-categorize` 3/3 |
+| `banking-exclude` 5/5 | `banking-matching` 3/3 | `banking-pending` 1/1 | `banking-recognized` 2/2 |
+| `banking-transactions` 3/3 | `banking-uncategorized` 3/3 | `bill-landed-costs` 9/9 | `bill-payments` 8/8 |
+| `bills` 9/9 | `branches` 5/5 | `cash-flow-statement-beginning` 2/2 | `cash-flow-statement` 3/3 |
+| `contacts` 3/3 | `credit-note-refunds` 1/1 | `credit-notes-apply-invoice` 1/1 | `credit-notes` 4/4 |
+| `currencies` 5/5 | `customers` 5/5 | `dashboard` 3/3 | `expenses` 5/5 |
+| `export` 1/1 | `financial-statements` 20/20 | `gl-accounting-basis` 17/17 | `gl-purchases` 10/10 |
+| `gl-sales` 13/13 | `import` 1/1 | `inventory-adjustment` 5/5 | `inventory-cost` 1/1 |
+| `item-categories` 3/3 | `items` 13/13 | `jamaica-customs` 9/9 | `jamaica-gct-return` 3/3 |
+| `jamaica-gct` 10/10 | `jamaica-tax-invoice` 5/5 | `jamaica-withholding` 5/5 | `jamaica` 11/11 |
+| `manual-journal` 8/8 | `organization` 3/3 | `payment-links` 1/1 | `payment-received` 8/8 |
+| `payment-services` 3/3 | `pdf-templates` 4/4 | `resource` 1/1 | `roles` 6/6 |
+| `sale-estimates` 11/11 | `sale-invoices` 11/11 | `sale-receipts` 6/6 | `settings` 3/3 |
+| `tax-engine-compat` 7/7 | `tax-rates` 3/3 | `transactions-locking` 6/6 | `users-invite` 1/1 |
+| `users` 5/5 | `vendor-credits-apply-bill` 4/4 | `vendor-credits-refund` 3/3 | `vendor-credits` 4/4 |
+| `vendors` 4/4 | `views` 1/1 | `warehouse-transfers` 7/7 | `warehouses` 5/5 |
 
 ## Known limitations
 
