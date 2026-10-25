@@ -4063,6 +4063,320 @@
         ]
       }
     },
+    "/api/jamaica/wht-summary": {
+      "get": {
+        "operationId": "JamaicaController_getWhtSummary",
+        "summary": "Withholding tax of a tax year: tax withheld from payments per customer against certificates, and the S04 credit (line F24).",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "year",
+            "required": false,
+            "in": "query",
+            "description": "The tax year (calendar year). Defaults to the previous year.",
+            "schema": {
+              "example": 2026,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhtSummaryResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Jamaica"
+        ]
+      }
+    },
+    "/api/jamaica/wht-certificates": {
+      "get": {
+        "operationId": "JamaicaController_getWhtCertificates",
+        "summary": "Lists the withholding tax certificates.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "taxYear",
+            "required": false,
+            "in": "query",
+            "description": "Filter by tax year.",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "customerId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by customer.",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WhtCertificateResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Jamaica"
+        ]
+      },
+      "post": {
+        "operationId": "JamaicaController_createWhtCertificate",
+        "summary": "Records a withholding tax certificate.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWhtCertificateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhtCertificateResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Jamaica"
+        ]
+      }
+    },
+    "/api/jamaica/wht-certificates/{id}": {
+      "get": {
+        "operationId": "JamaicaController_getWhtCertificate",
+        "summary": "Retrieves a withholding tax certificate.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhtCertificateResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Jamaica"
+        ]
+      },
+      "put": {
+        "operationId": "JamaicaController_editWhtCertificate",
+        "summary": "Edits a withholding tax certificate.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditWhtCertificateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhtCertificateResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Jamaica"
+        ]
+      },
+      "delete": {
+        "operationId": "JamaicaController_deleteWhtCertificate",
+        "summary": "Deletes a withholding tax certificate.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Jamaica"
+        ]
+      }
+    },
     "/api/jamaica/gct-return": {
       "get": {
         "operationId": "JamaicaController_getGctReturn",
@@ -29383,6 +29697,306 @@
           "warnings"
         ]
       },
+      "WhtCertificateResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "customerId": {
+            "type": "number"
+          },
+          "customerName": {
+            "type": "string"
+          },
+          "certificateNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "certificateDate": {
+            "type": "string"
+          },
+          "taxYear": {
+            "type": "number"
+          },
+          "periodFrom": {
+            "type": "string",
+            "nullable": true
+          },
+          "periodTo": {
+            "type": "string",
+            "nullable": true
+          },
+          "amount": {
+            "type": "number"
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "customerId",
+          "certificateNumber",
+          "certificateDate",
+          "taxYear",
+          "periodFrom",
+          "periodTo",
+          "amount",
+          "note"
+        ]
+      },
+      "WhtCustomerSummaryDto": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "number"
+          },
+          "customerName": {
+            "type": "string"
+          },
+          "customerTaxNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "paymentsCount": {
+            "type": "number"
+          },
+          "certificatesCount": {
+            "type": "number"
+          },
+          "withheldAmount": {
+            "type": "number"
+          },
+          "certifiedAmount": {
+            "type": "number"
+          },
+          "differenceAmount": {
+            "type": "number",
+            "description": "Withheld less certified; positive means certificates are missing."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "certified",
+              "missing",
+              "over_certified"
+            ]
+          }
+        },
+        "required": [
+          "customerId",
+          "customerName",
+          "customerTaxNumber",
+          "paymentsCount",
+          "certificatesCount",
+          "withheldAmount",
+          "certifiedAmount",
+          "differenceAmount",
+          "status"
+        ]
+      },
+      "WhtSummaryTotalsDto": {
+        "type": "object",
+        "properties": {
+          "withheldAmount": {
+            "type": "number"
+          },
+          "certifiedAmount": {
+            "type": "number"
+          },
+          "uncertifiedAmount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "withheldAmount",
+          "certifiedAmount",
+          "uncertifiedAmount"
+        ]
+      },
+      "WhtS04Dto": {
+        "type": "object",
+        "properties": {
+          "line": {
+            "type": "string",
+            "example": "F24"
+          },
+          "creditAmount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "line",
+          "creditAmount"
+        ]
+      },
+      "WhtWarningDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ]
+      },
+      "WhtSummaryResponseDto": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "number"
+          },
+          "fromDate": {
+            "type": "string"
+          },
+          "toDate": {
+            "type": "string"
+          },
+          "currencyCode": {
+            "type": "string"
+          },
+          "rate": {
+            "type": "number",
+            "description": "The seeded WHT rate on specified services, %."
+          },
+          "customers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WhtCustomerSummaryDto"
+            }
+          },
+          "totals": {
+            "$ref": "#/components/schemas/WhtSummaryTotalsDto"
+          },
+          "s04": {
+            "$ref": "#/components/schemas/WhtS04Dto"
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WhtWarningDto"
+            }
+          }
+        },
+        "required": [
+          "year",
+          "fromDate",
+          "toDate",
+          "currencyCode",
+          "rate",
+          "customers",
+          "totals",
+          "s04",
+          "warnings"
+        ]
+      },
+      "CreateWhtCertificateDto": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "number",
+            "description": "The customer that withheld the tax.",
+            "example": 5
+          },
+          "certificateNumber": {
+            "type": "string",
+            "nullable": true,
+            "description": "The number printed on the certificate.",
+            "example": "WHT-2026-0012"
+          },
+          "certificateDate": {
+            "type": "string",
+            "description": "The date of the certificate (YYYY-MM-DD).",
+            "example": "2027-01-15"
+          },
+          "taxYear": {
+            "type": "number",
+            "description": "The tax year the withheld tax belongs to. Defaults to the year of period_to, else of certificate_date.",
+            "example": 2026
+          },
+          "periodFrom": {
+            "type": "string",
+            "nullable": true,
+            "example": "2026-01-01"
+          },
+          "periodTo": {
+            "type": "string",
+            "nullable": true,
+            "example": "2026-12-31"
+          },
+          "amount": {
+            "type": "number",
+            "description": "The tax certified, in the base currency.",
+            "example": 300
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "customerId",
+          "certificateDate",
+          "amount"
+        ]
+      },
+      "EditWhtCertificateDto": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "number",
+            "description": "The customer that withheld the tax.",
+            "example": 5
+          },
+          "certificateNumber": {
+            "type": "string",
+            "nullable": true,
+            "description": "The number printed on the certificate.",
+            "example": "WHT-2026-0012"
+          },
+          "certificateDate": {
+            "type": "string",
+            "description": "The date of the certificate (YYYY-MM-DD).",
+            "example": "2027-01-15"
+          },
+          "taxYear": {
+            "type": "number",
+            "description": "The tax year the withheld tax belongs to. Defaults to the year of period_to, else of certificate_date.",
+            "example": 2026
+          },
+          "periodFrom": {
+            "type": "string",
+            "nullable": true,
+            "example": "2026-01-01"
+          },
+          "periodTo": {
+            "type": "string",
+            "nullable": true,
+            "example": "2026-12-31"
+          },
+          "amount": {
+            "type": "number",
+            "description": "The tax certified, in the base currency.",
+            "example": 300
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "customerId",
+          "certificateDate",
+          "amount"
+        ]
+      },
       "JamaicaSetupDto": {
         "type": "object",
         "properties": {
@@ -30051,6 +30665,27 @@
             "description": "The formatted amount",
             "example": "100.00"
           },
+          "withholdingTaxAmount": {
+            "type": "number",
+            "description": "Tax the customer withheld from the payment (Jamaica WHT). Null when none.",
+            "example": 30,
+            "nullable": true
+          },
+          "formattedWithholdingTaxAmount": {
+            "type": "string",
+            "description": "Formatted withheld tax; empty when none.",
+            "example": "30.00"
+          },
+          "depositAmount": {
+            "type": "number",
+            "description": "Amount deposited to the deposit account: amount − withholding_tax_amount.",
+            "example": 970
+          },
+          "formattedDepositAmount": {
+            "type": "string",
+            "description": "Formatted deposit amount.",
+            "example": "970.00"
+          },
           "formattedTotal": {
             "type": "string",
             "description": "The formatted total",
@@ -30358,6 +30993,11 @@
             "description": "The payment receive number of the payment received",
             "example": "123456"
           },
+          "withholdingTaxAmount": {
+            "type": "number",
+            "description": "Tax the customer withheld from the payment (e.g. Jamaica 3% withholding tax). The deposit account receives amount − withholding_tax_amount; the withheld part is a receivable (tax.withholding_account_id).",
+            "example": 30
+          },
           "statement": {
             "type": "string",
             "description": "The statement of the payment received",
@@ -30446,6 +31086,11 @@
             "type": "string",
             "description": "The payment receive number of the payment received",
             "example": "123456"
+          },
+          "withholdingTaxAmount": {
+            "type": "number",
+            "description": "Tax the customer withheld from the payment (e.g. Jamaica 3% withholding tax). The deposit account receives amount − withholding_tax_amount; the withheld part is a receivable (tax.withholding_account_id).",
+            "example": 30
           },
           "statement": {
             "type": "string",

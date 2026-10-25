@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import {
   usePaymentReceiveTotals,
   usePaymentReceivedTotalExceededAmount,
+  usePaymentReceivedWithholding,
 } from './utils';
 import {
   T,
@@ -16,6 +17,8 @@ import {
 export function PaymentReceiveFormFootetRight() {
   const { formattedSubtotal, formattedTotal } = usePaymentReceiveTotals();
   const exceededAmount = usePaymentReceivedTotalExceededAmount();
+  const { withholdingTaxAmount, depositAmount } =
+    usePaymentReceivedWithholding();
 
   return (
     <PaymentReceiveTotalLines labelColWidth={'180px'} amountColWidth={'180px'}>
@@ -29,6 +32,22 @@ export function PaymentReceiveFormFootetRight() {
         value={formattedTotal}
         textStyle={TotalLineTextStyle.Bold}
       />
+      {withholdingTaxAmount > 0 && (
+        <>
+          <TotalLine
+            title={'Tax withheld by customer'}
+            value={
+              <FormatNumber value={-withholdingTaxAmount} noZero={false} />
+            }
+            textStyle={TotalLineTextStyle.Regular}
+          />
+          <TotalLine
+            title={'Deposit amount'}
+            value={<FormatNumber value={depositAmount} noZero={false} />}
+            textStyle={TotalLineTextStyle.Regular}
+          />
+        </>
+      )}
       <TotalLine
         title={'Exceeded Amount'}
         value={<FormatNumber value={exceededAmount} noZero={false} />}

@@ -5,6 +5,7 @@ import {
   ReportsAction,
   AbilitySubject,
   AuditLogAction,
+  PaymentReceiveAction,
 } from '@/constants/abilityOption';
 import { Features } from '@/constants/features';
 
@@ -202,6 +203,14 @@ export const financialReportMenus: FinancialSection[] = [
         link: '/financial-reports/gct-return',
         subject: AbilitySubject.Report,
         ability: ReportsAction.READ_SALES_TAX_LIABILITY_SUMMARY,
+        feature: Features.Jamaica,
+      },
+      {
+        title: 'Withholding Tax',
+        desc: 'Tax customers withheld from payments, certificates and the S04 credit',
+        link: '/financial-reports/withholding-tax',
+        subject: AbilitySubject.PaymentReceive,
+        ability: PaymentReceiveAction.View,
         feature: Features.Jamaica,
       },
     ],

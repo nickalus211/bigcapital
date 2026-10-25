@@ -43,6 +43,7 @@ export type PaymentReceiveFormValues = {
   paymentReceiveNoManually: string;
   statement: string;
   amount: string | number;
+  withholdingTaxAmount: string | number;
   currencyCode: string;
   exchangeRate: number;
   entries: PaymentReceiveEntry[];
@@ -64,6 +65,7 @@ export type PaymentReceiveRequestBody = {
   paymentReceiveNo?: string;
   branchId: string | number;
   statement: string;
+  withholdingTaxAmount?: number | null;
   entries: PaymentReceiveRequestEntry[];
   attachments: unknown[];
 };
@@ -100,6 +102,7 @@ export const defaultPaymentReceive: PaymentReceiveFormValues = {
   paymentReceiveNoManually: '',
   statement: '',
   amount: '',
+  withholdingTaxAmount: '',
   currencyCode: '',
   exchangeRate: 1,
   entries: [],
@@ -277,6 +280,11 @@ export const transformFormToRequest = (
     ...(form.paymentReceiveNoManually && {
       paymentReceiveNo: form.paymentReceiveNo,
     }),
+    // Empty means no withholding tax (null clears it on edit).
+    withholdingTaxAmount:
+      form.withholdingTaxAmount === '' || form.withholdingTaxAmount == null
+        ? null
+        : Number(form.withholdingTaxAmount),
     entries: orderingLinesIndexes(entries),
     attachments,
   } as PaymentReceiveRequestBody;
@@ -317,6 +325,12 @@ export const transformErrors = (
     setFieldError(
       'paymentReceiveNo',
       intl.get('payment_received.field.error.payment_receive_no_required'),
+    );
+  }
+  if (getError('WITHHOLDING_TAX_EXCEEDS_AMOUNT')) {
+    setFieldError(
+      'withholdingTaxAmount',
+      'The withheld tax can not exceed the amount.',
     );
   }
   if (getError('PAYMENT_ACCOUNT_CURRENCY_INVALID')) {
@@ -372,6 +386,21 @@ export const usePaymentReceivedTotalAmount = () => {
   } = useFormikContext<PaymentReceiveFormValues>();
 
   return amount;
+};
+
+/**
+ * The tax withheld by the customer and the amount left for the deposit.
+ */
+export const usePaymentReceivedWithholding = () => {
+  const {
+    values: { amount, withholdingTaxAmount },
+  } = useFormikContext<PaymentReceiveFormValues>();
+
+  const withheld = Number(withholdingTaxAmount || 0);
+  return {
+    withholdingTaxAmount: withheld,
+    depositAmount: Number(amount || 0) - withheld,
+  };
 };
 
 export const usePaymentReceivedTotalExceededAmount = (): number => {

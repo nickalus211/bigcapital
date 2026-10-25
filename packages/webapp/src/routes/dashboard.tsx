@@ -506,6 +506,20 @@ export const getDashboardRoutes = () => [
     subscriptionActive: [SUBSCRIPTION_TYPE.MAIN],
   },
   {
+    path: '/financial-reports/withholding-tax',
+    component: lazy(() =>
+      import(
+        '@/containers/FinancialStatements/WithholdingTax/WithholdingTax'
+      ).then((m) => ({ default: m.WithholdingTax })),
+    ),
+    breadcrumb: 'Withholding Tax',
+    pageTitle: 'Withholding Tax',
+    backLink: true,
+    sidebarExpand: false,
+    feature: Features.Jamaica,
+    subscriptionActive: [SUBSCRIPTION_TYPE.MAIN],
+  },
+  {
     path: '/financial-reports/sales-tax-liability-summary',
     component: lazy(() =>
       import(

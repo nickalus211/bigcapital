@@ -747,6 +747,16 @@ export const SidebarMenu: SidebarMenuItem[] = [
               ability: ReportsAction.READ_SALES_TAX_LIABILITY_SUMMARY,
             },
           },
+          {
+            text: 'Withholding Tax',
+            href: '/financial-reports/withholding-tax',
+            type: ISidebarMenuItemType.Link,
+            feature: Features.Jamaica,
+            permission: {
+              subject: AbilitySubject.PaymentReceive,
+              ability: PaymentReceiveAction.View,
+            },
+          },
         ],
       },
       {

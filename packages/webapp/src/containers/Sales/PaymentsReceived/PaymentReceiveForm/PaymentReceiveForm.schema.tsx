@@ -7,6 +7,11 @@ const Schema = Yup.object().shape({
   paymentDate: Yup.date().required().label(intl.get('payment_date_')),
   depositAccountId: Yup.number().required().label(intl.get('deposit_account_')),
   amount: Yup.number().required().label('Amount'),
+  withholdingTaxAmount: Yup.number()
+    .nullable()
+    .min(0)
+    .max(Yup.ref('amount'), 'The withheld tax can not exceed the amount.')
+    .label('Tax withheld by customer'),
   paymentReceiveNo: Yup.string()
     .nullable()
     .max(DATATYPES_LENGTH.STRING)

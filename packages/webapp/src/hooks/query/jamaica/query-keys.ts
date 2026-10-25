@@ -7,4 +7,8 @@ export const jamaicaKeys = {
   settings: () => [JAMAICA_SETTINGS] as const,
   gctReturn: (query: { fromDate?: string; toDate?: string }) =>
     [JAMAICA_SETTINGS, 'GCT_RETURN', query] as const,
+  whtSummary: (year?: number) =>
+    [JAMAICA_SETTINGS, 'WHT_SUMMARY', year] as const,
+  whtCertificates: (query: { taxYear?: number; customerId?: number }) =>
+    [JAMAICA_SETTINGS, 'WHT_CERTIFICATES', query] as const,
 };

@@ -1057,6 +1057,60 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/jamaica/wht-summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Withholding tax of a tax year: tax withheld from payments per customer against certificates, and the S04 credit (line F24). */
+        get: operations["JamaicaController_getWhtSummary"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/jamaica/wht-certificates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists the withholding tax certificates. */
+        get: operations["JamaicaController_getWhtCertificates"];
+        put?: never;
+        /** Records a withholding tax certificate. */
+        post: operations["JamaicaController_createWhtCertificate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/jamaica/wht-certificates/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieves a withholding tax certificate. */
+        get: operations["JamaicaController_getWhtCertificate"];
+        /** Edits a withholding tax certificate. */
+        put: operations["JamaicaController_editWhtCertificate"];
+        post?: never;
+        /** Deletes a withholding tax certificate. */
+        delete: operations["JamaicaController_deleteWhtCertificate"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/jamaica/gct-return": {
         parameters: {
             query?: never;
@@ -7965,6 +8019,121 @@ export interface components {
             };
             warnings: components["schemas"]["GctReturnWarningDto"][];
         };
+        WhtCertificateResponseDto: {
+            id: number;
+            customerId: number;
+            customerName?: string;
+            certificateNumber: string | null;
+            certificateDate: string;
+            taxYear: number;
+            periodFrom: string | null;
+            periodTo: string | null;
+            amount: number;
+            note: string | null;
+        };
+        WhtCustomerSummaryDto: {
+            customerId: number;
+            customerName: string;
+            customerTaxNumber: string | null;
+            paymentsCount: number;
+            certificatesCount: number;
+            withheldAmount: number;
+            certifiedAmount: number;
+            /** @description Withheld less certified; positive means certificates are missing. */
+            differenceAmount: number;
+            /** @enum {string} */
+            status: "certified" | "missing" | "over_certified";
+        };
+        WhtSummaryTotalsDto: {
+            withheldAmount: number;
+            certifiedAmount: number;
+            uncertifiedAmount: number;
+        };
+        WhtS04Dto: {
+            /** @example F24 */
+            line: string;
+            creditAmount: number;
+        };
+        WhtWarningDto: {
+            code: string;
+            message: string;
+        };
+        WhtSummaryResponseDto: {
+            year: number;
+            fromDate: string;
+            toDate: string;
+            currencyCode: string;
+            /** @description The seeded WHT rate on specified services, %. */
+            rate: number;
+            customers: components["schemas"]["WhtCustomerSummaryDto"][];
+            totals: components["schemas"]["WhtSummaryTotalsDto"];
+            s04: components["schemas"]["WhtS04Dto"];
+            warnings: components["schemas"]["WhtWarningDto"][];
+        };
+        CreateWhtCertificateDto: {
+            /**
+             * @description The customer that withheld the tax.
+             * @example 5
+             */
+            customerId: number;
+            /**
+             * @description The number printed on the certificate.
+             * @example WHT-2026-0012
+             */
+            certificateNumber?: string | null;
+            /**
+             * @description The date of the certificate (YYYY-MM-DD).
+             * @example 2027-01-15
+             */
+            certificateDate: string;
+            /**
+             * @description The tax year the withheld tax belongs to. Defaults to the year of period_to, else of certificate_date.
+             * @example 2026
+             */
+            taxYear?: number;
+            /** @example 2026-01-01 */
+            periodFrom?: string | null;
+            /** @example 2026-12-31 */
+            periodTo?: string | null;
+            /**
+             * @description The tax certified, in the base currency.
+             * @example 300
+             */
+            amount: number;
+            note?: string | null;
+        };
+        EditWhtCertificateDto: {
+            /**
+             * @description The customer that withheld the tax.
+             * @example 5
+             */
+            customerId: number;
+            /**
+             * @description The number printed on the certificate.
+             * @example WHT-2026-0012
+             */
+            certificateNumber?: string | null;
+            /**
+             * @description The date of the certificate (YYYY-MM-DD).
+             * @example 2027-01-15
+             */
+            certificateDate: string;
+            /**
+             * @description The tax year the withheld tax belongs to. Defaults to the year of period_to, else of certificate_date.
+             * @example 2026
+             */
+            taxYear?: number;
+            /** @example 2026-01-01 */
+            periodFrom?: string | null;
+            /** @example 2026-12-31 */
+            periodTo?: string | null;
+            /**
+             * @description The tax certified, in the base currency.
+             * @example 300
+             */
+            amount: number;
+            note?: string | null;
+        };
         JamaicaSetupDto: {
             /**
              * @description Report the changes without applying them.
@@ -8410,6 +8579,26 @@ export interface components {
              */
             formattedAmount: string;
             /**
+             * @description Tax the customer withheld from the payment (Jamaica WHT). Null when none.
+             * @example 30
+             */
+            withholdingTaxAmount?: number | null;
+            /**
+             * @description Formatted withheld tax; empty when none.
+             * @example 30.00
+             */
+            formattedWithholdingTaxAmount?: string;
+            /**
+             * @description Amount deposited to the deposit account: amount − withholding_tax_amount.
+             * @example 970
+             */
+            depositAmount?: number;
+            /**
+             * @description Formatted deposit amount.
+             * @example 970.00
+             */
+            formattedDepositAmount?: string;
+            /**
              * @description The formatted total
              * @example 100.00 USD
              */
@@ -8625,6 +8814,11 @@ export interface components {
              */
             paymentReceiveNo: string;
             /**
+             * @description Tax the customer withheld from the payment (e.g. Jamaica 3% withholding tax). The deposit account receives amount − withholding_tax_amount; the withheld part is a receivable (tax.withholding_account_id).
+             * @example 30
+             */
+            withholdingTaxAmount?: number;
+            /**
              * @description The statement of the payment received
              * @example 123456
              */
@@ -8691,6 +8885,11 @@ export interface components {
              * @example 123456
              */
             paymentReceiveNo: string;
+            /**
+             * @description Tax the customer withheld from the payment (e.g. Jamaica 3% withholding tax). The deposit account receives amount − withholding_tax_amount; the withheld part is a receivable (tax.withholding_account_id).
+             * @example 30
+             */
+            withholdingTaxAmount?: number;
             /**
              * @description The statement of the payment received
              * @example 123456
@@ -20489,6 +20688,170 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["GenerateSaleInvoiceSharableLinkResponseDto"];
                 };
+            };
+        };
+    };
+    JamaicaController_getWhtSummary: {
+        parameters: {
+            query?: {
+                /** @description The tax year (calendar year). Defaults to the previous year. */
+                year?: number;
+            };
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WhtSummaryResponseDto"];
+                };
+            };
+        };
+    };
+    JamaicaController_getWhtCertificates: {
+        parameters: {
+            query?: {
+                /** @description Filter by tax year. */
+                taxYear?: number;
+                /** @description Filter by customer. */
+                customerId?: number;
+            };
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WhtCertificateResponseDto"][];
+                };
+            };
+        };
+    };
+    JamaicaController_createWhtCertificate: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateWhtCertificateDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WhtCertificateResponseDto"];
+                };
+            };
+        };
+    };
+    JamaicaController_getWhtCertificate: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WhtCertificateResponseDto"];
+                };
+            };
+        };
+    };
+    JamaicaController_editWhtCertificate: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EditWhtCertificateDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WhtCertificateResponseDto"];
+                };
+            };
+        };
+    };
+    JamaicaController_deleteWhtCertificate: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

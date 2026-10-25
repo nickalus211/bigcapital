@@ -37,7 +37,9 @@ import {
   FInputGroup,
 } from '@/components';
 import { ACCOUNT_TYPE } from '@/constants/accountTypes';
+import { Features } from '@/constants/features';
 import { useDateInputFormatter } from '@/hooks';
+import { useFeatureCan } from '@/hooks/state/feature';
 import { safeSumBy } from '@/utils';
 
 const getHeaderFieldsStyle = (theme: Theme) => css`
@@ -149,6 +151,9 @@ export function PaymentReceiveHeaderFields() {
         </>
       </FFormGroup>
 
+      {/* ------------ Withholding tax (Jamaica) ------------ */}
+      <PaymentReceiveWithholdingTaxField />
+
       {/* ------------ Payment receive no. ------------ */}
       <PaymentReceivePaymentNoField />
 
@@ -188,6 +193,54 @@ export function PaymentReceiveHeaderFields() {
         <FInputGroup name={'referenceNo'} fill />
       </FFormGroup>
     </Stack>
+  );
+}
+
+/** Jamaica withholding tax on specified services, % of the payment. */
+const WITHHOLDING_TAX_RATE = 3;
+
+/**
+ * Tax the customer withheld from the payment (Jamaica WHT). The deposit
+ * account receives the amount less the withheld tax.
+ */
+function PaymentReceiveWithholdingTaxField() {
+  const { featureCan } = useFeatureCan();
+  const {
+    values: { amount, currencyCode, withholdingTaxAmount },
+    setFieldValue,
+  } = useFormikContext<PaymentReceiveFormValues>();
+
+  if (!featureCan(Features.Jamaica) && !withholdingTaxAmount) return null;
+
+  const suggested =
+    Math.round(Number(amount || 0) * WITHHOLDING_TAX_RATE) / 100;
+
+  return (
+    <FFormGroup
+      name={'withholdingTaxAmount'}
+      label={'Tax withheld by customer'}
+      inline={true}
+      helperText={
+        'Withholding tax the customer kept and paid to TAJ. The deposit is the amount less this tax.'
+      }
+    >
+      <>
+        <ControlGroup>
+          <InputPrependText text={currencyCode}>{null}</InputPrependText>
+          <FMoneyInputGroup name={'withholdingTaxAmount'} />
+        </ControlGroup>
+
+        {suggested > 0 && Number(withholdingTaxAmount || 0) !== suggested && (
+          <ButtonLink
+            onClick={() => setFieldValue('withholdingTaxAmount', suggested)}
+            style={{ fontSize: '12px', marginTop: '4px' }}
+          >
+            Withheld {WITHHOLDING_TAX_RATE}% (
+            <Money amount={suggested} currency={currencyCode} />)
+          </ButtonLink>
+        )}
+      </>
+    </FFormGroup>
   );
 }
 
