@@ -558,6 +558,16 @@ export const SidebarMenu: SidebarMenuItem[] = [
               ability: ExpenseAction.View,
             },
           },
+          {
+            text: 'Customs Entries',
+            href: '/customs-entries',
+            type: ISidebarMenuItemType.Link,
+            feature: Features.Jamaica,
+            permission: {
+              subject: AbilitySubject.Expense,
+              ability: ExpenseAction.View,
+            },
+          },
         ],
       },
       {

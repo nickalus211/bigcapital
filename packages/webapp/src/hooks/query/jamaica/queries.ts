@@ -1,4 +1,10 @@
 import {
+  calculateCustomsEntry,
+  createCustomsEntry,
+  deleteCustomsEntry,
+  editCustomsEntry,
+  fetchCustomsEntries,
+  fetchCustomsEntry,
   createWhtCertificate,
   deleteWhtCertificate,
   editJamaicaSettings,
@@ -28,6 +34,11 @@ import type {
   WhtCertificate,
   WhtCertificatesQuery,
   WhtSummary,
+  CalculateCustomsEntryBody,
+  CreateCustomsEntryBody,
+  CustomsEntriesQuery,
+  CustomsEntry,
+  CustomsEntryCalculation,
 } from '@bigcapital/sdk-ts';
 
 export function useJamaicaSettings(
@@ -137,6 +148,88 @@ export function useDeleteWhtCertificate(
   return useMutation({
     ...props,
     mutationFn: (id: number) => deleteWhtCertificate(fetcher, id),
+    onSuccess: () => {
+      client.invalidateQueries({ queryKey: jamaicaKeys.all() });
+    },
+  });
+}
+
+export function useCustomsEntries(
+  query: CustomsEntriesQuery = {},
+  props?: Omit<UseQueryOptions<CustomsEntry[]>, 'queryKey' | 'queryFn'>,
+) {
+  const fetcher = useApiFetcher({ enableCamelCaseTransform: true });
+  return useQuery({
+    ...props,
+    queryKey: jamaicaKeys.customsEntries(query),
+    queryFn: () => fetchCustomsEntries(fetcher, query),
+  });
+}
+
+export function useCustomsEntry(
+  id: number | null,
+  props?: Omit<UseQueryOptions<CustomsEntry>, 'queryKey' | 'queryFn'>,
+) {
+  const fetcher = useApiFetcher({ enableCamelCaseTransform: true });
+  return useQuery({
+    enabled: !!id,
+    ...props,
+    queryKey: jamaicaKeys.customsEntry(id as number),
+    queryFn: () => fetchCustomsEntry(fetcher, id as number),
+  });
+}
+
+/**
+ * Works out a customs entry on the server as the form changes.
+ */
+export function useCustomsEntryCalculation(
+  body: CalculateCustomsEntryBody | null,
+  props?: Omit<
+    UseQueryOptions<CustomsEntryCalculation>,
+    'queryKey' | 'queryFn'
+  >,
+) {
+  const fetcher = useApiFetcher({ enableCamelCaseTransform: true });
+  return useQuery({
+    enabled: !!body,
+    ...props,
+    queryKey: jamaicaKeys.customsCalculation(body),
+    queryFn: () =>
+      calculateCustomsEntry(fetcher, body as CalculateCustomsEntryBody),
+  });
+}
+
+export function useSaveCustomsEntry(
+  props?: UseMutationOptions<
+    CustomsEntry,
+    Error,
+    { id?: number | null; values: CreateCustomsEntryBody }
+  >,
+) {
+  const client = useQueryClient();
+  const fetcher = useApiFetcher({ enableCamelCaseTransform: true });
+
+  return useMutation({
+    ...props,
+    mutationFn: ({ id, values }) =>
+      id
+        ? editCustomsEntry(fetcher, id, values)
+        : createCustomsEntry(fetcher, values),
+    onSuccess: () => {
+      client.invalidateQueries({ queryKey: jamaicaKeys.all() });
+    },
+  });
+}
+
+export function useDeleteCustomsEntry(
+  props?: UseMutationOptions<void, Error, number>,
+) {
+  const client = useQueryClient();
+  const fetcher = useApiFetcher({ enableCamelCaseTransform: true });
+
+  return useMutation({
+    ...props,
+    mutationFn: (id: number) => deleteCustomsEntry(fetcher, id),
     onSuccess: () => {
       client.invalidateQueries({ queryKey: jamaicaKeys.all() });
     },

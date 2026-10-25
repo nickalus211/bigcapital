@@ -197,6 +197,13 @@ function GctReturnSheet({ data }: { data: GctReturnData }) {
             <td>{money(purchases.zeroRatedAndExemptAmount)}</td>
             <td />
           </tr>
+          {purchases.importGct.taxAmount !== 0 && (
+            <tr>
+              <td>Imports · GCT paid at customs</td>
+              <td>{money(purchases.importGct.taxableAmount)}</td>
+              <td>{money(purchases.importGct.taxAmount)}</td>
+            </tr>
+          )}
           <tr className="total">
             <td>Input tax</td>
             <td />
@@ -228,6 +235,18 @@ function GctReturnSheet({ data }: { data: GctReturnData }) {
           </tr>
         </tbody>
       </Table>
+
+      {data.advanceGctCredit !== 0 && (
+        <Table>
+          <tbody>
+            <tr className="total">
+              <td>Advance GCT paid at customs (credit)</td>
+              <td />
+              <td>{money(data.advanceGctCredit)}</td>
+            </tr>
+          </tbody>
+        </Table>
+      )}
 
       <NetLine data-testId="gct-return-net">
         <span>

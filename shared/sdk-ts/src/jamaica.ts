@@ -9,6 +9,9 @@ export const JAMAICA_ROUTES = {
   WHT_SUMMARY: "/api/jamaica/wht-summary",
   WHT_CERTIFICATES: "/api/jamaica/wht-certificates",
   WHT_CERTIFICATE: "/api/jamaica/wht-certificates/{id}",
+  CUSTOMS_ENTRIES: "/api/jamaica/customs-entries",
+  CUSTOMS_ENTRY: "/api/jamaica/customs-entries/{id}",
+  CUSTOMS_CALCULATE: "/api/jamaica/customs-entries/calculate",
 } as const satisfies Record<string, keyof paths>;
 
 export type JamaicaSettings = OpResponseBody<
@@ -142,6 +145,95 @@ export async function deleteWhtCertificate(
 ): Promise<void> {
   const del = fetcher
     .path(JAMAICA_ROUTES.WHT_CERTIFICATE)
+    .method("delete")
+    .create();
+  await del({ id } as never);
+}
+
+export type CustomsEntry = OpResponseBody<
+  OpForPath<typeof JAMAICA_ROUTES.CUSTOMS_ENTRY, "get">
+>;
+export type CustomsEntryCalculation = OpResponseBody<
+  OpForPath<typeof JAMAICA_ROUTES.CUSTOMS_CALCULATE, "post">
+>;
+export type CalculateCustomsEntryBody = OpRequestBody<
+  OpForPath<typeof JAMAICA_ROUTES.CUSTOMS_CALCULATE, "post">
+>;
+export type CreateCustomsEntryBody = OpRequestBody<
+  OpForPath<typeof JAMAICA_ROUTES.CUSTOMS_ENTRIES, "post">
+>;
+export type EditCustomsEntryBody = OpRequestBody<
+  OpForPath<typeof JAMAICA_ROUTES.CUSTOMS_ENTRY, "put">
+>;
+export interface CustomsEntriesQuery {
+  fromDate?: string;
+  toDate?: string;
+}
+
+/**
+ * Works out the duties and taxes of a customs entry (C78) without saving it.
+ */
+export async function calculateCustomsEntry(
+  fetcher: ApiFetcher,
+  body: CalculateCustomsEntryBody,
+): Promise<CustomsEntryCalculation> {
+  const post = fetcher
+    .path(JAMAICA_ROUTES.CUSTOMS_CALCULATE)
+    .method("post")
+    .create();
+  const { data } = await post(body);
+  return data;
+}
+
+export async function fetchCustomsEntries(
+  fetcher: ApiFetcher,
+  query: CustomsEntriesQuery = {},
+): Promise<CustomsEntry[]> {
+  const get = fetcher
+    .path(JAMAICA_ROUTES.CUSTOMS_ENTRIES)
+    .method("get")
+    .create();
+  const { data } = await get(query as never);
+  return data as unknown as CustomsEntry[];
+}
+
+export async function fetchCustomsEntry(
+  fetcher: ApiFetcher,
+  id: number,
+): Promise<CustomsEntry> {
+  const get = fetcher.path(JAMAICA_ROUTES.CUSTOMS_ENTRY).method("get").create();
+  const { data } = await get({ id } as never);
+  return data;
+}
+
+export async function createCustomsEntry(
+  fetcher: ApiFetcher,
+  body: CreateCustomsEntryBody,
+): Promise<CustomsEntry> {
+  const post = fetcher
+    .path(JAMAICA_ROUTES.CUSTOMS_ENTRIES)
+    .method("post")
+    .create();
+  const { data } = await post(body);
+  return data as unknown as CustomsEntry;
+}
+
+export async function editCustomsEntry(
+  fetcher: ApiFetcher,
+  id: number,
+  body: EditCustomsEntryBody,
+): Promise<CustomsEntry> {
+  const put = fetcher.path(JAMAICA_ROUTES.CUSTOMS_ENTRY).method("put").create();
+  const { data } = await put({ id, ...body } as never);
+  return data;
+}
+
+export async function deleteCustomsEntry(
+  fetcher: ApiFetcher,
+  id: number,
+): Promise<void> {
+  const del = fetcher
+    .path(JAMAICA_ROUTES.CUSTOMS_ENTRY)
     .method("delete")
     .create();
   await del({ id } as never);

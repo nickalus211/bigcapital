@@ -7849,6 +7849,512 @@
         ]
       }
     },
+    "/api/jamaica/customs-entries/calculate": {
+      "post": {
+        "operationId": "CustomsEntriesController_calculate",
+        "summary": "Works out the duties and taxes of a customs entry (C78) without saving it.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CalculateCustomsEntryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomsEntryCalculationDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Jamaica"
+        ]
+      }
+    },
+    "/api/jamaica/customs-entries": {
+      "get": {
+        "operationId": "CustomsEntriesController_getEntries",
+        "summary": "Lists the customs entries.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fromDate",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "2026-10-01",
+              "type": "string"
+            }
+          },
+          {
+            "name": "toDate",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "2026-10-31",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CustomsEntryResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Jamaica"
+        ]
+      },
+      "post": {
+        "operationId": "CustomsEntriesController_createEntry",
+        "summary": "Records a customs entry: posts the duties as an expense allocated to the goods bill, and the import and advance GCT.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCustomsEntryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomsEntryResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Jamaica"
+        ]
+      }
+    },
+    "/api/jamaica/customs-entries/{id}": {
+      "get": {
+        "operationId": "CustomsEntriesController_getEntry",
+        "summary": "Retrieves a customs entry.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomsEntryResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Jamaica"
+        ]
+      },
+      "put": {
+        "operationId": "CustomsEntriesController_editEntry",
+        "summary": "Edits a customs entry and posts it again.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditCustomsEntryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomsEntryResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Jamaica"
+        ]
+      },
+      "delete": {
+        "operationId": "CustomsEntriesController_deleteEntry",
+        "summary": "Deletes a customs entry with its expense, landed cost and ledger entries.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Jamaica"
+        ]
+      }
+    },
+    "/api/landed-cost/transactions": {
+      "get": {
+        "operationId": "BillAllocateLandedCostController_getLandedCostTransactions",
+        "summary": "Get landed cost transactions",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of landed cost transactions."
+          }
+        },
+        "tags": [
+          "Landed Cost"
+        ]
+      }
+    },
+    "/api/landed-cost/bills/{billId}/allocate": {
+      "post": {
+        "operationId": "BillAllocateLandedCostController_calculateLandedCost",
+        "summary": "Allocate landed cost to bill items",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "billId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AllocateBillLandedCostDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Landed cost allocated successfully."
+          }
+        },
+        "tags": [
+          "Landed Cost"
+        ]
+      }
+    },
+    "/api/landed-cost/{allocatedLandedCostId}": {
+      "delete": {
+        "operationId": "BillAllocateLandedCostController_deleteAllocatedLandedCost",
+        "summary": "Delete allocated landed cost",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "allocatedLandedCostId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Allocated landed cost deleted successfully."
+          }
+        },
+        "tags": [
+          "Landed Cost"
+        ]
+      }
+    },
+    "/api/landed-cost/bills/{billId}/transactions": {
+      "get": {
+        "operationId": "BillAllocateLandedCostController_getBillLandedCostTransactions",
+        "summary": "Get bill landed cost transactions",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer bc_1234567890abcdef"
+            }
+          },
+          {
+            "name": "organization-id",
+            "in": "header",
+            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "billId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of bill landed cost transactions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "billId": {
+                      "type": "number"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/BillLandedCostTransactionDto"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Landed Cost"
+        ]
+      }
+    },
     "/api/warehouse-transfers/validate-bulk-delete": {
       "post": {
         "operationId": "WarehouseTransfersController_validateBulkDeleteWarehouseTransfers",
@@ -25312,198 +25818,6 @@
         ]
       }
     },
-    "/api/landed-cost/transactions": {
-      "get": {
-        "operationId": "BillAllocateLandedCostController_getLandedCostTransactions",
-        "summary": "Get landed cost transactions",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "Bearer bc_1234567890abcdef"
-            }
-          },
-          {
-            "name": "organization-id",
-            "in": "header",
-            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of landed cost transactions."
-          }
-        },
-        "tags": [
-          "Landed Cost"
-        ]
-      }
-    },
-    "/api/landed-cost/bills/{billId}/allocate": {
-      "post": {
-        "operationId": "BillAllocateLandedCostController_calculateLandedCost",
-        "summary": "Allocate landed cost to bill items",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "Bearer bc_1234567890abcdef"
-            }
-          },
-          {
-            "name": "organization-id",
-            "in": "header",
-            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "billId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AllocateBillLandedCostDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Landed cost allocated successfully."
-          }
-        },
-        "tags": [
-          "Landed Cost"
-        ]
-      }
-    },
-    "/api/landed-cost/{allocatedLandedCostId}": {
-      "delete": {
-        "operationId": "BillAllocateLandedCostController_deleteAllocatedLandedCost",
-        "summary": "Delete allocated landed cost",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "Bearer bc_1234567890abcdef"
-            }
-          },
-          {
-            "name": "organization-id",
-            "in": "header",
-            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "allocatedLandedCostId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Allocated landed cost deleted successfully."
-          }
-        },
-        "tags": [
-          "Landed Cost"
-        ]
-      }
-    },
-    "/api/landed-cost/bills/{billId}/transactions": {
-      "get": {
-        "operationId": "BillAllocateLandedCostController_getBillLandedCostTransactions",
-        "summary": "Get bill landed cost transactions",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "Bearer bc_1234567890abcdef"
-            }
-          },
-          {
-            "name": "organization-id",
-            "in": "header",
-            "description": "Required if Authorization is a JWT token. The organization ID to operate within.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "billId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of bill landed cost transactions.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "billId": {
-                      "type": "number"
-                    },
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/BillLandedCostTransactionDto"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Landed Cost"
-        ]
-      }
-    },
     "/api/exchange-rates/latest": {
       "get": {
         "operationId": "ExchangeRatesController_getLatestExchangeRate",
@@ -29551,6 +29865,22 @@
           "totalAmount"
         ]
       },
+      "GctReturnImportGctDto": {
+        "type": "object",
+        "properties": {
+          "taxableAmount": {
+            "type": "number",
+            "description": "CIF + duties the import GCT was charged on"
+          },
+          "taxAmount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "taxableAmount",
+          "taxAmount"
+        ]
+      },
       "GctReturnPurchasesDto": {
         "type": "object",
         "properties": {
@@ -29566,6 +29896,14 @@
           "zeroRatedAndExemptAmount": {
             "type": "number"
           },
+          "importGct": {
+            "description": "Import GCT paid at customs (customs entries); part of input_tax",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GctReturnImportGctDto"
+              }
+            ]
+          },
           "inputTax": {
             "type": "number"
           }
@@ -29574,6 +29912,7 @@
           "standardRated",
           "standardRatedAmount",
           "zeroRatedAndExemptAmount",
+          "importGct",
           "inputTax"
         ]
       },
@@ -29655,9 +29994,13 @@
           "apportionment": {
             "$ref": "#/components/schemas/GctReturnApportionmentDto"
           },
+          "advanceGctCredit": {
+            "type": "number",
+            "description": "Advance GCT paid at customs, credited against the GCT due"
+          },
           "netGct": {
             "type": "number",
-            "description": "Output tax less claimable input tax"
+            "description": "Output tax less claimable input tax and the advance GCT credit"
           },
           "position": {
             "type": "string",
@@ -29691,6 +30034,7 @@
           "outputTax",
           "purchases",
           "apportionment",
+          "advanceGctCredit",
           "netGct",
           "position",
           "documents",
@@ -32466,6 +32810,759 @@
           "categories",
           "attachments"
         ]
+      },
+      "CustomsOverrideDto": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string"
+          },
+          "computed": {
+            "type": "number"
+          },
+          "amount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "field",
+          "computed",
+          "amount"
+        ]
+      },
+      "CustomsRatesDto": {
+        "type": "object",
+        "properties": {
+          "scfRate": {
+            "type": "number"
+          },
+          "eplRate": {
+            "type": "number"
+          },
+          "importGctRate": {
+            "type": "number"
+          },
+          "advanceGctRate": {
+            "type": "number"
+          },
+          "verified": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "scfRate",
+          "eplRate",
+          "importGctRate",
+          "advanceGctRate",
+          "verified"
+        ]
+      },
+      "CustomsAllocationDto": {
+        "type": "object",
+        "properties": {
+          "entryId": {
+            "type": "number"
+          },
+          "itemId": {
+            "type": "number"
+          },
+          "itemName": {
+            "type": "string"
+          },
+          "cost": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "entryId",
+          "itemId",
+          "itemName",
+          "cost"
+        ]
+      },
+      "CustomsEntryCalculationDto": {
+        "type": "object",
+        "properties": {
+          "fobAmount": {
+            "type": "number"
+          },
+          "freightAmount": {
+            "type": "number"
+          },
+          "insuranceAmount": {
+            "type": "number"
+          },
+          "cifAmount": {
+            "type": "number"
+          },
+          "customsDutyRate": {
+            "type": "number",
+            "nullable": true
+          },
+          "customsDutyAmount": {
+            "type": "number"
+          },
+          "scfAmount": {
+            "type": "number"
+          },
+          "eplAmount": {
+            "type": "number"
+          },
+          "asdAmount": {
+            "type": "number"
+          },
+          "sctAmount": {
+            "type": "number"
+          },
+          "cafAmount": {
+            "type": "number"
+          },
+          "importGctBase": {
+            "type": "number"
+          },
+          "importGctAmount": {
+            "type": "number"
+          },
+          "advanceGctAmount": {
+            "type": "number"
+          },
+          "dutiesAmount": {
+            "type": "number",
+            "description": "Duties and fees added to the cost of the goods."
+          },
+          "taxesAmount": {
+            "type": "number",
+            "description": "Import GCT and advance GCT."
+          },
+          "totalAmount": {
+            "type": "number",
+            "description": "Total paid to Customs."
+          },
+          "overrides": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomsOverrideDto"
+            }
+          },
+          "rates": {
+            "$ref": "#/components/schemas/CustomsRatesDto"
+          },
+          "allocations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomsAllocationDto"
+            }
+          }
+        },
+        "required": [
+          "fobAmount",
+          "freightAmount",
+          "insuranceAmount",
+          "cifAmount",
+          "customsDutyRate",
+          "customsDutyAmount",
+          "scfAmount",
+          "eplAmount",
+          "asdAmount",
+          "sctAmount",
+          "cafAmount",
+          "importGctBase",
+          "importGctAmount",
+          "advanceGctAmount",
+          "dutiesAmount",
+          "taxesAmount",
+          "totalAmount",
+          "overrides",
+          "rates",
+          "allocations"
+        ]
+      },
+      "CustomsEntryResponseDto": {
+        "type": "object",
+        "properties": {
+          "fobAmount": {
+            "type": "number"
+          },
+          "freightAmount": {
+            "type": "number"
+          },
+          "insuranceAmount": {
+            "type": "number"
+          },
+          "cifAmount": {
+            "type": "number"
+          },
+          "customsDutyRate": {
+            "type": "number",
+            "nullable": true
+          },
+          "customsDutyAmount": {
+            "type": "number"
+          },
+          "scfAmount": {
+            "type": "number"
+          },
+          "eplAmount": {
+            "type": "number"
+          },
+          "asdAmount": {
+            "type": "number"
+          },
+          "sctAmount": {
+            "type": "number"
+          },
+          "cafAmount": {
+            "type": "number"
+          },
+          "importGctBase": {
+            "type": "number"
+          },
+          "importGctAmount": {
+            "type": "number"
+          },
+          "advanceGctAmount": {
+            "type": "number"
+          },
+          "dutiesAmount": {
+            "type": "number",
+            "description": "Duties and fees added to the cost of the goods."
+          },
+          "taxesAmount": {
+            "type": "number",
+            "description": "Import GCT and advance GCT."
+          },
+          "totalAmount": {
+            "type": "number",
+            "description": "Total paid to Customs."
+          },
+          "overrides": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomsOverrideDto"
+            }
+          },
+          "rates": {
+            "$ref": "#/components/schemas/CustomsRatesDto"
+          },
+          "allocations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomsAllocationDto"
+            }
+          },
+          "id": {
+            "type": "number"
+          },
+          "entryNumber": {
+            "type": "string"
+          },
+          "entryDate": {
+            "type": "string"
+          },
+          "referenceNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "billId": {
+            "type": "number",
+            "nullable": true
+          },
+          "billNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "vendorName": {
+            "type": "string",
+            "nullable": true
+          },
+          "paymentAccountId": {
+            "type": "number"
+          },
+          "paymentAccountName": {
+            "type": "string"
+          },
+          "allocationMethod": {
+            "type": "string"
+          },
+          "expenseId": {
+            "type": "number",
+            "nullable": true
+          },
+          "landedCostId": {
+            "type": "number",
+            "nullable": true
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "fobAmount",
+          "freightAmount",
+          "insuranceAmount",
+          "cifAmount",
+          "customsDutyRate",
+          "customsDutyAmount",
+          "scfAmount",
+          "eplAmount",
+          "asdAmount",
+          "sctAmount",
+          "cafAmount",
+          "importGctBase",
+          "importGctAmount",
+          "advanceGctAmount",
+          "dutiesAmount",
+          "taxesAmount",
+          "totalAmount",
+          "overrides",
+          "rates",
+          "allocations",
+          "id",
+          "entryNumber",
+          "entryDate",
+          "referenceNo",
+          "billId",
+          "billNumber",
+          "vendorName",
+          "paymentAccountId",
+          "paymentAccountName",
+          "allocationMethod",
+          "expenseId",
+          "landedCostId",
+          "note"
+        ]
+      },
+      "CalculateCustomsEntryDto": {
+        "type": "object",
+        "properties": {
+          "billId": {
+            "type": "number",
+            "nullable": true,
+            "description": "The bill of the imported goods. The duties and fees are allocated to its inventory lines.",
+            "example": 12
+          },
+          "allocationMethod": {
+            "type": "string",
+            "enum": [
+              "value",
+              "quantity"
+            ],
+            "description": "How the duties are spread over the bill lines.",
+            "example": "value"
+          },
+          "fobAmount": {
+            "type": "number",
+            "description": "FOB value of the goods, in JMD at the customs rate.",
+            "example": 90000
+          },
+          "freightAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Freight to Jamaica, in JMD.",
+            "example": 0
+          },
+          "insuranceAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Insurance, in JMD.",
+            "example": 0
+          },
+          "customsDutyRate": {
+            "type": "number",
+            "nullable": true,
+            "description": "Customs Duty rate from the tariff, % of CIF.",
+            "example": 20
+          },
+          "customsDutyAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Customs Duty (CD). Computed from the rate when omitted.",
+            "example": 0
+          },
+          "scfAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Standard Compliance Fee. Computed when omitted.",
+            "example": 0
+          },
+          "eplAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Environmental Protection Levy. Computed when omitted.",
+            "example": 0
+          },
+          "asdAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Additional Stamp Duty.",
+            "example": 0
+          },
+          "sctAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Special Consumption Tax.",
+            "example": 0
+          },
+          "cafAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Customs Administration Fee.",
+            "example": 0
+          },
+          "importGctAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Import GCT. Computed when omitted.",
+            "example": 0
+          },
+          "advanceGctAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Advance GCT. Computed when omitted; send 0 when none was charged.",
+            "example": 0
+          },
+          "entryDate": {
+            "type": "string",
+            "description": "The date of the entry (YYYY-MM-DD); picks the rates in force. Defaults to today.",
+            "example": "2026-10-20"
+          }
+        },
+        "required": [
+          "fobAmount"
+        ]
+      },
+      "CreateCustomsEntryDto": {
+        "type": "object",
+        "properties": {
+          "billId": {
+            "type": "number",
+            "nullable": true,
+            "description": "The bill of the imported goods. The duties and fees are allocated to its inventory lines.",
+            "example": 12
+          },
+          "allocationMethod": {
+            "type": "string",
+            "enum": [
+              "value",
+              "quantity"
+            ],
+            "description": "How the duties are spread over the bill lines.",
+            "example": "value"
+          },
+          "fobAmount": {
+            "type": "number",
+            "description": "FOB value of the goods, in JMD at the customs rate.",
+            "example": 90000
+          },
+          "freightAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Freight to Jamaica, in JMD.",
+            "example": 0
+          },
+          "insuranceAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Insurance, in JMD.",
+            "example": 0
+          },
+          "customsDutyRate": {
+            "type": "number",
+            "nullable": true,
+            "description": "Customs Duty rate from the tariff, % of CIF.",
+            "example": 20
+          },
+          "customsDutyAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Customs Duty (CD). Computed from the rate when omitted.",
+            "example": 0
+          },
+          "scfAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Standard Compliance Fee. Computed when omitted.",
+            "example": 0
+          },
+          "eplAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Environmental Protection Levy. Computed when omitted.",
+            "example": 0
+          },
+          "asdAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Additional Stamp Duty.",
+            "example": 0
+          },
+          "sctAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Special Consumption Tax.",
+            "example": 0
+          },
+          "cafAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Customs Administration Fee.",
+            "example": 0
+          },
+          "importGctAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Import GCT. Computed when omitted.",
+            "example": 0
+          },
+          "advanceGctAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Advance GCT. Computed when omitted; send 0 when none was charged.",
+            "example": 0
+          },
+          "entryNumber": {
+            "type": "string",
+            "description": "The C78 entry number.",
+            "example": "C78-2026-001234"
+          },
+          "entryDate": {
+            "type": "string",
+            "description": "The date of the entry (YYYY-MM-DD).",
+            "example": "2026-10-20"
+          },
+          "paymentAccountId": {
+            "type": "number",
+            "description": "The account the duties and taxes were paid from.",
+            "example": 1000
+          },
+          "referenceNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "fobAmount",
+          "entryNumber",
+          "entryDate",
+          "paymentAccountId"
+        ]
+      },
+      "EditCustomsEntryDto": {
+        "type": "object",
+        "properties": {
+          "billId": {
+            "type": "number",
+            "nullable": true,
+            "description": "The bill of the imported goods. The duties and fees are allocated to its inventory lines.",
+            "example": 12
+          },
+          "allocationMethod": {
+            "type": "string",
+            "enum": [
+              "value",
+              "quantity"
+            ],
+            "description": "How the duties are spread over the bill lines.",
+            "example": "value"
+          },
+          "fobAmount": {
+            "type": "number",
+            "description": "FOB value of the goods, in JMD at the customs rate.",
+            "example": 90000
+          },
+          "freightAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Freight to Jamaica, in JMD.",
+            "example": 0
+          },
+          "insuranceAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Insurance, in JMD.",
+            "example": 0
+          },
+          "customsDutyRate": {
+            "type": "number",
+            "nullable": true,
+            "description": "Customs Duty rate from the tariff, % of CIF.",
+            "example": 20
+          },
+          "customsDutyAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Customs Duty (CD). Computed from the rate when omitted.",
+            "example": 0
+          },
+          "scfAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Standard Compliance Fee. Computed when omitted.",
+            "example": 0
+          },
+          "eplAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Environmental Protection Levy. Computed when omitted.",
+            "example": 0
+          },
+          "asdAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Additional Stamp Duty.",
+            "example": 0
+          },
+          "sctAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Special Consumption Tax.",
+            "example": 0
+          },
+          "cafAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Customs Administration Fee.",
+            "example": 0
+          },
+          "importGctAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Import GCT. Computed when omitted.",
+            "example": 0
+          },
+          "advanceGctAmount": {
+            "type": "number",
+            "nullable": true,
+            "description": "Advance GCT. Computed when omitted; send 0 when none was charged.",
+            "example": 0
+          },
+          "entryNumber": {
+            "type": "string",
+            "description": "The C78 entry number.",
+            "example": "C78-2026-001234"
+          },
+          "entryDate": {
+            "type": "string",
+            "description": "The date of the entry (YYYY-MM-DD).",
+            "example": "2026-10-20"
+          },
+          "paymentAccountId": {
+            "type": "number",
+            "description": "The account the duties and taxes were paid from.",
+            "example": 1000
+          },
+          "referenceNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "fobAmount",
+          "entryNumber",
+          "entryDate",
+          "paymentAccountId"
+        ]
+      },
+      "BillLandedCostTransactionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "The unique identifier of the landed cost transaction",
+            "example": 1
+          },
+          "billId": {
+            "type": "number",
+            "description": "The bill id the landed cost is allocated to",
+            "example": 10
+          },
+          "fromTransactionId": {
+            "type": "number",
+            "description": "The id of the source transaction the cost was allocated from",
+            "example": 5
+          },
+          "fromTransactionType": {
+            "type": "string",
+            "description": "The type of the source transaction (Bill or Expense)",
+            "example": "Expense"
+          },
+          "fromTransactionEntryId": {
+            "type": "number",
+            "description": "The entry id of the source transaction",
+            "example": 2
+          },
+          "allocationMethod": {
+            "type": "string",
+            "description": "The allocation method used to distribute the cost",
+            "example": "quantity"
+          },
+          "allocationMethodFormatted": {
+            "type": "string",
+            "description": "The translated label of the allocation method",
+            "example": "Quantity"
+          },
+          "costAccountId": {
+            "type": "number",
+            "description": "The cost account id the landed cost is posted to",
+            "example": 1020
+          },
+          "description": {
+            "type": "string",
+            "description": "The description of the landed cost transaction",
+            "example": "Freight charges"
+          },
+          "amount": {
+            "type": "number",
+            "description": "The allocated landed cost amount",
+            "example": 150
+          },
+          "localAmount": {
+            "type": "number",
+            "description": "The allocated landed cost amount in the base currency",
+            "example": 150
+          },
+          "currencyCode": {
+            "type": "string",
+            "description": "The currency code of the landed cost transaction",
+            "example": "USD"
+          },
+          "exchangeRate": {
+            "type": "number",
+            "description": "The exchange rate applied to the amount",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "The resolved name of the source item or expense account",
+            "example": "Widget A"
+          },
+          "formattedAmount": {
+            "type": "string",
+            "description": "Formatted allocated amount",
+            "example": "$150.00"
+          },
+          "formattedLocalAmount": {
+            "type": "string",
+            "description": "Formatted allocated amount in the base currency",
+            "example": "$150.00"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "AllocateBillLandedCostDto": {
+        "type": "object",
+        "properties": {}
       },
       "WarehouseTransferEntryResponseDto": {
         "type": "object",
@@ -48129,98 +49226,6 @@
           "data",
           "pagination"
         ]
-      },
-      "BillLandedCostTransactionDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number",
-            "description": "The unique identifier of the landed cost transaction",
-            "example": 1
-          },
-          "billId": {
-            "type": "number",
-            "description": "The bill id the landed cost is allocated to",
-            "example": 10
-          },
-          "fromTransactionId": {
-            "type": "number",
-            "description": "The id of the source transaction the cost was allocated from",
-            "example": 5
-          },
-          "fromTransactionType": {
-            "type": "string",
-            "description": "The type of the source transaction (Bill or Expense)",
-            "example": "Expense"
-          },
-          "fromTransactionEntryId": {
-            "type": "number",
-            "description": "The entry id of the source transaction",
-            "example": 2
-          },
-          "allocationMethod": {
-            "type": "string",
-            "description": "The allocation method used to distribute the cost",
-            "example": "quantity"
-          },
-          "allocationMethodFormatted": {
-            "type": "string",
-            "description": "The translated label of the allocation method",
-            "example": "Quantity"
-          },
-          "costAccountId": {
-            "type": "number",
-            "description": "The cost account id the landed cost is posted to",
-            "example": 1020
-          },
-          "description": {
-            "type": "string",
-            "description": "The description of the landed cost transaction",
-            "example": "Freight charges"
-          },
-          "amount": {
-            "type": "number",
-            "description": "The allocated landed cost amount",
-            "example": 150
-          },
-          "localAmount": {
-            "type": "number",
-            "description": "The allocated landed cost amount in the base currency",
-            "example": 150
-          },
-          "currencyCode": {
-            "type": "string",
-            "description": "The currency code of the landed cost transaction",
-            "example": "USD"
-          },
-          "exchangeRate": {
-            "type": "number",
-            "description": "The exchange rate applied to the amount",
-            "example": 1
-          },
-          "name": {
-            "type": "string",
-            "description": "The resolved name of the source item or expense account",
-            "example": "Widget A"
-          },
-          "formattedAmount": {
-            "type": "string",
-            "description": "Formatted allocated amount",
-            "example": "$150.00"
-          },
-          "formattedLocalAmount": {
-            "type": "string",
-            "description": "Formatted allocated amount in the base currency",
-            "example": "$150.00"
-          }
-        },
-        "required": [
-          "id"
-        ]
-      },
-      "AllocateBillLandedCostDto": {
-        "type": "object",
-        "properties": {}
       },
       "ExchangeRateLatestResponseDto": {
         "type": "object",

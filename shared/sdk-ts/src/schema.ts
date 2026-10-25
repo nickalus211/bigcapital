@@ -2017,6 +2017,128 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/jamaica/customs-entries/calculate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Works out the duties and taxes of a customs entry (C78) without saving it. */
+        post: operations["CustomsEntriesController_calculate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/jamaica/customs-entries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists the customs entries. */
+        get: operations["CustomsEntriesController_getEntries"];
+        put?: never;
+        /** Records a customs entry: posts the duties as an expense allocated to the goods bill, and the import and advance GCT. */
+        post: operations["CustomsEntriesController_createEntry"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/jamaica/customs-entries/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieves a customs entry. */
+        get: operations["CustomsEntriesController_getEntry"];
+        /** Edits a customs entry and posts it again. */
+        put: operations["CustomsEntriesController_editEntry"];
+        post?: never;
+        /** Deletes a customs entry with its expense, landed cost and ledger entries. */
+        delete: operations["CustomsEntriesController_deleteEntry"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/landed-cost/transactions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get landed cost transactions */
+        get: operations["BillAllocateLandedCostController_getLandedCostTransactions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/landed-cost/bills/{billId}/allocate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Allocate landed cost to bill items */
+        post: operations["BillAllocateLandedCostController_calculateLandedCost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/landed-cost/{allocatedLandedCostId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete allocated landed cost */
+        delete: operations["BillAllocateLandedCostController_deleteAllocatedLandedCost"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/landed-cost/bills/{billId}/transactions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get bill landed cost transactions */
+        get: operations["BillAllocateLandedCostController_getBillLandedCostTransactions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/warehouse-transfers/validate-bulk-delete": {
         parameters: {
             query?: never;
@@ -5166,74 +5288,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/landed-cost/transactions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get landed cost transactions */
-        get: operations["BillAllocateLandedCostController_getLandedCostTransactions"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/landed-cost/bills/{billId}/allocate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Allocate landed cost to bill items */
-        post: operations["BillAllocateLandedCostController_calculateLandedCost"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/landed-cost/{allocatedLandedCostId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /** Delete allocated landed cost */
-        delete: operations["BillAllocateLandedCostController_deleteAllocatedLandedCost"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/landed-cost/bills/{billId}/transactions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get bill landed cost transactions */
-        get: operations["BillAllocateLandedCostController_getBillLandedCostTransactions"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/exchange-rates/latest": {
         parameters: {
             query?: never;
@@ -7979,10 +8033,17 @@ export interface components {
             /** @description Standard + zero-rated + exempt */
             totalAmount: number;
         };
+        GctReturnImportGctDto: {
+            /** @description CIF + duties the import GCT was charged on */
+            taxableAmount: number;
+            taxAmount: number;
+        };
         GctReturnPurchasesDto: {
             standardRated: components["schemas"]["GctReturnRateLineDto"][];
             standardRatedAmount: number;
             zeroRatedAndExemptAmount: number;
+            /** @description Import GCT paid at customs (customs entries); part of input_tax */
+            importGct: components["schemas"]["GctReturnImportGctDto"];
             inputTax: number;
         };
         GctReturnApportionmentDto: {
@@ -8009,7 +8070,9 @@ export interface components {
             outputTax: number;
             purchases: components["schemas"]["GctReturnPurchasesDto"];
             apportionment: components["schemas"]["GctReturnApportionmentDto"];
-            /** @description Output tax less claimable input tax */
+            /** @description Advance GCT paid at customs, credited against the GCT due */
+            advanceGctCredit: number;
+            /** @description Output tax less claimable input tax and the advance GCT credit */
             netGct: number;
             /** @enum {string} */
             position: "payable" | "refundable" | "nil";
@@ -9735,6 +9798,428 @@ export interface components {
              */
             attachments: string[];
         };
+        CustomsOverrideDto: {
+            field: string;
+            computed: number;
+            amount: number;
+        };
+        CustomsRatesDto: {
+            scfRate: number;
+            eplRate: number;
+            importGctRate: number;
+            advanceGctRate: number;
+            verified: boolean;
+        };
+        CustomsAllocationDto: {
+            entryId: number;
+            itemId: number;
+            itemName: string;
+            cost: number;
+        };
+        CustomsEntryCalculationDto: {
+            fobAmount: number;
+            freightAmount: number;
+            insuranceAmount: number;
+            cifAmount: number;
+            customsDutyRate: number | null;
+            customsDutyAmount: number;
+            scfAmount: number;
+            eplAmount: number;
+            asdAmount: number;
+            sctAmount: number;
+            cafAmount: number;
+            importGctBase: number;
+            importGctAmount: number;
+            advanceGctAmount: number;
+            /** @description Duties and fees added to the cost of the goods. */
+            dutiesAmount: number;
+            /** @description Import GCT and advance GCT. */
+            taxesAmount: number;
+            /** @description Total paid to Customs. */
+            totalAmount: number;
+            overrides: components["schemas"]["CustomsOverrideDto"][];
+            rates: components["schemas"]["CustomsRatesDto"];
+            allocations: components["schemas"]["CustomsAllocationDto"][];
+        };
+        CustomsEntryResponseDto: {
+            fobAmount: number;
+            freightAmount: number;
+            insuranceAmount: number;
+            cifAmount: number;
+            customsDutyRate: number | null;
+            customsDutyAmount: number;
+            scfAmount: number;
+            eplAmount: number;
+            asdAmount: number;
+            sctAmount: number;
+            cafAmount: number;
+            importGctBase: number;
+            importGctAmount: number;
+            advanceGctAmount: number;
+            /** @description Duties and fees added to the cost of the goods. */
+            dutiesAmount: number;
+            /** @description Import GCT and advance GCT. */
+            taxesAmount: number;
+            /** @description Total paid to Customs. */
+            totalAmount: number;
+            overrides: components["schemas"]["CustomsOverrideDto"][];
+            rates: components["schemas"]["CustomsRatesDto"];
+            allocations: components["schemas"]["CustomsAllocationDto"][];
+            id: number;
+            entryNumber: string;
+            entryDate: string;
+            referenceNo: string | null;
+            billId: number | null;
+            billNumber: string | null;
+            vendorName: string | null;
+            paymentAccountId: number;
+            paymentAccountName: string;
+            allocationMethod: string;
+            expenseId: number | null;
+            landedCostId: number | null;
+            note: string | null;
+        };
+        CalculateCustomsEntryDto: {
+            /**
+             * @description The bill of the imported goods. The duties and fees are allocated to its inventory lines.
+             * @example 12
+             */
+            billId?: number | null;
+            /**
+             * @description How the duties are spread over the bill lines.
+             * @example value
+             * @enum {string}
+             */
+            allocationMethod?: "value" | "quantity";
+            /**
+             * @description FOB value of the goods, in JMD at the customs rate.
+             * @example 90000
+             */
+            fobAmount: number;
+            /**
+             * @description Freight to Jamaica, in JMD.
+             * @example 0
+             */
+            freightAmount?: number | null;
+            /**
+             * @description Insurance, in JMD.
+             * @example 0
+             */
+            insuranceAmount?: number | null;
+            /**
+             * @description Customs Duty rate from the tariff, % of CIF.
+             * @example 20
+             */
+            customsDutyRate?: number | null;
+            /**
+             * @description Customs Duty (CD). Computed from the rate when omitted.
+             * @example 0
+             */
+            customsDutyAmount?: number | null;
+            /**
+             * @description Standard Compliance Fee. Computed when omitted.
+             * @example 0
+             */
+            scfAmount?: number | null;
+            /**
+             * @description Environmental Protection Levy. Computed when omitted.
+             * @example 0
+             */
+            eplAmount?: number | null;
+            /**
+             * @description Additional Stamp Duty.
+             * @example 0
+             */
+            asdAmount?: number | null;
+            /**
+             * @description Special Consumption Tax.
+             * @example 0
+             */
+            sctAmount?: number | null;
+            /**
+             * @description Customs Administration Fee.
+             * @example 0
+             */
+            cafAmount?: number | null;
+            /**
+             * @description Import GCT. Computed when omitted.
+             * @example 0
+             */
+            importGctAmount?: number | null;
+            /**
+             * @description Advance GCT. Computed when omitted; send 0 when none was charged.
+             * @example 0
+             */
+            advanceGctAmount?: number | null;
+            /**
+             * @description The date of the entry (YYYY-MM-DD); picks the rates in force. Defaults to today.
+             * @example 2026-10-20
+             */
+            entryDate?: string;
+        };
+        CreateCustomsEntryDto: {
+            /**
+             * @description The bill of the imported goods. The duties and fees are allocated to its inventory lines.
+             * @example 12
+             */
+            billId?: number | null;
+            /**
+             * @description How the duties are spread over the bill lines.
+             * @example value
+             * @enum {string}
+             */
+            allocationMethod?: "value" | "quantity";
+            /**
+             * @description FOB value of the goods, in JMD at the customs rate.
+             * @example 90000
+             */
+            fobAmount: number;
+            /**
+             * @description Freight to Jamaica, in JMD.
+             * @example 0
+             */
+            freightAmount?: number | null;
+            /**
+             * @description Insurance, in JMD.
+             * @example 0
+             */
+            insuranceAmount?: number | null;
+            /**
+             * @description Customs Duty rate from the tariff, % of CIF.
+             * @example 20
+             */
+            customsDutyRate?: number | null;
+            /**
+             * @description Customs Duty (CD). Computed from the rate when omitted.
+             * @example 0
+             */
+            customsDutyAmount?: number | null;
+            /**
+             * @description Standard Compliance Fee. Computed when omitted.
+             * @example 0
+             */
+            scfAmount?: number | null;
+            /**
+             * @description Environmental Protection Levy. Computed when omitted.
+             * @example 0
+             */
+            eplAmount?: number | null;
+            /**
+             * @description Additional Stamp Duty.
+             * @example 0
+             */
+            asdAmount?: number | null;
+            /**
+             * @description Special Consumption Tax.
+             * @example 0
+             */
+            sctAmount?: number | null;
+            /**
+             * @description Customs Administration Fee.
+             * @example 0
+             */
+            cafAmount?: number | null;
+            /**
+             * @description Import GCT. Computed when omitted.
+             * @example 0
+             */
+            importGctAmount?: number | null;
+            /**
+             * @description Advance GCT. Computed when omitted; send 0 when none was charged.
+             * @example 0
+             */
+            advanceGctAmount?: number | null;
+            /**
+             * @description The C78 entry number.
+             * @example C78-2026-001234
+             */
+            entryNumber: string;
+            /**
+             * @description The date of the entry (YYYY-MM-DD).
+             * @example 2026-10-20
+             */
+            entryDate: string;
+            /**
+             * @description The account the duties and taxes were paid from.
+             * @example 1000
+             */
+            paymentAccountId: number;
+            referenceNo?: string | null;
+            note?: string | null;
+        };
+        EditCustomsEntryDto: {
+            /**
+             * @description The bill of the imported goods. The duties and fees are allocated to its inventory lines.
+             * @example 12
+             */
+            billId?: number | null;
+            /**
+             * @description How the duties are spread over the bill lines.
+             * @example value
+             * @enum {string}
+             */
+            allocationMethod?: "value" | "quantity";
+            /**
+             * @description FOB value of the goods, in JMD at the customs rate.
+             * @example 90000
+             */
+            fobAmount: number;
+            /**
+             * @description Freight to Jamaica, in JMD.
+             * @example 0
+             */
+            freightAmount?: number | null;
+            /**
+             * @description Insurance, in JMD.
+             * @example 0
+             */
+            insuranceAmount?: number | null;
+            /**
+             * @description Customs Duty rate from the tariff, % of CIF.
+             * @example 20
+             */
+            customsDutyRate?: number | null;
+            /**
+             * @description Customs Duty (CD). Computed from the rate when omitted.
+             * @example 0
+             */
+            customsDutyAmount?: number | null;
+            /**
+             * @description Standard Compliance Fee. Computed when omitted.
+             * @example 0
+             */
+            scfAmount?: number | null;
+            /**
+             * @description Environmental Protection Levy. Computed when omitted.
+             * @example 0
+             */
+            eplAmount?: number | null;
+            /**
+             * @description Additional Stamp Duty.
+             * @example 0
+             */
+            asdAmount?: number | null;
+            /**
+             * @description Special Consumption Tax.
+             * @example 0
+             */
+            sctAmount?: number | null;
+            /**
+             * @description Customs Administration Fee.
+             * @example 0
+             */
+            cafAmount?: number | null;
+            /**
+             * @description Import GCT. Computed when omitted.
+             * @example 0
+             */
+            importGctAmount?: number | null;
+            /**
+             * @description Advance GCT. Computed when omitted; send 0 when none was charged.
+             * @example 0
+             */
+            advanceGctAmount?: number | null;
+            /**
+             * @description The C78 entry number.
+             * @example C78-2026-001234
+             */
+            entryNumber: string;
+            /**
+             * @description The date of the entry (YYYY-MM-DD).
+             * @example 2026-10-20
+             */
+            entryDate: string;
+            /**
+             * @description The account the duties and taxes were paid from.
+             * @example 1000
+             */
+            paymentAccountId: number;
+            referenceNo?: string | null;
+            note?: string | null;
+        };
+        BillLandedCostTransactionDto: {
+            /**
+             * @description The unique identifier of the landed cost transaction
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description The bill id the landed cost is allocated to
+             * @example 10
+             */
+            billId?: number;
+            /**
+             * @description The id of the source transaction the cost was allocated from
+             * @example 5
+             */
+            fromTransactionId?: number;
+            /**
+             * @description The type of the source transaction (Bill or Expense)
+             * @example Expense
+             */
+            fromTransactionType?: string;
+            /**
+             * @description The entry id of the source transaction
+             * @example 2
+             */
+            fromTransactionEntryId?: number;
+            /**
+             * @description The allocation method used to distribute the cost
+             * @example quantity
+             */
+            allocationMethod?: string;
+            /**
+             * @description The translated label of the allocation method
+             * @example Quantity
+             */
+            allocationMethodFormatted?: string;
+            /**
+             * @description The cost account id the landed cost is posted to
+             * @example 1020
+             */
+            costAccountId?: number;
+            /**
+             * @description The description of the landed cost transaction
+             * @example Freight charges
+             */
+            description?: string;
+            /**
+             * @description The allocated landed cost amount
+             * @example 150
+             */
+            amount?: number;
+            /**
+             * @description The allocated landed cost amount in the base currency
+             * @example 150
+             */
+            localAmount?: number;
+            /**
+             * @description The currency code of the landed cost transaction
+             * @example USD
+             */
+            currencyCode?: string;
+            /**
+             * @description The exchange rate applied to the amount
+             * @example 1
+             */
+            exchangeRate?: number;
+            /**
+             * @description The resolved name of the source item or expense account
+             * @example Widget A
+             */
+            name?: string;
+            /**
+             * @description Formatted allocated amount
+             * @example $150.00
+             */
+            formattedAmount?: string;
+            /**
+             * @description Formatted allocated amount in the base currency
+             * @example $150.00
+             */
+            formattedLocalAmount?: string;
+        };
+        AllocateBillLandedCostDto: Record<string, never>;
         WarehouseTransferEntryResponseDto: {
             /**
              * @description The ID of the warehouse transfer entry
@@ -18166,89 +18651,6 @@ export interface components {
             data: components["schemas"]["AuditLogListItemDto"][];
             pagination: components["schemas"]["PaginationMetaDto"];
         };
-        BillLandedCostTransactionDto: {
-            /**
-             * @description The unique identifier of the landed cost transaction
-             * @example 1
-             */
-            id: number;
-            /**
-             * @description The bill id the landed cost is allocated to
-             * @example 10
-             */
-            billId?: number;
-            /**
-             * @description The id of the source transaction the cost was allocated from
-             * @example 5
-             */
-            fromTransactionId?: number;
-            /**
-             * @description The type of the source transaction (Bill or Expense)
-             * @example Expense
-             */
-            fromTransactionType?: string;
-            /**
-             * @description The entry id of the source transaction
-             * @example 2
-             */
-            fromTransactionEntryId?: number;
-            /**
-             * @description The allocation method used to distribute the cost
-             * @example quantity
-             */
-            allocationMethod?: string;
-            /**
-             * @description The translated label of the allocation method
-             * @example Quantity
-             */
-            allocationMethodFormatted?: string;
-            /**
-             * @description The cost account id the landed cost is posted to
-             * @example 1020
-             */
-            costAccountId?: number;
-            /**
-             * @description The description of the landed cost transaction
-             * @example Freight charges
-             */
-            description?: string;
-            /**
-             * @description The allocated landed cost amount
-             * @example 150
-             */
-            amount?: number;
-            /**
-             * @description The allocated landed cost amount in the base currency
-             * @example 150
-             */
-            localAmount?: number;
-            /**
-             * @description The currency code of the landed cost transaction
-             * @example USD
-             */
-            currencyCode?: string;
-            /**
-             * @description The exchange rate applied to the amount
-             * @example 1
-             */
-            exchangeRate?: number;
-            /**
-             * @description The resolved name of the source item or expense account
-             * @example Widget A
-             */
-            name?: string;
-            /**
-             * @description Formatted allocated amount
-             * @example $150.00
-             */
-            formattedAmount?: string;
-            /**
-             * @description Formatted allocated amount in the base currency
-             * @example $150.00
-             */
-            formattedLocalAmount?: string;
-        };
-        AllocateBillLandedCostDto: Record<string, never>;
         ExchangeRateLatestResponseDto: {
             /**
              * @description The base currency code
@@ -22792,6 +23194,276 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    CustomsEntriesController_calculate: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CalculateCustomsEntryDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomsEntryCalculationDto"];
+                };
+            };
+        };
+    };
+    CustomsEntriesController_getEntries: {
+        parameters: {
+            query?: {
+                fromDate?: string;
+                toDate?: string;
+            };
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomsEntryResponseDto"][];
+                };
+            };
+        };
+    };
+    CustomsEntriesController_createEntry: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCustomsEntryDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomsEntryResponseDto"];
+                };
+            };
+        };
+    };
+    CustomsEntriesController_getEntry: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomsEntryResponseDto"];
+                };
+            };
+        };
+    };
+    CustomsEntriesController_editEntry: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EditCustomsEntryDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomsEntryResponseDto"];
+                };
+            };
+        };
+    };
+    CustomsEntriesController_deleteEntry: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    BillAllocateLandedCostController_getLandedCostTransactions: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of landed cost transactions. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    BillAllocateLandedCostController_calculateLandedCost: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path: {
+                billId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AllocateBillLandedCostDto"];
+            };
+        };
+        responses: {
+            /** @description Landed cost allocated successfully. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    BillAllocateLandedCostController_deleteAllocatedLandedCost: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path: {
+                allocatedLandedCostId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Allocated landed cost deleted successfully. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    BillAllocateLandedCostController_getBillLandedCostTransactions: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
+                Authorization: string;
+                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
+                "organization-id": string;
+            };
+            path: {
+                billId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of bill landed cost transactions. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        billId?: number;
+                        data?: components["schemas"]["BillLandedCostTransactionDto"][];
+                    };
+                };
             };
         };
     };
@@ -34096,113 +34768,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GetAuditLogsResponseDto"];
-                };
-            };
-        };
-    };
-    BillAllocateLandedCostController_getLandedCostTransactions: {
-        parameters: {
-            query?: never;
-            header: {
-                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
-                Authorization: string;
-                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
-                "organization-id": string;
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description List of landed cost transactions. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    BillAllocateLandedCostController_calculateLandedCost: {
-        parameters: {
-            query?: never;
-            header: {
-                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
-                Authorization: string;
-                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
-                "organization-id": string;
-            };
-            path: {
-                billId: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AllocateBillLandedCostDto"];
-            };
-        };
-        responses: {
-            /** @description Landed cost allocated successfully. */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    BillAllocateLandedCostController_deleteAllocatedLandedCost: {
-        parameters: {
-            query?: never;
-            header: {
-                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
-                Authorization: string;
-                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
-                "organization-id": string;
-            };
-            path: {
-                allocatedLandedCostId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Allocated landed cost deleted successfully. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    BillAllocateLandedCostController_getBillLandedCostTransactions: {
-        parameters: {
-            query?: never;
-            header: {
-                /** @description Value must be 'Bearer <token>' where <token> is an API key prefixed with 'bc_' or a JWT token. */
-                Authorization: string;
-                /** @description Required if Authorization is a JWT token. The organization ID to operate within. */
-                "organization-id": string;
-            };
-            path: {
-                billId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description List of bill landed cost transactions. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        billId?: number;
-                        data?: components["schemas"]["BillLandedCostTransactionDto"][];
-                    };
                 };
             };
         };

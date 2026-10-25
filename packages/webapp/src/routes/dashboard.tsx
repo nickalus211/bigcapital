@@ -611,6 +611,18 @@ export const getDashboardRoutes = () => [
     hotkey: 'shift+x',
     subscriptionActive: [SUBSCRIPTION_TYPE.MAIN],
   },
+  {
+    path: `/customs-entries`,
+    component: lazy(() =>
+      import('@/containers/Purchases/CustomsEntries/CustomsEntries').then(
+        (m) => ({ default: m.CustomsEntries }),
+      ),
+    ),
+    breadcrumb: 'Customs Entries',
+    pageTitle: 'Customs Entries',
+    feature: Features.Jamaica,
+    subscriptionActive: [SUBSCRIPTION_TYPE.MAIN],
+  },
   // Customers
   {
     path: `/customers/import`,
