@@ -64,6 +64,25 @@ describe('BillGL', () => {
     expect(itemEntryTwo.accountId).toBe(200);
   });
 
+  it('debits the account of an account line (no item)', () => {
+    const bill = buildBill({
+      entries: [
+        {
+          id: 3,
+          itemId: null,
+          item: null,
+          totalExcludingTax: 2500,
+          costAccountId: 400,
+        },
+      ],
+    });
+    const entries = buildLedger(bill).getEntries();
+    const accountLine = entries.find((entry) => entry.accountId === 400);
+
+    expect(accountLine.debit).toBe(2500);
+    expect(accountLine.accountNormal).toBe(AccountNormal.DEBIT);
+  });
+
   it('appends the landed costs as credit ledger entries', () => {
     const ledger = buildLedger(
       buildBill(),

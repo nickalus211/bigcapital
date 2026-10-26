@@ -200,6 +200,8 @@ export class ItemEntry extends BaseModel {
     // const { Expense } = require('../../Expenses/models/Expense.model');
     // const ProjectTask = require('models/Task');
 
+    const { Account } = require('../../Accounts/models/Account.model');
+
     return {
       item: {
         relation: Model.BelongsToOneRelation,
@@ -207,6 +209,18 @@ export class ItemEntry extends BaseModel {
         join: {
           from: 'items_entries.itemId',
           to: 'items.id',
+        },
+      },
+
+      /**
+       * The cost account of the entry (the account of a bill account line).
+       */
+      costAccount: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: Account,
+        join: {
+          from: 'items_entries.costAccountId',
+          to: 'accounts.id',
         },
       },
 

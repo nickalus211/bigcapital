@@ -9,6 +9,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  ValidateIf,
 } from 'class-validator';
 import { ItemLinkDto } from '@/modules/Items/dtos/ItemLink.dto';
 
@@ -21,11 +22,21 @@ export class ItemEntryDto {
   })
   index: number;
 
+  // Bills accept account lines: no item, only `costAccountId`. Other
+  // documents still reject a line without an item in their validators.
+  @ValidateIf(
+    (entry) =>
+      (entry.itemId !== undefined && entry.itemId !== null) ||
+      !entry.costAccountId,
+  )
   @IsNotEmpty()
   @IsInt()
   @ApiProperty({
-    description: 'The id of the item',
+    description:
+      'The id of the item. Bills accept an account line instead: omit it and send `cost_account_id`.',
     example: 1,
+    required: false,
+    nullable: true,
   })
   itemId: number;
 

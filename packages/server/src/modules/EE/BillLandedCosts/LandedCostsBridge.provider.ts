@@ -66,7 +66,10 @@ export class LandedCostsBridgeProvider
   public async validateBillEntries(
     entries: IBillLandedCostEntryDTO[],
   ): Promise<void> {
-    const entriesItemsIds = entries.map((e) => e.itemId);
+    // Account lines (no item) can't carry landed costs; see below.
+    const entriesItemsIds = entries
+      .map((e) => e.itemId)
+      .filter((itemId) => itemId !== undefined && itemId !== null);
     const entriesItems = await this.itemModel()
       .query()
       .whereIn('id', entriesItemsIds);
@@ -76,7 +79,7 @@ export class LandedCostsBridgeProvider
     const nonInventoryHasCost = entries.filter((entry) => {
       const item = entriesItemsById.get(entry.itemId);
 
-      return entry.landedCost && item.type !== 'inventory';
+      return entry.landedCost && item?.type !== 'inventory';
     });
     if (nonInventoryHasCost.length > 0) {
       throw new ServiceError(

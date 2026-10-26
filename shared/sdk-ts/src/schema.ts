@@ -7190,10 +7190,10 @@ export interface components {
              */
             index: number;
             /**
-             * @description The id of the item
+             * @description The id of the item. Bills accept an account line instead: omit it and send `cost_account_id`.
              * @example 1
              */
-            itemId: number;
+            itemId?: number | null;
             /** @description The nested item summary */
             item?: components["schemas"]["ItemLinkDto"];
             /**
@@ -12310,10 +12310,10 @@ export interface components {
              */
             index: number;
             /**
-             * @description The id of the item
+             * @description The id of the item. Bills accept an account line instead: omit it and send `cost_account_id`.
              * @example 1
              */
-            itemId: number;
+            itemId?: number | null;
             /** @description The nested item summary */
             item?: components["schemas"]["ItemLinkDto"];
             /**

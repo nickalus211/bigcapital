@@ -38,6 +38,10 @@ export interface ItemEntriesTableContextValue {
   isInclusiveTax?: boolean;
   /* Controls whether the landed cost column is displayed. */
   landedCost?: boolean;
+  /* Controls whether the account column is displayed (bill account lines). */
+  accountLines?: boolean;
+  /* The accounts list used on the account cell suggestions. */
+  accounts?: unknown[];
 }
 
 const ItemEntriesTableContext = createContext<

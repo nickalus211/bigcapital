@@ -39,11 +39,13 @@ const BillFormSchema = Yup.object().shape({
           then: Yup.number().required(),
         }),
       rate: Yup.number().nullable().max(DATATYPES_LENGTH.INT_10),
+      costAccountId: Yup.number().nullable(),
+      // The item is required unless the line posts to an account.
       itemId: Yup.number()
         .nullable()
-        .when(['quantity', 'rate'], {
-          is: (quantity: unknown, rate: unknown) =>
-            !isBlank(quantity) && !isBlank(rate),
+        .when(['quantity', 'rate', 'costAccountId'], {
+          is: (quantity: unknown, rate: unknown, costAccountId: unknown) =>
+            !isBlank(quantity) && !isBlank(rate) && isBlank(costAccountId),
           then: Yup.number().required(),
         }),
       total: Yup.number().nullable(),

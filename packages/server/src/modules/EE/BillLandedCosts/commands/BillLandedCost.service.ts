@@ -55,7 +55,7 @@ export class BillLandedCost {
       unallocatedCostAmount: billEntry.unallocatedCostAmount,
       allocatedCostAmount: billEntry.allocatedCostAmount,
       description: billEntry.description,
-      costAccountId: billEntry.costAccountId || billEntry.item.costAccountId,
+      costAccountId: billEntry.costAccountId || billEntry.item?.costAccountId,
     };
   }
 }

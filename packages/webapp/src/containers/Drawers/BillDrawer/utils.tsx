@@ -46,7 +46,12 @@ export const useBillReadonlyEntriesTableColumns = () => {
     () => [
       {
         Header: intl.get('product_and_service'),
-        accessor: 'item.name',
+        id: 'item',
+        // Account lines have no item: show the account instead.
+        accessor: (entry: {
+          item?: { name?: string } | null;
+          costAccount?: { name?: string } | null;
+        }) => entry.item?.name ?? entry.costAccount?.name ?? '',
         Cell: TextOverviewTooltipCell,
         width: 150,
         className: 'item',

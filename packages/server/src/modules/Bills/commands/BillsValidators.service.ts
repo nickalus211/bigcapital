@@ -8,6 +8,7 @@ import { VendorCreditAppliedBill } from '@/modules/VendorCreditsApplyBills/model
 import { TenantModelProxy } from '@/modules/System/models/TenantBaseModel';
 import { BillEntryDto } from '../dtos/Bill.dto';
 import { BillLandedCostsBridge } from '../integrations/BillLandedCostsBridge';
+import { Account } from '@/modules/Accounts/models/Account.model';
 
 @Injectable()
 export class BillsValidators {
@@ -23,7 +24,44 @@ export class BillsValidators {
     >,
 
     private readonly landedCostsBridge: BillLandedCostsBridge,
+
+    @Inject(Account.name)
+    private accountModel: TenantModelProxy<typeof Account>,
   ) {}
+
+  /**
+   * Validates the account lines of the bill: every line needs an item or a
+   * cost account, and the cost accounts must exist.
+   * @param {BillEntryDto[]} entries
+   */
+  public async validateBillAccountLines(entries: BillEntryDto[]) {
+    const hasItem = (entry: BillEntryDto) =>
+      entry.itemId !== undefined && entry.itemId !== null;
+
+    if (entries.some((entry) => !hasItem(entry) && !entry.costAccountId)) {
+      throw new ServiceError(
+        ERRORS.BILL_ENTRY_ITEM_OR_ACCOUNT_REQUIRED,
+        'Each bill line needs an item or an account.',
+      );
+    }
+    const accountsIds = [
+      ...new Set(
+        entries.filter((e) => e.costAccountId).map((e) => e.costAccountId),
+      ),
+    ];
+    if (accountsIds.length === 0) return;
+
+    const foundAccounts = await this.accountModel()
+      .query()
+      .whereIn('id', accountsIds);
+
+    if (foundAccounts.length !== accountsIds.length) {
+      throw new ServiceError(
+        ERRORS.BILL_ENTRY_ACCOUNT_NOT_FOUND,
+        'A bill line account was not found.',
+      );
+    }
+  }
 
   /**
    * Validates the bill existance.

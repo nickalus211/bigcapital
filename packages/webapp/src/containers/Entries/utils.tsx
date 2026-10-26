@@ -106,7 +106,7 @@ export const ensureEntriesHaveEmptyLine =
  */
 export const isLandedCostDisabled = (item: unknown) =>
   ['service', 'non-inventory'].indexOf(
-    (item as { type?: string }).type as string,
+    (item as { type?: string } | null)?.type as string,
   ) === -1;
 
 interface FetchedItemRow {

@@ -116,10 +116,17 @@ export class EditBillService {
       billDTO.entries,
     );
     // Validate the items ids existance on the storage.
-    await this.itemsEntriesService.validateItemsIdsExistance(billDTO.entries);
+    // Validates every line has an item or an account (account lines).
+    await this.validators.validateBillAccountLines(billDTO.entries);
+
+    // Validate items IDs existance of the item lines.
+    const itemEntries = billDTO.entries.filter(
+      (entry) => entry.itemId !== undefined && entry.itemId !== null,
+    );
+    await this.itemsEntriesService.validateItemsIdsExistance(itemEntries);
     // Accept the purchasable items only.
     await this.itemsEntriesService.validateNonPurchasableEntriesItems(
-      billDTO.entries,
+      itemEntries,
     );
 
     // Transforms the bill DTO to model object.
