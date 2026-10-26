@@ -33,9 +33,12 @@ export default function AccountCellRenderer({
 
   useCellAutoFocus(accountRef, autoFocus, id, index);
 
-  const handleAccountSelected = useCallback(
-    (account) => {
-      updateData(index, id, account.id);
+  // `onItemChange` rather than `onItemSelect`: the latter replaces the
+  // suggest's own handler, which is what routes the "Create" option to the
+  // new account dialog.
+  const handleAccountChange = useCallback(
+    (accountId) => {
+      updateData(index, id, accountId);
     },
     [updateData, index, id],
   );
@@ -58,7 +61,7 @@ export default function AccountCellRenderer({
     >
       <AccountsSuggestField
         items={accounts}
-        onItemSelect={handleAccountSelected}
+        onItemChange={handleAccountChange}
         selectedValue={initialValue}
         filterByRootTypes={filterAccountsByRootTypes}
         filterByTypes={filterAccountsByTypes}

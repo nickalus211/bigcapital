@@ -104,7 +104,11 @@ function AccountFormDialogContent({
         .catch(handleError);
     } else {
       createAccountMutate({ ...form } as CreateAccountBody)
-        .then(handleSuccess)
+        .then((account) => {
+          handleSuccess();
+          // Lets the field that opened the dialog select the new account.
+          if (account?.id) payload.onCreated?.(account as { id: number });
+        })
         .catch(handleError);
     }
   };

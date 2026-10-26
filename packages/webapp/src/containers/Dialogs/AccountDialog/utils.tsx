@@ -12,6 +12,8 @@ export const AccountDialogAction = {
   Edit: 'edit',
   NewChild: 'NewChild',
   NewDefinedType: 'NewDefinedType',
+  /** From the "Create" option of an account search: name typed there. */
+  NewFromQuery: 'NewFromQuery',
 };
 
 /**
@@ -68,6 +70,19 @@ function transformNewDefinedTypePayload(
 }
 
 /**
+ * Payload transformer for a new account named from a search query.
+ */
+function transformNewFromQueryPayload(
+  _account: Account | undefined,
+  payload: AccountDialogPayload,
+) {
+  return {
+    name: payload.name || '',
+    accountType: payload.accountType || '',
+  };
+}
+
+/**
  * Merged the fetched account with transformed payload.
  */
 const mergeWithAccount =
@@ -101,6 +116,7 @@ function getConditions(): Array<[string, AccountTransformer?]> {
     [AccountDialogAction.Edit],
     [AccountDialogAction.NewChild, tranformNewChildAccountPayload],
     [AccountDialogAction.NewDefinedType, transformNewDefinedTypePayload],
+    [AccountDialogAction.NewFromQuery, transformNewFromQueryPayload],
   ];
 }
 

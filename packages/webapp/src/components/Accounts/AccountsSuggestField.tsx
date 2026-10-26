@@ -1,5 +1,6 @@
 import { MenuItem } from '@blueprintjs/core';
 import { ItemRenderer, ItemPredicate } from '@blueprintjs/select';
+import { FormikContextType, useFormikContext } from 'formik';
 import React, { useCallback, ComponentType } from 'react';
 import intl from 'react-intl-universal';
 import { usePreprocessingAccounts } from './_hooks';
@@ -11,6 +12,7 @@ import {
 } from '@/components';
 import { DialogsName } from '@/constants/dialogs';
 import { withDialogActions } from '@/containers/Dialog/withDialogActions';
+import { AccountDialogAction } from '@/containers/Dialogs/AccountDialog/utils';
 
 // Types for renderers and predicates
 type AccountItemRenderer = ItemRenderer<AccountSelectModel>;
@@ -36,6 +38,22 @@ const createNewItemRenderer = (
 const createNewItemFromQuery = (name: string): Partial<AccountSelectModel> => ({
   name,
 });
+/**
+ * The account type to preselect for a new account: the only allowed type,
+ * else the type named like the only allowed root type (expense, income).
+ */
+const getDefaultAccountType = (
+  filterByTypes: string[],
+  filterByRootTypes: string[],
+): string => {
+  if (filterByTypes.length === 1) return filterByTypes[0];
+  if (filterByRootTypes.length === 1) {
+    const [rootType] = filterByRootTypes;
+    if (rootType === 'expense' || rootType === 'income') return rootType;
+  }
+  return '';
+};
+
 // Filters accounts items.
 const filterAccountsPredicater: AccountItemPredicate = (
   query: string,
@@ -117,6 +135,8 @@ type ComponentProps<C> = C extends ComponentType<infer P> ? P : never;
  */
 function withAccountsSuggestFieldLogic<C extends ComponentType<any>>(
   Component: C,
+  // Returns the Formik context for the Formik-bound field, else null.
+  useFieldFormik: () => FormikContextType<unknown> | null = () => null,
 ): ComponentType<
   AccountsSuggestFieldOwnProps & Omit<ComponentProps<C>, ProvidedSuggestProps>
 > {
@@ -145,13 +165,37 @@ function withAccountsSuggestFieldLogic<C extends ComponentType<any>>(
       filterByNormal: filterByNormal ? [filterByNormal] : [],
       filterByRootTypes,
     });
+    const formik = useFieldFormik();
+    const { onItemChange, name } = suggestProps as {
+      onItemChange?: (value: number, item: { id: number }) => void;
+      name?: string;
+    };
+    // Opens the account dialog with the typed name, then selects the new
+    // account in this field.
     const handleCreateItemSelect = useCallback(
       (item: AccountSelectModel | Partial<AccountSelectModel>) => {
-        if (!('id' in item) || !item.id) {
-          openDialog(DialogsName.AccountForm);
-        }
+        if ('id' in item && item.id) return;
+
+        openDialog(DialogsName.AccountForm, {
+          action: AccountDialogAction.NewFromQuery,
+          name: item.name,
+          accountType: getDefaultAccountType(filterByTypes, filterByRootTypes),
+          onCreated: (account: { id: number }) => {
+            if (formik && name) {
+              formik.setFieldValue(name, account.id);
+            }
+            onItemChange?.(account.id, account);
+          },
+        });
       },
-      [openDialog],
+      [
+        openDialog,
+        filterByTypes,
+        filterByRootTypes,
+        formik,
+        name,
+        onItemChange,
+      ],
     );
     // Maybe inject new item props to select component.
     const maybeCreateNewItemRenderer = allowCreate
@@ -181,7 +225,10 @@ function withAccountsSuggestFieldLogic<C extends ComponentType<any>>(
   };
 }
 const AccountsSuggestFieldWithLogic = withAccountsSuggestFieldLogic(Suggest);
-const FAccountsSuggestFieldWithLogic = withAccountsSuggestFieldLogic(FSuggest);
+const FAccountsSuggestFieldWithLogic = withAccountsSuggestFieldLogic(
+  FSuggest,
+  useFormikContext,
+);
 
 export const AccountsSuggestField = withDialogActions(
   AccountsSuggestFieldWithLogic,

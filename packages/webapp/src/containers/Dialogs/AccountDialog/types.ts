@@ -23,6 +23,10 @@ export interface AccountDialogPayload {
   accountId?: number | null;
   accountType?: string;
   parentAccountId?: number | string;
+  /** Prefilled name (`NewFromQuery`). */
+  name?: string;
+  /** Called with the new account once it is created. */
+  onCreated?: (account: { id: number; name?: string }) => void;
   [key: string]: unknown;
 }
 

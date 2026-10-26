@@ -3,6 +3,20 @@
 Newest first. Every entry is backward compatible unless it is marked
 **BREAKING**, and none are.
 
+## Fix: create an account from an account search (2026-10-26)
+
+Webapp and SDK only; the API is unchanged.
+
+- **"Create" in an account search did nothing in table lines** (for example
+  the Expense Category column on expenses). The line's own select handler
+  replaced the one that opens the New Account dialog. Now the dialog opens
+  with the typed name, with the type preset from the column (Expense for
+  expense categories), and the new account is selected in the line after
+  it's saved.
+- The New Account dialog said "edited" when creating a sub-account or an
+  account from a search; it now says "created".
+- SDK: `createAccount` returns the created account (it returned nothing).
+
 ## M6: Customs entries (2026-10-25)
 
 Details and examples: [customs-entries.md](customs-entries.md). Additive

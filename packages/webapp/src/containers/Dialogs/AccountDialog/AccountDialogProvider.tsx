@@ -51,7 +51,9 @@ function AccountDialogProvider({
 
   // Handle fetch Currencies data table
   const { data: currencies, isLoading: isCurrenciesLoading } = useCurrencies();
-  const isNewMode = !payload?.action;
+  // New unless an account is being edited (new child and new-from-search
+  // dialogs carry an action too).
+  const isNewMode = !payload?.accountId;
 
   // Retrieves the disabled fields of the form.
   const fieldsDisabled = React.useMemo(
