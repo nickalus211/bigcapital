@@ -1,4 +1,7 @@
-FROM bigcapitalhq/server:latest as build
+# The server image whose migrations run. docker-compose.jamaica.yml points it
+# at the local build; the default stays upstream's image.
+ARG SERVER_IMAGE=bigcapitalhq/server:latest
+FROM ${SERVER_IMAGE} as build
 
 ARG DB_HOST= \
   DB_USER= \

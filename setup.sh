@@ -11,6 +11,18 @@ DOCKER_COMPOSE_DIR=docker
 DOCKER_ENV_EXAMPLE_PATH=$CURRENT/.env.example
 DOCKER_ENV_PATH=$CURRENT/.env
 
+# Running from a source checkout of this repository (e.g. the Jamaica fork):
+# build the server and webapp images from the source instead of pulling the
+# upstream images, and never re-download upstream's docker files.
+if [ -f "$CURRENT/packages/server/Dockerfile" ] && [ -f "$CURRENT/docker-compose.jamaica.yml" ]
+then
+    LOCAL_SOURCE=1
+    COMPOSE_FILES="-f $DOCKER_FILE_PATH -f ./docker-compose.jamaica.yml"
+else
+    LOCAL_SOURCE=0
+    COMPOSE_FILES="-f $DOCKER_FILE_PATH"
+fi
+
 # if docker-compose is installed
 if command -v docker-compose &> /dev/null
 then
@@ -70,7 +82,8 @@ clone_github_folder() {
 
 
 setup_env() {
-    if [ -f $DOCKER_ENV_EXAMPLE_PATH ];
+    # Keep an existing .env; only create it from the example.
+    if [ -f $DOCKER_ENV_EXAMPLE_PATH ] && [ ! -f "$DOCKER_ENV_PATH" ];
     then
         cp "$CURRENT/.env.example" "$DOCKER_ENV_PATH"
     fi
@@ -156,8 +169,22 @@ function askForAction() {
 function install() {
     echo "Installing Bigcapital.........."
     echo "installing is going to take few minutes..."
-    download
-    setup_env
+    if [ "$LOCAL_SOURCE" == "1" ];
+    then
+        setup_env
+        buildLocalImages
+    else
+        download
+        setup_env
+    fi
+}
+
+# Builds the images from the source checkout. The server image goes first:
+# the database migration image is built from it.
+function buildLocalImages() {
+    echo "Building the server and webapp images from source (this takes a while)..."
+    /bin/bash -c "$COMPOSE_CMD $COMPOSE_FILES --env-file=$DOCKER_ENV_PATH build server"
+    /bin/bash -c "$COMPOSE_CMD $COMPOSE_FILES --env-file=$DOCKER_ENV_PATH build"
 }
 
 function download() { 
@@ -172,8 +199,16 @@ function download() {
 }
 
 function startServices() {
-    /bin/bash -c "$COMPOSE_CMD -f $DOCKER_FILE_PATH --env-file=$DOCKER_ENV_PATH build"
-    /bin/bash -c "$COMPOSE_CMD -f $DOCKER_FILE_PATH --env-file=$DOCKER_ENV_PATH up -d"
+    if [ "$LOCAL_SOURCE" == "1" ];
+    then
+        buildLocalImages
+        # Stop Watchtower left over from an upstream install; it would replace
+        # the local build with upstream's images.
+        docker rm -f bigcapital-auto-update &> /dev/null
+    else
+        /bin/bash -c "$COMPOSE_CMD $COMPOSE_FILES --env-file=$DOCKER_ENV_PATH build"
+    fi
+    /bin/bash -c "$COMPOSE_CMD $COMPOSE_FILES --env-file=$DOCKER_ENV_PATH up -d"
 
     local migrator_container_id=$(docker container ls -aq -f "name=bigcapital-database-migration")
     if [ -n "$migrator_container_id" ]; then
@@ -203,16 +238,28 @@ function startServices() {
         fi
     fi
 
+    # Wait for the server's Docker health check (it pings /api/system_db).
     local api_container_id=$(docker container ls -q -f "name=bigcapital-server")
     local idx2=0
-    while ! docker logs $api_container_id 2>&1 | grep -m 1 -i "Server listening on port" | grep -q ".";
+    local health=""
+    while [ $idx2 -lt 300 ];
     do
-        local message=">> Waiting for Bigcapital Server to Start"
-        local dots=$(printf '%*s' $idx2 | tr ' ' '.')    
-        echo -ne "\r$message$dots"
+        health=$(docker inspect --format='{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' $api_container_id 2>/dev/null)
+        if [ "$health" == "healthy" ]; then
+            break
+        fi
+        local message=">> Waiting for Bigcapital Server to Start ($health)"
+        local dots=$(printf '%*s' $(( idx2 % 10 )) | tr ' ' '.')
+        echo -ne "\r\033[K$message$dots"
         ((idx2++))
         sleep 1
     done
+    if [ "$health" != "healthy" ]; then
+        printf "\r\033[K"
+        echo "   Bigcapital Server is not healthy after 5 minutes ($health) ❌"
+        echo "   Check the logs: ./setup.sh logs (2: API)"
+        return 1
+    fi
     printf "\r\033[K"
     echo "   API server started successfully ✅"
     ACCESS_URL=$(grep -E '^BASE_URL=' "$DOCKER_ENV_PATH" 2>/dev/null | cut -d= -f2-)
@@ -226,7 +273,7 @@ function startServices() {
 
 # Stoppes all the Docker containers.
 function stopServices() {
-    /bin/bash -c "$COMPOSE_CMD -f $DOCKER_FILE_PATH --env-file=$DOCKER_ENV_PATH down"
+    /bin/bash -c "$COMPOSE_CMD $COMPOSE_FILES --env-file=$DOCKER_ENV_PATH down"
 }
 
 # Restarts all the Docker containers.
@@ -271,13 +318,13 @@ function viewLogs(){
 function viewSpecificLogs(){
     local SERVICE_NAME=$1
 
-    if /bin/bash -c "$COMPOSE_CMD -f $DOCKER_FILE_PATH ps | grep -q '$SERVICE_NAME'"; then
+    if /bin/bash -c "$COMPOSE_CMD $COMPOSE_FILES ps | grep -q '$SERVICE_NAME'"; then
         echo "Service '$SERVICE_NAME' is running."
     else
         echo "Service '$SERVICE_NAME' is not running."
     fi
 
-    /bin/bash -c "$COMPOSE_CMD -f $DOCKER_FILE_PATH logs -f $SERVICE_NAME"
+    /bin/bash -c "$COMPOSE_CMD $COMPOSE_FILES logs -f $SERVICE_NAME"
 }
 
 function upgrade() {
@@ -285,8 +332,15 @@ function upgrade() {
     stopServices
 
     echo
-    echo "***** DOWNLOADING STABLE VERSION ****"
-    download
+    if [ "$LOCAL_SOURCE" == "1" ];
+    then
+        echo "***** UPDATING THE SOURCE CHECKOUT ****"
+        git -C "$CURRENT" pull --ff-only
+        buildLocalImages
+    else
+        echo "***** DOWNLOADING STABLE VERSION ****"
+        download
+    fi
 
     echo "***** PLEASE VALIDATE AND START SERVICES ****"
 }

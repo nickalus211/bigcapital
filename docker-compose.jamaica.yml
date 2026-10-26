@@ -1,0 +1,40 @@
+# Builds Bigcapital from this repository (the Jamaica fork) instead of
+# pulling the upstream images. Layered on top of docker-compose.prod.yml:
+#
+#   docker compose -f docker-compose.prod.yml -f docker-compose.jamaica.yml up -d
+#
+# setup.sh uses both files automatically when run from a source checkout.
+
+services:
+  server:
+    image: bigcapital-jamaica/server:local
+    build:
+      context: ./
+      dockerfile: packages/server/Dockerfile
+    labels:
+      # Never let Watchtower replace the local build with upstream's image.
+      com.centurylinklabs.watchtower.enable: 'false'
+    environment:
+      # Jamaica fork (M0): modules hidden from the webapp.
+      - HIDDEN_MODULES=${HIDDEN_MODULES}
+
+  webapp:
+    image: bigcapital-jamaica/webapp:local
+    build:
+      context: ./
+      dockerfile: packages/webapp/Dockerfile
+    labels:
+      com.centurylinklabs.watchtower.enable: 'false'
+
+  database_migration:
+    build:
+      args:
+        # Run the migrations of the local server build (includes the Jamaica
+        # tenant migrations). Build the server image first.
+        SERVER_IMAGE: bigcapital-jamaica/server:local
+
+  # Watchtower only pulls upstream images; disabled for local builds.
+  # Enable it with `--profile auto-update` if you ever go back to upstream.
+  auto-update:
+    profiles:
+      - auto-update
