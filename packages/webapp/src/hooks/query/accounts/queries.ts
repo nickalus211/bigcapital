@@ -83,7 +83,7 @@ export function useAccountsTypes(
 }
 
 export function useCreateAccount(
-  props?: UseMutationOptions<void, Error, CreateAccountBody>,
+  props?: UseMutationOptions<Account, Error, CreateAccountBody>,
 ) {
   const client = useQueryClient();
   const fetcher = useApiFetcher();
