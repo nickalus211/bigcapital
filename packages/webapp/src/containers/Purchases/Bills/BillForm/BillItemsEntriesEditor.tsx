@@ -20,7 +20,7 @@ type EntriesFieldRenderProps = {
  * Bill form body.
  */
 export function BillFormBody() {
-  const { items, taxRates } = useBillFormContext();
+  const { items, taxRates, accounts } = useBillFormContext();
   const { featureCan } = useFeatureCan();
   const isLandedCostEnabled = featureCan(Features.LandedCost);
 
@@ -43,6 +43,8 @@ export function BillFormBody() {
           itemType={ITEM_TYPE.PURCHASABLE}
           taxRates={taxRates}
           landedCost={isLandedCostEnabled}
+          accountLines={true}
+          accounts={accounts}
         />
       )}
     </FastField>

@@ -28715,8 +28715,9 @@
           },
           "itemId": {
             "type": "number",
-            "description": "The id of the item",
-            "example": 1
+            "description": "The id of the item. Bills accept an account line instead: omit it and send `cost_account_id`.",
+            "example": 1,
+            "nullable": true
           },
           "item": {
             "description": "The nested item summary",
@@ -28824,7 +28825,6 @@
         },
         "required": [
           "index",
-          "itemId",
           "rate",
           "quantity",
           "discount",
@@ -36785,8 +36785,9 @@
           },
           "itemId": {
             "type": "number",
-            "description": "The id of the item",
-            "example": 1
+            "description": "The id of the item. Bills accept an account line instead: omit it and send `cost_account_id`.",
+            "example": 1,
+            "nullable": true
           },
           "item": {
             "description": "The nested item summary",
@@ -36899,7 +36900,6 @@
         },
         "required": [
           "index",
-          "itemId",
           "rate",
           "quantity",
           "discount",

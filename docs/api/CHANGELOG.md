@@ -3,6 +3,26 @@
 Newest first. Every entry is backward compatible unless it is marked
 **BREAKING**, and none are.
 
+## Bill account lines (2026-10-26)
+
+Additive only. Details: [bills.md](bills.md#account-lines).
+
+### `POST /api/bills`, `PUT /api/bills/:id`
+- `entries[].item_id` is now optional when `entries[].cost_account_id` is
+  sent: the line debits that account directly (no item needed).
+- New 400 errors: `BILL_ENTRY_ITEM_OR_ACCOUNT_REQUIRED`,
+  `BILL_ENTRY_ACCOUNT_NOT_FOUND`.
+
+### `GET /api/bills/:id`
+- Entries gain `cost_account` (nullable). `item` is `null` on account lines.
+
+### Webapp
+- The bill form has an **Account** column; the bill drawer shows the
+  account name on account lines.
+
+### Invoice and estimate sync
+No change.
+
 ## Dashboard graphs (2026-10-25)
 
 Additive only. Details: [dashboard.md](dashboard.md#get-apidashboardinsights).

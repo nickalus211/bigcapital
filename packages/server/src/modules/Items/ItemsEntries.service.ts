@@ -66,7 +66,10 @@ export class ItemsEntriesService {
     entries: ItemEntry[],
     trx?: Knex.Transaction,
   ): Promise<ItemEntry[]> {
-    const entriesItemsIds = entries.map((e) => e.itemId);
+    // Account lines (bills) have no item.
+    const entriesItemsIds = entries
+      .map((e) => e.itemId)
+      .filter((itemId) => itemId !== undefined && itemId !== null);
 
     const inventoryItems = await this.itemModel()
       .query(trx)
@@ -88,7 +91,13 @@ export class ItemsEntriesService {
   ) {
     const itemsIds = itemEntries.map((e) => e.itemId);
 
-    const foundItems = await this.itemModel().query().whereIn('id', itemsIds);
+    // A line without an item is reported as not found (not a query error).
+    const foundItems = await this.itemModel()
+      .query()
+      .whereIn(
+        'id',
+        itemsIds.filter((itemId) => itemId !== undefined && itemId !== null),
+      );
 
     const foundItemsIds = foundItems.map((item: Item) => item.id);
     const notFoundItemsIds = difference(itemsIds, foundItemsIds);
@@ -219,7 +228,9 @@ export class ItemsEntriesService {
    * Sets the cost/sell accounts to the invoice entries.
    */
   public setItemsEntriesDefaultAccounts = async (entries: ItemEntryDto[]) => {
-    const entriesItemsIds = entries.map((e) => e.itemId);
+    const entriesItemsIds = entries
+      .map((e) => e.itemId)
+      .filter((itemId) => itemId !== undefined && itemId !== null);
     const items = await this.itemModel().query().whereIn('id', entriesItemsIds);
 
     return entries.map((entry) => {

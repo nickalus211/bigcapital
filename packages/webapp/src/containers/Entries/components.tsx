@@ -12,6 +12,7 @@ import {
   PercentFieldCell,
   NumericInputCell,
   CheckBoxFieldCell,
+  AccountsListFieldCell,
 } from '@/components/DataTableCells';
 import { TaxRatesSuggestInputCell } from '@/components/TaxRates/TaxRatesSuggestInputCell';
 import { Align, CellType } from '@/constants';
@@ -110,7 +111,8 @@ const LandedCostHeaderCell = () => {
  * Retrieve editable items entries columns.
  */
 export function useEditableItemsEntriesColumns() {
-  const { landedCost, enableTaxRates } = useItemEntriesTableContext();
+  const { landedCost, enableTaxRates, accountLines } =
+    useItemEntriesTableContext();
 
   return React.useMemo(
     () => [
@@ -124,6 +126,23 @@ export function useEditableItemsEntriesColumns() {
         className: 'item',
         fieldProps: { allowCreate: true },
       },
+      // Account lines (bills): a line can post to an account without an
+      // item; with an item and no account, the item's account is used.
+      ...(accountLines
+        ? [
+            {
+              id: 'costAccountId',
+              Header: 'Account',
+              accessor: 'costAccountId',
+              Cell: AccountsListFieldCell,
+              disableSortBy: true,
+              width: 130,
+              className: 'account',
+              filterAccountsByRootTypes: ['expense', 'asset'],
+              fieldProps: { allowCreate: true },
+            },
+          ]
+        : []),
       {
         Header: intl.get('description'),
         accessor: 'description',
@@ -200,6 +219,6 @@ export function useEditableItemsEntriesColumns() {
       },
     ],
     // The tax column follows settings that may load after the first render.
-    [landedCost, enableTaxRates],
+    [landedCost, enableTaxRates, accountLines],
   );
 }

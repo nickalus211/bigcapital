@@ -39,6 +39,7 @@ export const MIN_LINES_NUMBER = 1;
 export type BillFormEntry = {
   index: number;
   itemId: string | number;
+  costAccountId: string | number;
   rate: string | number;
   discount: string | number;
   quantity: string | number;
@@ -75,6 +76,7 @@ export type BillFormValues = {
 export const defaultBillEntry: BillFormEntry = {
   index: 0,
   itemId: '',
+  costAccountId: '',
   rate: '',
   discount: '',
   quantity: '',
@@ -165,7 +167,14 @@ export const transformEntriesToSubmit = (
 ): Record<string, unknown>[] => {
   const transformBillEntry = (entry: BillFormEntry) => {
     const { amount, ...rest } = transformToForm(entry, defaultBillEntry);
-    return rest;
+    return {
+      ...rest,
+      // An account line has no item; with an item and no account the
+      // server uses the item's account.
+      itemId: rest.itemId || null,
+      costAccountId: rest.costAccountId || null,
+      taxRateId: rest.taxRateId || null,
+    };
   };
   return FF.pipe(
     entries,
@@ -180,7 +189,9 @@ export const transformEntriesToSubmit = (
 export const filterNonZeroEntries = (
   entries: BillFormEntry[],
 ): BillFormEntry[] => {
-  return entries.filter((item) => item.itemId && item.quantity);
+  return entries.filter(
+    (entry) => (entry.itemId || entry.costAccountId) && entry.quantity,
+  );
 };
 
 /**

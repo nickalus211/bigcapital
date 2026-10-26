@@ -269,7 +269,8 @@ export class BillPaymentCashGL {
       ...this.cashEntriesCommonEntry,
       debit: item.totalExcludingTax * billExchangeRate * ratio,
       accountId:
-        ['inventory'].indexOf(item.item.type) !== -1
+        // Account lines (no item) post to their own cost account.
+        item.item?.type === 'inventory'
           ? item.item.inventoryAccountId
           : item.costAccountId,
       index: index + 2,

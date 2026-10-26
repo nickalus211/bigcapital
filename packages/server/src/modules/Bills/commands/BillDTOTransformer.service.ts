@@ -130,13 +130,18 @@ export class BillDTOTransformer {
    */
   private setBillEntriesDefaultAccounts() {
     return async (entries: ItemEntry[]) => {
-      const entriesItemsIds = entries.map((e) => e.itemId);
+      const entriesItemsIds = entries
+        .map((e) => e.itemId)
+        .filter((itemId) => itemId !== undefined && itemId !== null);
       const items = await this.itemModel()
         .query()
         .whereIn('id', entriesItemsIds);
 
       return entries.map((entry) => {
         const item = items.find((i) => i.id === entry.itemId);
+
+        // Account lines (no item) keep their own cost account.
+        if (!item) return entry;
 
         return {
           ...entry,

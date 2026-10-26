@@ -34,6 +34,8 @@ interface ItemsEntriesTableProps {
   isInclusiveTax?: boolean;
   landedCost?: boolean;
   defaultEntry?: ItemEntry;
+  accountLines?: boolean;
+  accounts?: unknown[];
 }
 
 /**
@@ -81,6 +83,7 @@ function ItemEntriesTableRoot() {
     landedCost,
     taxRates,
     itemType,
+    accounts,
   } = useItemEntriesTableContext();
 
   // Editiable items entries columns.
@@ -130,6 +133,7 @@ function ItemEntriesTableRoot() {
       payload={{
         items,
         taxRates,
+        accounts: accounts || [],
         errors: errors || [],
         updateData: handleUpdateData,
         removeRow: handleRemoveRow,

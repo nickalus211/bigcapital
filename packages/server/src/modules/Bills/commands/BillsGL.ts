@@ -95,7 +95,7 @@ export class BillGL {
       ...commonJournalMeta,
       debit: totalLocal + landedCostAmount,
       accountId:
-        ['inventory'].indexOf(entry.item.type) !== -1
+        entry.item?.type === 'inventory'
           ? entry.item.inventoryAccountId
           : entry.costAccountId,
       index: index + 1,
