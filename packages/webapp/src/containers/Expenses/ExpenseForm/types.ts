@@ -49,12 +49,14 @@ export type ExpenseFormContext = {
   submitPayloadRef: React.MutableRefObject<ExpenseSubmitPayload>;
   currencies: Record<string, any>[];
   customers: Record<string, any>[];
+  vendors: Record<string, any>[];
   expense: Expense | undefined;
   accounts: Record<string, any>[];
   branches: Record<string, any>[];
   isCurrenciesLoading: boolean;
   isExpenseLoading: boolean;
   isCustomersLoading: boolean;
+  isVendorsLoading: boolean;
   isAccountsLoading: boolean;
   isBranchesSuccess: boolean;
   isBranchesLoading: boolean;

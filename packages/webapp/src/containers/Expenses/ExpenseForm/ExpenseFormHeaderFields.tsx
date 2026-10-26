@@ -3,20 +3,15 @@ import { DateInput } from '@blueprintjs/datetime';
 import { css } from '@emotion/css';
 import { useTheme } from '@emotion/react';
 import classNames from 'classnames';
-import { FastField, ErrorMessage } from 'formik';
-import React from 'react';
+import { FastField, ErrorMessage, useFormikContext } from 'formik';
+import React, { useMemo } from 'react';
 import intl from 'react-intl-universal';
 import { ExpensesExchangeRateInputField } from './components';
 import { SUPPORTED_EXPENSE_PAYMENT_ACCOUNT_TYPES } from './constants';
 import { useExpenseFormContext } from './ExpenseFormPageProvider';
-import { customersFieldShouldUpdate, accountsFieldShouldUpdate } from './utils';
+import { accountsFieldShouldUpdate } from './utils';
 import type { Theme } from '@xstyled/emotion';
-import {
-  CustomersSelect,
-  FInputGroup,
-  Stack,
-  FormattedMessage as T,
-} from '@/components';
+import { FInputGroup, Stack, FormattedMessage as T } from '@/components';
 import {
   FFormGroup,
   FSelect,
@@ -25,6 +20,7 @@ import {
   Hint,
 } from '@/components';
 import { CLASSES } from '@/constants/classes';
+import { VendorsSelect } from '@/components/Vendors';
 import { useDateInputFormatter } from '@/hooks';
 import { tansformDateValue, inputIntent, handleDateChange } from '@/utils';
 
@@ -49,7 +45,7 @@ const getFieldsStyle = (theme: Theme) => css`
  * Expense form header.
  */
 export function ExpenseFormHeader() {
-  const { currencies, accounts, customers } = useExpenseFormContext();
+  const { currencies, accounts, customers, vendors } = useExpenseFormContext();
   const theme = useTheme() as unknown as Theme;
   const fieldsClassName = getFieldsStyle(theme);
   const dateInputFormatter = useDateInputFormatter();
@@ -140,43 +136,53 @@ export function ExpenseFormHeader() {
         />
       </FFormGroup>
 
-      {/* ----------- Customer ----------- */}
-      <ExpenseFormCustomerSelect customers={customers} />
+      {/* ----------- Vendor (payee) ----------- */}
+      <ExpenseFormVendorSelect vendors={vendors} customers={customers} />
     </Stack>
   );
 }
 
-type ExpenseFormCustomerSelectProps = {
+type ExpenseFormVendorSelectProps = {
+  vendors: Record<string, any>[];
   customers: Record<string, any>[];
 };
 
 /**
- * Customer select field of expense form.
+ * Vendor (payee) select field of expense form. The payee used to be picked
+ * from the customers, so a saved expense whose payee is a customer still
+ * shows it.
  * @returns {React.ReactNode}
  */
-function ExpenseFormCustomerSelect({
+function ExpenseFormVendorSelect({
+  vendors,
   customers,
-}: ExpenseFormCustomerSelectProps) {
+}: ExpenseFormVendorSelectProps) {
+  const { values } = useFormikContext<{ payeeId?: number | string }>();
+
+  const items = useMemo(() => {
+    const payeeId = Number(values.payeeId);
+    const isVendor = vendors.some((vendor) => vendor.id === payeeId);
+    const legacyPayee = !isVendor
+      ? customers.find((customer) => customer.id === payeeId)
+      : null;
+
+    return legacyPayee ? [...vendors, legacyPayee] : vendors;
+  }, [vendors, customers, values.payeeId]);
+
   return (
     <FormGroup
-      label={intl.get('customer')}
-      labelInfo={<Hint />}
+      label={'Vendor'}
+      labelInfo={<Hint content={'Who you paid, e.g. the supplier.'} />}
       inline={true}
       // @ts-expect-error FormGroup does not declare `name` / `fastField` / `shouldUpdateDeps` / `shouldUpdate`
       name={'payeeId'}
-      fastField={true}
-      shouldUpdateDeps={{ items: customers }}
-      shouldUpdate={customersFieldShouldUpdate}
     >
-      <CustomersSelect
+      <VendorsSelect
         name={'payeeId'}
-        items={customers}
-        placeholder={<T id={'select_customer_account'} />}
+        items={items}
+        placeholder={'Select a vendor'}
         allowCreate={true}
         popoverFill={true}
-        fastField={true}
-        shouldUpdateDeps={{ items: customers }}
-        shouldUpdate={customersFieldShouldUpdate}
       />
     </FormGroup>
   );
