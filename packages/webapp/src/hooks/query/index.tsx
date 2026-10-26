@@ -47,6 +47,7 @@ export * from './warehouses-transfers';
 export * from './banking';
 export * from './api-keys';
 export * from './jamaica';
+export * from './dashboard';
 export * from './payment-methods';
 export * from './payment-link';
 export * from './payment-services';

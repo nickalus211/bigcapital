@@ -4483,6 +4483,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/dashboard/insights": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Money received and spent per month, cash balance trend, spending by category and summary totals (cash basis). */
+        get: operations["DashboardController_getInsights"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/roles": {
         parameters: {
             query?: never;
@@ -17543,6 +17560,90 @@ export interface components {
              *     ]
              */
             hiddenModules: string[];
+        };
+        DashboardInsightsSummaryDto: {
+            /**
+             * @description Money received this month
+             * @example 120000
+             */
+            received: number;
+            /**
+             * @description Money spent this month
+             * @example 85000
+             */
+            spent: number;
+            /**
+             * @description Received − spent this month
+             * @example 35000
+             */
+            net: number;
+            /**
+             * @description Cash and bank balance now
+             * @example 410000
+             */
+            cashBalance: number;
+            /**
+             * @description Owed to you (A/R)
+             * @example 60000
+             */
+            receivable: number;
+            /**
+             * @description You owe (A/P)
+             * @example 25000
+             */
+            payable: number;
+            /**
+             * @description Money received in the period
+             * @example 900000
+             */
+            totalReceived: number;
+            /**
+             * @description Money spent in the period
+             * @example 700000
+             */
+            totalSpent: number;
+        };
+        DashboardMonthlyCashFlowDto: {
+            /** @example 2026-10 */
+            month: string;
+            /** @example 120000 */
+            received: number;
+            /** @example 85000 */
+            spent: number;
+            /** @example 35000 */
+            net: number;
+        };
+        DashboardBalancePointDto: {
+            /** @example 2026-10 */
+            month: string;
+            /**
+             * @description Cash and bank balance at month end
+             * @example 410000
+             */
+            balance: number;
+        };
+        DashboardCategoryAmountDto: {
+            /**
+             * @description Null for "Other"
+             * @example 1004
+             */
+            accountId: number | null;
+            /** @example Rent */
+            name: string;
+            /** @example 240000 */
+            amount: number;
+        };
+        DashboardInsightsResponseDto: {
+            /** @example JMD */
+            currencyCode: string;
+            /** @example 2025-11-01 */
+            fromDate: string;
+            /** @example 2026-10-31 */
+            toDate: string;
+            summary: components["schemas"]["DashboardInsightsSummaryDto"];
+            monthly: components["schemas"]["DashboardMonthlyCashFlowDto"][];
+            balanceTrend: components["schemas"]["DashboardBalancePointDto"][];
+            spendingByCategory: components["schemas"]["DashboardCategoryAmountDto"][];
         };
         RolePermissionResponseDto: {
             /**
@@ -33377,6 +33478,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GetDashboardBootMetaResponseDto"];
+                };
+            };
+        };
+    };
+    DashboardController_getInsights: {
+        parameters: {
+            query?: {
+                /** @description Number of months, including the current one (1–36). */
+                months?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DashboardInsightsResponseDto"];
                 };
             };
         };

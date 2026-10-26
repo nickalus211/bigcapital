@@ -1356,6 +1356,18 @@ export const getDashboardRoutes = () => [
     breadcrumb: 'Bank Rules',
     subscriptionActive: [SUBSCRIPTION_TYPE.MAIN],
   },
+  // Shortcuts (the cards that used to be the homepage)
+  {
+    path: `/shortcuts`,
+    component: lazy(() =>
+      import('@/containers/Homepage/Shortcuts').then((m) => ({
+        default: m.Shortcuts,
+      })),
+    ),
+    breadcrumb: 'Shortcuts',
+    pageTitle: 'Shortcuts',
+    subscriptionActive: [SUBSCRIPTION_TYPE.MAIN],
+  },
   // Homepage
   {
     path: `/`,

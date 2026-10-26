@@ -1,5 +1,8 @@
 import React, { useEffect } from 'react';
 import { HomepageContent } from './HomepageContent';
+import { HomeDashboard } from './Dashboard/HomeDashboard';
+import { useAbilityContext } from '@/hooks';
+import { AbilitySubject, ReportsAction } from '@/constants/abilityOption';
 import type { WithDashboardActionsProps } from '@/containers/Dashboard/withDashboardActions';
 import { DashboardInsider } from '@/components/Dashboard';
 import { withDashboardActions } from '@/containers/Dashboard/withDashboardActions';
@@ -15,6 +18,14 @@ function DashboardHomepage({
   changePageTitle,
 }: DashboardHomepageProps) {
   const organizationName = useCurrentOrganizationName();
+  const ability = useAbilityContext();
+
+  // The dashboard shows report figures; without the permission the
+  // homepage keeps the shortcuts.
+  const canSeeDashboard = ability.can(
+    ReportsAction.READ_PROFIT_LOSS,
+    AbilitySubject.Report,
+  );
 
   useEffect(() => {
     changePageTitle(organizationName);
@@ -22,7 +33,7 @@ function DashboardHomepage({
 
   return (
     <DashboardInsider name="homepage">
-      <HomepageContent />
+      {canSeeDashboard ? <HomeDashboard /> : <HomepageContent />}
     </DashboardInsider>
   );
 }

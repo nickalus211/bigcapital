@@ -3,6 +3,25 @@
 Newest first. Every entry is backward compatible unless it is marked
 **BREAKING**, and none are.
 
+## Dashboard graphs (2026-10-25)
+
+Additive only. Details: [dashboard.md](dashboard.md#get-apidashboardinsights).
+
+### New endpoint `GET /api/dashboard/insights?months=12`
+- Money received and spent per month on the cash and bank accounts (cash
+  basis), the cash and bank balance at each month end, spending by expense
+  account, and this month's totals with the amounts owed to and by you.
+- `months`: 1–36, default 12, including the current month.
+- Needs the Profit & Loss report permission.
+
+### Webapp
+- The homepage is now a dashboard with these graphs. The shortcut cards
+  moved to **Shortcuts** (`/shortcuts`, in the sidebar under Homepage). Users
+  without the Profit & Loss permission still get the cards on the homepage.
+
+### Invoice and estimate sync
+No change.
+
 ## M6: Customs entries (2026-10-25)
 
 Details and examples: [customs-entries.md](customs-entries.md). Additive

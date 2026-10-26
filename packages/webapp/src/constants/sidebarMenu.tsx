@@ -59,6 +59,13 @@ export const SidebarMenu: SidebarMenuItem[] = [
     href: '/',
     matchExact: true,
   },
+  {
+    text: 'Shortcuts',
+    type: ISidebarMenuItemType.Link,
+    disabled: false,
+    href: '/shortcuts',
+    matchExact: true,
+  },
   // ---------------
   // # Sales & Inventory
   // ---------------

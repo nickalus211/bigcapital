@@ -23605,6 +23605,39 @@
         ]
       }
     },
+    "/api/dashboard/insights": {
+      "get": {
+        "operationId": "DashboardController_getInsights",
+        "summary": "Money received and spent per month, cash balance trend, spending by category and summary totals (cash basis).",
+        "parameters": [
+          {
+            "name": "months",
+            "required": false,
+            "in": "query",
+            "description": "Number of months, including the current one (1–36).",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardInsightsResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Dashboard"
+        ]
+      }
+    },
     "/api/roles": {
       "post": {
         "operationId": "RolesController_createRole",
@@ -47409,6 +47442,177 @@
           "features",
           "isBigcapitalCloud",
           "hiddenModules"
+        ]
+      },
+      "DashboardInsightsSummaryDto": {
+        "type": "object",
+        "properties": {
+          "received": {
+            "type": "number",
+            "description": "Money received this month",
+            "example": 120000
+          },
+          "spent": {
+            "type": "number",
+            "description": "Money spent this month",
+            "example": 85000
+          },
+          "net": {
+            "type": "number",
+            "description": "Received − spent this month",
+            "example": 35000
+          },
+          "cashBalance": {
+            "type": "number",
+            "description": "Cash and bank balance now",
+            "example": 410000
+          },
+          "receivable": {
+            "type": "number",
+            "description": "Owed to you (A/R)",
+            "example": 60000
+          },
+          "payable": {
+            "type": "number",
+            "description": "You owe (A/P)",
+            "example": 25000
+          },
+          "totalReceived": {
+            "type": "number",
+            "description": "Money received in the period",
+            "example": 900000
+          },
+          "totalSpent": {
+            "type": "number",
+            "description": "Money spent in the period",
+            "example": 700000
+          }
+        },
+        "required": [
+          "received",
+          "spent",
+          "net",
+          "cashBalance",
+          "receivable",
+          "payable",
+          "totalReceived",
+          "totalSpent"
+        ]
+      },
+      "DashboardMonthlyCashFlowDto": {
+        "type": "object",
+        "properties": {
+          "month": {
+            "type": "string",
+            "example": "2026-10"
+          },
+          "received": {
+            "type": "number",
+            "example": 120000
+          },
+          "spent": {
+            "type": "number",
+            "example": 85000
+          },
+          "net": {
+            "type": "number",
+            "example": 35000
+          }
+        },
+        "required": [
+          "month",
+          "received",
+          "spent",
+          "net"
+        ]
+      },
+      "DashboardBalancePointDto": {
+        "type": "object",
+        "properties": {
+          "month": {
+            "type": "string",
+            "example": "2026-10"
+          },
+          "balance": {
+            "type": "number",
+            "description": "Cash and bank balance at month end",
+            "example": 410000
+          }
+        },
+        "required": [
+          "month",
+          "balance"
+        ]
+      },
+      "DashboardCategoryAmountDto": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "number",
+            "nullable": true,
+            "description": "Null for \"Other\"",
+            "example": 1004
+          },
+          "name": {
+            "type": "string",
+            "example": "Rent"
+          },
+          "amount": {
+            "type": "number",
+            "example": 240000
+          }
+        },
+        "required": [
+          "accountId",
+          "name",
+          "amount"
+        ]
+      },
+      "DashboardInsightsResponseDto": {
+        "type": "object",
+        "properties": {
+          "currencyCode": {
+            "type": "string",
+            "example": "JMD"
+          },
+          "fromDate": {
+            "type": "string",
+            "example": "2025-11-01"
+          },
+          "toDate": {
+            "type": "string",
+            "example": "2026-10-31"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/DashboardInsightsSummaryDto"
+          },
+          "monthly": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DashboardMonthlyCashFlowDto"
+            }
+          },
+          "balanceTrend": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DashboardBalancePointDto"
+            }
+          },
+          "spendingByCategory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DashboardCategoryAmountDto"
+            }
+          }
+        },
+        "required": [
+          "currencyCode",
+          "fromDate",
+          "toDate",
+          "summary",
+          "monthly",
+          "balanceTrend",
+          "spendingByCategory"
         ]
       },
       "RolePermissionResponseDto": {
